@@ -299,17 +299,17 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
                                                 0.88,
                                         width:
                                             MediaQuery.of(context).size.width *
-                                                0.8,
+                                                0.6,
                                         child: MediaQuery.removePadding(
                                             context: context,
                                             removeTop: true,
                                             child: GridView.builder(
                                               gridDelegate:
                                                   const SliverGridDelegateWithMaxCrossAxisExtent(
-                                                      maxCrossAxisExtent: 450,
-                                                      childAspectRatio: 3 / 2,
+                                                      maxCrossAxisExtent: 280,
                                                       crossAxisSpacing: 20,
-                                                      mainAxisSpacing: 20),
+                                                      mainAxisSpacing: 20,
+                                                      mainAxisExtent: 280),
                                               itemCount: staffHomework!.length,
                                               shrinkWrap: true,
                                               padding: const EdgeInsets.only(

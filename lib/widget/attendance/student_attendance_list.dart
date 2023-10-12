@@ -572,33 +572,46 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
                                                       },
                                                     )
                                                   ],
-                                                  title: RichText(
-                                                    text: TextSpan(
-                                                      children: [
-                                                        const TextSpan(
-                                                            text:
-                                                                "You've marked absent for these students("),
-                                                        for (int i = 0;
-                                                            i <
-                                                                absentList
-                                                                    .length;
-                                                            i++)
-                                                          TextSpan(
-                                                            text:
-                                                                "${absentList[i].studentName},",
-                                                          ),
-                                                        const TextSpan(
-                                                            text:
-                                                                ")Make sure the notification will send to the parents!"),
-                                                      ],
-                                                      style: SafeGoogleFont(
-                                                          "Lato",
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color: const Color(
-                                                              0xff2A232D)),
-                                                    ),
+                                                  title: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        "You've marked absent for these students",
+                                                        style: SafeGoogleFont(
+                                                            "Lato",
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color: const Color(
+                                                                0xff2A232D)),
+                                                      ),
+                                                      for (int i = 0;
+                                                          i < absentList.length;
+                                                          i++)
+                                                        Text(
+                                                          "${i + 1})  ${absentList[i].studentName}",
+                                                          style: SafeGoogleFont(
+                                                              "Lato",
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              color: const Color(
+                                                                  0xff2A232D)),
+                                                        ),
+                                                      Text(
+                                                        "Make sure the notification will send to the parents!",
+                                                        style: SafeGoogleFont(
+                                                            "Lato",
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color: const Color(
+                                                                0xff2A232D)),
+                                                      ),
+                                                    ],
                                                   ),
                                                 );
                                               },

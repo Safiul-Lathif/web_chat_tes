@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:ui/config/strings.dart';
-import 'package:ui/model/search/management_list_model.dart';
 import 'package:ui/utils/session_management.dart';
+
+import '../../model/management_list.dart';
 
 Future<List<ManagementList>?> getManagementList() async {
   var url = Uri.parse("${Strings.baseURL}api/user/all_management_list");

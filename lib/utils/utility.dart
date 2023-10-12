@@ -3,11 +3,14 @@ import 'dart:io';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:ui/config/strings.dart';
+import 'package:ui/model/message_view_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Utility {
@@ -59,6 +62,48 @@ class Utility {
       }
       rethrow;
     }
+  }
+
+  static void popUpDialog(BuildContext context, Message data) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Container(
+            constraints:
+                BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+            child: AlertDialog(
+              content: SingleChildScrollView(
+                child: Text(data.message.toString()),
+              ),
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      Clipboard.setData(
+                              ClipboardData(text: data.message.toString()))
+                          .then((_) {
+                        Utility.displaySnackBar(
+                            context, 'Copied to your clipboard !');
+                      });
+                    },
+                    icon: const Icon(Icons.copy)),
+                IconButton(
+                    onPressed: () async {
+                      await Share.share(data.message.toString());
+                    },
+                    icon: const Icon(Icons.share)),
+                IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.arrow_forward_ios)),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   static String convertTimeFormat(String time) {

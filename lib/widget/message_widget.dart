@@ -1,23 +1,27 @@
+// ignore_for_file: file_names, must_be_immutable
 import 'package:expandable_text/expandable_text.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:multiselect/multiselect.dart';
-import 'package:ui/api/message_visible_count_api.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:ui/Utils/Utility.dart';
+import 'package:ui/api/class_group_api.dart';
+import 'package:ui/api/search/get_admin_list_api.dart';
 import 'package:ui/api/sendTextApi.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/file_listview.dart';
 import 'package:ui/custom/filelistviewnew.dart';
+import 'package:ui/model/all_group_list.dart';
 import 'package:ui/model/classModel.dart';
 import 'package:ui/model/group/student_group_list_model.dart';
-import 'package:ui/model/message_visiblecount.dart';
-import 'package:ui/utils/utility.dart';
+import 'package:ui/model/management_list.dart';
+import 'package:ui/model/search/admin_list_model.dart';
 import 'package:ui/utils/utils_file.dart';
-import '../api/classgroupApi.dart';
 import '../api/group/student_group_list.dart';
-
-import 'package:multi_select_flutter/multi_select_flutter.dart';
+import '../api/message_visible_count_api.dart';
+import '../api/search/get_management_list_api.dart';
+import '../model/message_visiblecount.dart';
 
 class MessageWidget extends StatefulWidget {
   MessageWidget({
@@ -107,22 +111,62 @@ class _MessageWidgetState extends State<MessageWidget> {
   ];
   List<bool> studentSelect = [];
   ClassGroup? class_;
+  GroupList? groupList;
   int groupCount = 0;
   List<StudentGroupList> studentGroupList = [];
+  List<ManagementList> managementList = [];
+  List<AdminList> listOfAdmin = [];
+
   List<String> menuItems = [];
+  List<String> classWise = [];
+  List<String> sectionWise = [];
+  List<String> managementWise = [];
   List<String> selectedItems = [];
+
   void getAllTheGroup() async {
     if (widget.id == "2") {
+      await getClassList().then((value) {
+        if (mounted) {
+          setState(() {
+            groupList = value;
+            for (int i = 0; i < groupList!.classes.length; i++) {
+              classWise.add(groupList!.classes[i].className);
+            }
+          });
+        }
+      });
       await getClassGroup().then((value) {
         if (mounted) {
           setState(() {
             class_ = value;
             for (int i = 0; i < class_!.classGroup.length; i++) {
-              menuItems.add(class_!.classGroup[i].groupName);
+              sectionWise.add(class_!.classGroup[i].groupName);
             }
           });
         }
       });
+    } else if (widget.name.toUpperCase() == "ADMIN-MANAGEMENT") {
+      if (widget.role.toUpperCase() == "MANAGEMENT") {
+        await getAdminList().then((value) {
+          setState(() {
+            dropDownTitle = "Select Individual Admin";
+            listOfAdmin = value!;
+            for (int i = 0; i < value.length; i++) {
+              menuItems.add(listOfAdmin[i].firstName);
+            }
+          });
+        });
+      } else {
+        await getManagementList().then((value) => {
+              setState(() {
+                dropDownTitle = "Select Individual Management";
+                managementList = value!;
+                for (int i = 0; i < value.length; i++) {
+                  menuItems.add(managementList[i].firstName);
+                }
+              })
+            });
+      }
     } else {
       await getStudentGroupList(widget.id).then((value) {
         if (mounted) {
@@ -138,7 +182,14 @@ class _MessageWidgetState extends State<MessageWidget> {
   }
 
   bool isSelected = false;
+  bool isClassWise = true;
+  bool isSectionWise = true;
   void initialize() async {
+    if (widget.name.toUpperCase() == "ADMIN-MANAGEMENT") {
+      setState(() {
+        distributionType = 9;
+      });
+    }
     await getVisibleCount(widget.id).then((value) {
       if (value != null) {
         if (mounted) {
@@ -158,46 +209,82 @@ class _MessageWidgetState extends State<MessageWidget> {
   }
 
   Color color = Colors.orange;
-
   String selected = "";
   String text = 'Everyone';
   String visibilityMessage = 'Visible to ';
   bool isMessageSend = true;
+  String dropDownTitle = '';
+
   List checkListItems = [
     {
+      "width": 0.16,
       "id": 3,
       "value": true,
       "fl": 4,
       "title": "Everyone",
     },
     {
+      "width": 0.15,
       "id": 4,
       "value": false,
       "fl": 5,
       "title": "ClassWise",
     },
     {
+      "width": 0.17,
       "id": 5,
       "value": false,
       "fl": 4,
       "title": "Parents",
     },
   ];
+
   List checkListItems1 = [
     {
+      "width": 0.15,
       "id": 3,
       "value": true,
       "title": "Everyone",
     },
     {
+      "width": 0.15,
       "id": 4,
       "value": false,
       "title": "StudentWise",
     },
     {
+      "width": 0.15,
       "id": 5,
       "value": false,
       "title": "Parents",
+    },
+  ];
+  List checkListItems2 = [
+    {
+      "width": 0.15,
+      "id": 9,
+      "value": true,
+      "title": "Everyone",
+    },
+    {
+      "width": 0.15,
+      "id": 9,
+      "value": false,
+      "title": "ManagementWise",
+    },
+  ];
+  List checkListItems3 = [
+    {
+      "width": 0.15,
+      "id": 9,
+      "value": true,
+      "title": "Everyone",
+    },
+    {
+      "width": 0.15,
+      "id": 9,
+      "value": false,
+      "title": "AdminWise",
     },
   ];
   @override
@@ -417,6 +504,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                                       controller: textController,
                                       focusNode: widget.focusNode,
                                       textAlign: TextAlign.center,
+                                      maxLines: 10,
                                       decoration: InputDecoration.collapsed(
                                         hintText: 'Type Your Text Here',
                                         hintStyle: SafeGoogleFont(
@@ -495,7 +583,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                                               decoration: const BoxDecoration(
                                                   image: DecorationImage(
                                                       image: NetworkImage(
-                                                        ("https://cdn-icons-png.flaticon.com/128/3143/3143540.png"),
+                                                        "https://cdn-icons-png.flaticon.com/128/3143/3143540.png",
                                                       ),
                                                       fit: BoxFit.fill)),
                                             ),
@@ -525,132 +613,6 @@ class _MessageWidgetState extends State<MessageWidget> {
                                 )
                               ],
                             ),
-                            // Column(
-                            //   mainAxisAlignment: MainAxisAlignment.center,
-                            //   children: [
-                            //     Container(
-                            //       width: MediaQuery.of(context).size.width*0.4 * fem,
-                            //       height: 102 * fem,
-                            //       decoration: BoxDecoration(
-                            //         borderRadius:
-                            //             BorderRadius.circular(7 * fem),
-                            //         border: Border.all(
-                            //             color: const Color(0xff9f9f9f)),
-                            //       ),
-                            //       child: InkWell(
-                            //           onTap: () async {
-                            //             var files = await FilePicker.platform
-                            //                 .pickFiles(
-                            //                     allowMultiple: false,
-                            //                     type: FileType.custom,
-                            //                     allowedExtensions: ['mp3']);
-                            //             if (files != null) {
-                            //               audio.clear();
-                            //               setState(() {
-                            //                 //Ticket No 95 100523
-                            //                 for (var i = 0;
-                            //                     i < files.files.length;
-                            //                     i++) {
-                            //                   if (files.files[i].path!
-                            //                       .contains("mp3")) {
-                            //                     audio.addAll(files.files);
-                            //                   } else {
-                            //                     Navigator.pop(context);
-                            //                     Utility.displaySnackBar(context,
-                            //                         "Audio File Extenion is Missing");
-                            //                   }
-                            //                 }
-                            //                 audio.addAll(files.files);
-                            //                 textController.text = '';
-                            //                 textTitleController.text = '';
-                            //                 imgController.text = '';
-                            //                 audioTextController.text = '';
-                            //                 speaksController.text = '';
-                            //                 materialController.text = '';
-                            //                 videoCaptionController.text = '';
-                            //                 videoLinkController.text = '';
-                            //                 circularController.text = '';
-                            //                 docController.text = '';
-                            //                 document = [];
-                            //                 material = [];
-                            //                 image = [];
-                            //                 quoteController.text = '';
-                            //               });
-                            //               //Ticket No 50
-                            //               for (var i = 0;
-                            //                   i < audio.length;
-                            //                   i++) {
-                            //                 var f = File(audio[i].path!);
-                            //                 int sizeInBytes = f.lengthSync();
-                            //                 sizeInMb =
-                            //                     sizeInBytes / (1024 * 1024);
-                            //                 if (sizeInMb > 2) {
-                            //                   setState(() {
-                            //                     audio = [];
-                            //                   });
-                            //                 }
-                            //               }
-                            //             }
-                            //           },
-                            //           child: Column(
-                            //             mainAxisAlignment:
-                            //                 MainAxisAlignment.center,
-                            //             children: [
-                            //               Container(
-                            //                 height: 25,
-                            //                 width: 25,
-                            //                 decoration: const BoxDecoration(
-                            //                     image: DecorationImage(
-                            //                         image: AssetImage(
-                            //                           ("assets/images/add_file.png"),
-                            //                         ),
-                            //                         fit: BoxFit.fill)),
-                            //               ),
-                            //               sizeInMb > 2
-                            //                   ? Center(
-                            //                       child: Text(
-                            //                         "Maximum File Size is 2MB",
-                            //                         style: SafeGoogleFont(
-                            //                           'Inter',
-                            //                           fontSize: 12 * ffem,
-                            //                           fontWeight:
-                            //                               FontWeight.bold,
-                            //                           height: 0.9152272542 *
-                            //                               ffem /
-                            //                               fem,
-                            //                           letterSpacing: 1.2 * fem,
-                            //                           color: Colors.black,
-                            //                         ),
-                            //                       ),
-                            //                     )
-                            //                   : audio.isEmpty
-                            //                       ? Text(
-                            //                           "Please select Audio files to upload",
-                            //                           style: SafeGoogleFont(
-                            //                             'Inter',
-                            //                             fontSize: 12 * ffem,
-                            //                             fontWeight:
-                            //                                 FontWeight.w400,
-                            //                             height: 0.9152272542 *
-                            //                                 ffem /
-                            //                                 fem,
-                            //                             letterSpacing:
-                            //                                 1.2 * fem,
-                            //                             color: const Color(
-                            //                                 0xff797979),
-                            //                           ),
-                            //                         )
-                            //                       : //Ticket No 50
-                            //                       FileListView(
-                            //                           file: audio,
-                            //                           iconPath:
-                            //                               Images.commvoice,
-                            //                         ),
-                            //             ],
-                            //           )),
-                            //     ),
-                            //   ],
-                            // ),
                             Column(
                               children: [
                                 Container(
@@ -703,7 +665,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                                           videoLinkController, //Ticket No 17
                                       textAlign: TextAlign.center,
 
-                                      // maxLines: 10,
+                                      maxLines: 10,
                                       decoration: InputDecoration.collapsed(
                                         hintText: //Ticket No 17
                                             "Paste your video link \n\n (for Multiple links use comma ',' at end of each link)",
@@ -787,7 +749,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                                             decoration: const BoxDecoration(
                                                 image: DecorationImage(
                                                     image: NetworkImage(
-                                                      ("https://cdn-icons-png.flaticon.com/128/1981/1981438.png"),
+                                                      "https://cdn-icons-png.flaticon.com/128/1981/1981438.png",
                                                     ),
                                                     fit: BoxFit.fill)),
                                           ),
@@ -922,7 +884,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                                         controller: quoteController,
                                         focusNode: widget.focusNode,
                                         textAlign: TextAlign.center,
-                                        // maxLines: 10,
+                                        maxLines: 10,
                                         decoration: InputDecoration.collapsed(
                                           hintText: 'Type Your Quotes Here',
                                           hintStyle: SafeGoogleFont(
@@ -959,7 +921,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                                         controller: speaksController,
                                         focusNode: widget.focusNode,
                                         textAlign: TextAlign.center,
-                                        // maxLines: 10,
+                                        maxLines: 10,
                                         decoration: InputDecoration.collapsed(
                                           hintText: 'Type Announcements here',
                                           hintStyle: SafeGoogleFont(
@@ -996,7 +958,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                                         controller: circularController,
                                         focusNode: widget.focusNode,
                                         textAlign: TextAlign.center,
-                                        // maxLines: 10,
+                                        maxLines: 10,
                                         decoration: InputDecoration.collapsed(
                                           hintText: 'Type Circular here',
                                           hintStyle: SafeGoogleFont(
@@ -1098,203 +1060,337 @@ class _MessageWidgetState extends State<MessageWidget> {
                         const SizedBox(
                           height: 10,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: List.generate(
-                              widget.id == "1" ||
+                        SizedBox(
+                          height: 35,
+                          width: MediaQuery.of(context).size.width,
+                          child: ListView.builder(
+                              itemCount: widget.id == "1" ||
                                       widget.id == '3' ||
                                       widget.id == '4' ||
                                       widget.id == '5'
                                   ? 1
-                                  : checkListItems.length, (index) {
-                            checkListItems[0]['title'] = widget.name;
-                            return Expanded(
-                              flex: checkListItems[index]["fl"],
-                              child: CheckboxListTile(
-                                visualDensity: const VisualDensity(
-                                    horizontal: -4.0, vertical: -4.0),
-                                controlAffinity:
-                                    ListTileControlAffinity.leading,
-                                contentPadding: EdgeInsets.zero,
-                                dense: true,
-                                title: Transform.translate(
-                                  offset: const Offset(-10, 0),
-                                  child: Text(
-                                    widget.id == '2'
-                                        ? checkListItems[index]["title"]
-                                        : checkListItems1[index]["title"],
-                                    style: SafeGoogleFont(
-                                      'Inter',
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w400,
-                                      height: 0.9152272542 * ffem / fem,
-                                      letterSpacing: 1,
-                                      color: const Color(0xff8e8e8e),
+                                  : widget.name.toUpperCase() ==
+                                          "ADMIN-MANAGEMENT"
+                                      ? 2
+                                      : checkListItems.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                checkListItems[0]['title'] = widget.name;
+                                var width = widget.name.toUpperCase() ==
+                                        "ADMIN-MANAGEMENT"
+                                    ? checkListItems2[index]['width']
+                                    : widget.id == '2'
+                                        ? checkListItems[index]['width']
+                                        : checkListItems1[index]['width'];
+                                return Container(
+                                  constraints: BoxConstraints(
+                                      maxWidth:
+                                          MediaQuery.of(context).size.width *
+                                              width),
+                                  child: CheckboxListTile(
+                                    visualDensity: const VisualDensity(
+                                        horizontal: -4.0, vertical: -4.0),
+                                    controlAffinity:
+                                        ListTileControlAffinity.leading,
+                                    contentPadding: EdgeInsets.zero,
+                                    dense: true,
+                                    title: Transform.translate(
+                                      offset: const Offset(-10, 0),
+                                      child: Text(
+                                        widget.id == '2'
+                                            ? checkListItems[index]["title"]
+                                            : widget.name.toUpperCase() ==
+                                                        "ADMIN-MANAGEMENT" &&
+                                                    widget.role.toUpperCase() ==
+                                                        "ADMIN"
+                                                ? checkListItems2[index]
+                                                    ["title"]
+                                                : widget.name.toUpperCase() ==
+                                                            "ADMIN-MANAGEMENT" &&
+                                                        widget.role
+                                                                .toUpperCase() ==
+                                                            "MANAGEMENT"
+                                                    ? checkListItems3[index]
+                                                        ['title']
+                                                    : checkListItems1[index]
+                                                        ['title'],
+                                        style: SafeGoogleFont(
+                                          'Inter',
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w400,
+                                          height: 0.9152272542 * ffem / fem,
+                                          letterSpacing: 1,
+                                          color: const Color(0xff8e8e8e),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                activeColor: checkListItems[0]["value"]
-                                    ? const Color(0xfff98a1d)
-                                    : checkListItems[1]["value"]
-                                        ? Colors.green
-                                        : Colors.pink,
-                                value: checkListItems[index]["value"],
-                                onChanged: widget.id == "1" ||
-                                        widget.id == '3' ||
-                                        widget.id == '4' ||
-                                        widget.id == '5'
-                                    ? null
-                                    : (value) {
-                                        HapticFeedback.vibrate();
-                                        if (index == 1) {
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) =>
-                                                  widget.id != '2' &&
-                                                          studentGroupList
-                                                              .isEmpty
-                                                      ? const AlertDialog(
-                                                          title: Text(
-                                                              "No students in the group"),
-                                                        )
-                                                      : AlertDialog(
-                                                          title: Text(
-                                                            widget.id == '2'
-                                                                ? 'Select Individual classes'
-                                                                : 'Select Individual Student',
-                                                          ),
-                                                          actions: [
-                                                            TextButton(
-                                                                onPressed:
-                                                                    widget.id ==
-                                                                            '2'
-                                                                        ? () {
-                                                                            setState(() {
-                                                                              for (var element in checkListItems) {
-                                                                                element["value"] = false;
-                                                                              }
-                                                                              checkListItems[index]["value"] = value;
-                                                                              visibilityMessage = selectedItems.toString();
-                                                                              errorText = '';
-                                                                              List<int> selectedIds = [];
-                                                                              for (int i = 0; i < selectedItems.length; i++) {
-                                                                                selectedIds.add(class_!.classGroup.firstWhere((element) => element.groupName == selectedItems[i]).allUserCount.toInt());
-                                                                              }
-                                                                              var totalCount = selectedIds.reduce((value, element) => value + element);
-                                                                              count = totalCount;
-                                                                              color = Colors.green;
-                                                                              text = "ClassWise";
-                                                                              distributionType = 6;
-                                                                              isMessageSend = value!;
-                                                                            });
-                                                                            Navigator.pop(context);
-                                                                          }
-                                                                        : () {
+                                    activeColor: checkListItems[0]["value"]
+                                        ? const Color(0xfff98a1d)
+                                        : checkListItems[1]["value"]
+                                            ? Colors.green
+                                            : Colors.pink,
+                                    value: checkListItems[index]["value"],
+                                    onChanged:
+                                        widget.id == "1" ||
+                                                widget.id == '3' ||
+                                                widget.id == '4' ||
+                                                widget.id == '5'
+                                            ? null
+                                            : (value) {
+                                                HapticFeedback.vibrate();
+                                                if (index == 1) {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) => widget
+                                                                    .id !=
+                                                                '2' &&
+                                                            studentGroupList
+                                                                .isEmpty &&
+                                                            widget.name
+                                                                    .toUpperCase() !=
+                                                                "ADMIN-MANAGEMENT"
+                                                        ? const AlertDialog(
+                                                            title: Text(
+                                                                "No students in the group"),
+                                                          )
+                                                        : widget.id == '2'
+                                                            ? AlertDialog(
+                                                                actions: [
+                                                                    TextButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          setState(
+                                                                              () {
                                                                             for (var element
                                                                                 in checkListItems) {
                                                                               element["value"] = false;
                                                                             }
                                                                             checkListItems[index]["value"] =
                                                                                 value;
-                                                                            setState(() {
-                                                                              visibilityMessage = selectedItems.toString();
-                                                                              errorText = '';
-                                                                              count = groupCount + selectedItems.length;
-                                                                              color = Colors.green;
-                                                                              text = 'StudentWise';
-                                                                              distributionType = 7;
-                                                                              isMessageSend = value!;
-                                                                            });
-                                                                            Navigator.pop(context);
-                                                                          },
-                                                                child:
-                                                                    const Text(
-                                                                        "Ok"))
-                                                          ],
-                                                          content:
-                                                              SingleChildScrollView(
-                                                            child:
-                                                                MultiSelectDialogField(
-                                                              dialogWidth:
-                                                                  MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.2,
-                                                              dialogHeight:
-                                                                  MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .height,
-                                                              items: menuItems
-                                                                  .map((e) =>
-                                                                      MultiSelectItem(
-                                                                          e, e))
-                                                                  .toList(),
-                                                              searchable: true,
-                                                              listType:
-                                                                  MultiSelectListType
-                                                                      .CHIP,
-                                                              onConfirm:
-                                                                  (List<String>
-                                                                      values) {
-                                                                selectedItems =
-                                                                    values;
-                                                              },
-                                                            ),
-                                                          ),
-                                                        ));
-                                        } else if (value == true) {
-                                          setState(() {
-                                            visibilityMessage = 'Visible To';
-                                            errorText = '';
-                                            selectedItems.clear();
-                                            for (var element
-                                                in checkListItems) {
-                                              element["value"] = false;
-                                            }
-                                            checkListItems[index]["value"] =
-                                                value;
-                                            checkListItems[0]["value"]
-                                                ? color =
-                                                    const Color(0xfff98a1d)
-                                                : checkListItems[1]["value"]
-                                                    ? color = Colors.green
-                                                    : color = Colors.pink;
-                                            text =
-                                                checkListItems[index]['title'];
-                                            distributionType =
-                                                checkListItems[index]['id'];
-                                            isMessageSend = value!;
-                                            checkListItems[0]["value"]
-                                                ? count = (int.parse(msgCount!
-                                                        .admin.length
-                                                        .toString()) +
-                                                    int.parse(msgCount!
-                                                        .management.length
-                                                        .toString()) +
-                                                    int.parse(msgCount!
-                                                        .parent.length
-                                                        .toString()) +
-                                                    int.parse(msgCount!
-                                                        .staff.length
-                                                        .toString()))
-                                                : checkListItems[1]['value']
-                                                    ? count =
-                                                        msgCount!.staff.length
-                                                    : count =
-                                                        msgCount!.parent.length;
-                                          });
-                                        } else {
-                                          setState(() {
-                                            errorText =
-                                                'Cant unselect all the field select any one !';
-                                          });
-                                        }
-                                      },
-                              ),
-                            );
-                          }),
+                                                                            visibilityMessage =
+                                                                                selectedItems.toString();
+                                                                            errorText =
+                                                                                '';
+                                                                            List<int>
+                                                                                selectedIds =
+                                                                                [];
+                                                                            if (distributionType ==
+                                                                                6) {
+                                                                              for (int i = 0; i < selectedItems.length; i++) {
+                                                                                selectedIds.add(class_!.classGroup.firstWhere((element) => element.groupName == selectedItems[i]).allUserCount.toInt());
+                                                                              }
+                                                                            } else {
+                                                                              for (int i = 0; i < selectedItems.length; i++) {
+                                                                                selectedIds.add(groupList!.classes.firstWhere((element) => element.className == selectedItems[i]).totalCount);
+                                                                              }
+                                                                            }
+                                                                            var totalCount = selectedIds.reduce((value, element) =>
+                                                                                value +
+                                                                                element);
+                                                                            count =
+                                                                                totalCount;
+                                                                            color =
+                                                                                Colors.green;
+                                                                            text =
+                                                                                "ClassWise";
+                                                                            isMessageSend =
+                                                                                value!;
+                                                                          });
+                                                                          Navigator.pop(
+                                                                              context);
+                                                                        },
+                                                                        child: const Text(
+                                                                            "Ok"))
+                                                                  ],
+                                                                title: const Text(
+                                                                    'Select Classes'),
+                                                                content:
+                                                                    SingleChildScrollView(
+                                                                  child:
+                                                                      StatefulBuilder(
+                                                                    builder:
+                                                                        (context,
+                                                                            setState) {
+                                                                      return Column(
+                                                                        children: [
+                                                                          Visibility(
+                                                                            visible:
+                                                                                isSectionWise,
+                                                                            child:
+                                                                                MultiSelectDialogField(
+                                                                              items: sectionWise.map((e) => MultiSelectItem(e, e)).toList(),
+                                                                              listType: MultiSelectListType.CHIP,
+                                                                              buttonText: const Text("Select section wise"),
+                                                                              onConfirm: (List<String> values) {
+                                                                                setState(() {
+                                                                                  distributionType = 6;
+                                                                                  selectedItems = values;
+                                                                                  isClassWise = false;
+                                                                                });
+                                                                              },
+                                                                              searchable: true,
+                                                                              title: const Text("Select  classes"),
+                                                                              searchHint: 'Select section wise',
+                                                                              decoration: BoxDecoration(shape: BoxShape.rectangle, border: Border.all(color: Colors.black)),
+                                                                            ),
+                                                                          ),
+                                                                          const SizedBox(
+                                                                            height:
+                                                                                10,
+                                                                          ),
+                                                                          Visibility(
+                                                                            visible:
+                                                                                isClassWise,
+                                                                            child:
+                                                                                MultiSelectDialogField(
+                                                                              items: classWise.map((e) => MultiSelectItem(e, e)).toList(),
+                                                                              listType: MultiSelectListType.CHIP,
+                                                                              buttonText: const Text("Select ClassWise"),
+                                                                              onConfirm: (List<String> values) {
+                                                                                setState(() {
+                                                                                  distributionType = 8;
+                                                                                  selectedItems = values;
+                                                                                  isSectionWise = false;
+                                                                                });
+                                                                              },
+                                                                              searchable: true,
+                                                                              title: const Text("Select  classes"),
+                                                                              searchHint: 'Select ClassWise',
+                                                                              decoration: BoxDecoration(shape: BoxShape.rectangle, border: Border.all(color: Colors.black)),
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                                ))
+                                                            : AlertDialog(
+                                                                title: Text(
+                                                                  widget.name.toUpperCase() ==
+                                                                          "ADMIN-MANAGEMENT"
+                                                                      ? dropDownTitle
+                                                                      : 'Select Individual Student',
+                                                                ),
+                                                                actions: [
+                                                                  TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        for (var element
+                                                                            in checkListItems) {
+                                                                          element["value"] =
+                                                                              false;
+                                                                        }
+                                                                        checkListItems[index]["value"] =
+                                                                            value;
+                                                                        setState(
+                                                                            () {
+                                                                          visibilityMessage =
+                                                                              selectedItems.toString();
+                                                                          errorText =
+                                                                              '';
+                                                                          count = widget.name.toUpperCase() == "ADMIN-MANAGEMENT"
+                                                                              ? selectedItems.length
+                                                                              : groupCount + selectedItems.length;
+
+                                                                          color =
+                                                                              Colors.green;
+                                                                          text = widget.name.toUpperCase() == "ADMIN-MANAGEMENT"
+                                                                              ? "Management"
+                                                                              : 'StudentWise';
+                                                                          isMessageSend =
+                                                                              value!;
+                                                                        });
+                                                                        Navigator.pop(
+                                                                            context);
+                                                                      },
+                                                                      child: const Text(
+                                                                          "Ok"))
+                                                                ],
+                                                                content:
+                                                                    SingleChildScrollView(
+                                                                  child:
+                                                                      MultiSelectDialogField(
+                                                                    dialogHeight:
+                                                                        MediaQuery.of(context)
+                                                                            .size
+                                                                            .height,
+                                                                    items: menuItems
+                                                                        .map((e) => MultiSelectItem(
+                                                                            e,
+                                                                            e))
+                                                                        .toList(),
+                                                                    searchable:
+                                                                        true,
+                                                                    listType:
+                                                                        MultiSelectListType
+                                                                            .CHIP,
+                                                                    onConfirm: (List<
+                                                                            String>
+                                                                        values) {
+                                                                      selectedItems =
+                                                                          values;
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                  );
+                                                } else if (value == true) {
+                                                  setState(() {
+                                                    selectedItems.clear();
+                                                    errorText = '';
+                                                    visibilityMessage =
+                                                        "visible to ";
+                                                    for (var element
+                                                        in checkListItems) {
+                                                      element["value"] = false;
+                                                    }
+                                                    checkListItems[index]
+                                                        ["value"] = value;
+                                                    checkListItems[0]["value"]
+                                                        ? color = const Color(
+                                                            0xfff98a1d)
+                                                        : checkListItems[1]
+                                                                ["value"]
+                                                            ? color =
+                                                                Colors.green
+                                                            : color =
+                                                                Colors.pink;
+                                                    text = checkListItems[index]
+                                                        ['title'];
+                                                    distributionType =
+                                                        checkListItems[index]
+                                                            ['id'];
+                                                    isMessageSend = value!;
+                                                    checkListItems[0]["value"]
+                                                        ? count = (int.parse(
+                                                                msgCount!.admin
+                                                                    .length
+                                                                    .toString()) +
+                                                            int.parse(msgCount!
+                                                                .management
+                                                                .length
+                                                                .toString()) +
+                                                            int.parse(msgCount!
+                                                                .parent.length
+                                                                .toString()) +
+                                                            int.parse(msgCount!
+                                                                .staff.length
+                                                                .toString()))
+                                                        : checkListItems[1]
+                                                                ['value']
+                                                            ? count = msgCount!.staff.length
+                                                            : count = msgCount!.parent.length;
+                                                  });
+                                                } else {
+                                                  setState(() {
+                                                    errorText =
+                                                        'Cant unselect all the field select any one !';
+                                                  });
+                                                }
+                                              },
+                                  ),
+                                );
+                              }),
                         )
                       ])),
                   if (errorText != '')
@@ -1326,24 +1422,60 @@ class _MessageWidgetState extends State<MessageWidget> {
   }
 
   void onMessageSend() async {
+    HapticFeedback.vibrate();
     List<String> selectedIds = [];
     setState(() {
       isTapped = true;
     });
-    if (widget.id == '2') {
+
+    if (widget.name.toUpperCase() == "ADMIN-MANAGEMENT") {
       for (int i = 0; i < selectedItems.length; i++) {
-        selectedIds.add(class_!.classGroup
-            .firstWhere((element) => element.groupName == selectedItems[i])
-            .classConfig
-            .toString());
+        if (widget.role.toUpperCase() == "MANAGEMENT") {
+          selectedIds.add(listOfAdmin
+              .firstWhere((element) => element.firstName == selectedItems[i])
+              .id
+              .toString());
+        } else {
+          selectedIds.add(managementList
+              .firstWhere((element) => element.firstName == selectedItems[i])
+              .id
+              .toString());
+        }
+        setState(() {
+          distributionType = 9;
+        });
       }
-    } else {
+    } else if (widget.id != '2') {
       for (int i = 0; i < selectedItems.length; i++) {
         selectedIds.add(studentGroupList
             .firstWhere((element) => element.name == selectedItems[i])
             .id
             .toString());
+        setState(() {
+          distributionType = 7;
+        });
       }
+    }
+    switch (distributionType) {
+      case 6:
+        {
+          for (int i = 0; i < selectedItems.length; i++) {
+            selectedIds.add(class_!.classGroup
+                .firstWhere((element) => element.groupName == selectedItems[i])
+                .classConfig
+                .toString());
+          }
+        }
+        break;
+      case 8:
+        {
+          for (int i = 0; i < selectedItems.length; i++) {
+            selectedIds.add(groupList!.classes
+                .firstWhere((element) => element.className == selectedItems[i])
+                .id
+                .toString());
+          }
+        }
     }
     if (textController.text.isNotEmpty) {
       category = 1;
@@ -1471,7 +1603,7 @@ class _MessageWidgetState extends State<MessageWidget> {
       widget.role == "staff"
           ? Utility.displaySnackBar(
               context, "Notification sent for approval successfully")
-          : Utility.displaySnackBar(context, "Message send Successfully");
+          : Utility.displaySnackBar(context, value['message']);
     } else {
       Navigator.pop(context);
       Utility.displaySnackBar(context, "Message not send");
@@ -1498,7 +1630,7 @@ class TabWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double baseWidth = 1314;
+    double baseWidth = 1514;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
     return Tab(

@@ -478,6 +478,7 @@ import 'package:intl/intl.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:ui/card/QuotesCard.dart';
 import 'package:ui/card/approved_card.dart';
+import 'package:ui/card/attendance_card.dart';
 import 'package:ui/card/birthday_card.dart';
 import 'package:ui/card/circular_card.dart';
 import 'package:ui/card/document_card.dart';
@@ -880,6 +881,17 @@ class _NewsFeedInfoState extends State<NewsFeedInfo> {
                           id: widget.id,
                           usr_Name: '',
                           parentCount: '',
+                        );
+                      } else if (message.messageCategory == "Attendance") {
+                        return AttendanceCard(
+                          redCount: message.readCount,
+                          type: message.viewType,
+                          role: widget.role,
+                          callback: msg,
+                          data: message,
+                          itemIndex: 0,
+                          notiid: message.notificationId,
+                          id: widget.id,
                         );
                       } else if (message.messageCategory == 'News & Events' &&
                           message.moduleType == 1) {

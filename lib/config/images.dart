@@ -23,6 +23,7 @@ class Chat {
   static const String newsIcon = "assets/images/news.png";
   static const String homeWorkIcon = 'assets/chat/assignment.png';
   static const String eventsIcon = "assets/images/calendar.png";
+  static const String attendanceIcon = 'assets/chat/attendance.png';
 }
 
 class DashboardUi {

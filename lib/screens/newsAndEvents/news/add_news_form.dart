@@ -10,7 +10,7 @@ import 'package:multiselect/multiselect.dart';
 import 'package:ui/Utils/Utility.dart';
 import 'package:ui/api/class_group_api.dart';
 import 'package:ui/api/news&events/send_news_api.dart';
-import 'package:ui/model/class_group_model.dart';
+import 'package:ui/model/classModel.dart';
 
 class AddNewsForm extends StatefulWidget {
   const AddNewsForm({
