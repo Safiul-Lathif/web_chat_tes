@@ -10,8 +10,7 @@ import 'package:multiselect/multiselect.dart';
 import 'package:ui/Utils/utility.dart';
 import 'package:ui/api/class_group_api.dart';
 import 'package:ui/api/news&events/send_events_api.dart';
-
-import '../../../model/class_group_model.dart';
+import 'package:ui/model/classModel.dart';
 
 class AddEventForm extends StatefulWidget {
   const AddEventForm({super.key});

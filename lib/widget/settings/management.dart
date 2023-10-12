@@ -167,7 +167,7 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                                     top: 10, bottom: 10),
                                                 child: Center(
                                                   child: Text(
-                                                      "Delete ${management.managementPersonName}"),
+                                                      "Delete ${management.firstName}"),
                                                 )),
                                           ),
                                           InkWell(
@@ -176,10 +176,11 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                                 isEdit = true;
                                                 userId =
                                                     management.id.toString();
-                                                nameController.text = management
-                                                    .managementPersonName;
-                                                mailController.text =
-                                                    management.emailAddress;
+                                                nameController.text =
+                                                    management.firstName;
+                                                mailController.text = management
+                                                    .mobileNumber
+                                                    .toString();
                                                 numberController.text =
                                                     management.mobileNumber
                                                         .toString();
@@ -195,7 +196,7 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                                     top: 10, bottom: 10),
                                                 child: Center(
                                                   child: Text(
-                                                      "Edit ${management.managementPersonName}"),
+                                                      "Edit ${management.firstName}"),
                                                 )),
                                           ),
                                         ])));
@@ -209,7 +210,7 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                   padding: const EdgeInsets.all(10.0),
                                   child: Row(
                                     children: [
-                                      management.photo == ''
+                                      management.profileImage == ''
                                           ? Image.asset(
                                               Images.userProfile,
                                               width: 88.28,
@@ -220,7 +221,7 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                                   const BorderRadius.all(
                                                       Radius.circular(10)),
                                               child: Image.network(
-                                                management.photo,
+                                                management.profileImage,
                                                 width: 88.28,
                                                 height: 81,
                                                 fit: BoxFit.cover,
@@ -254,8 +255,7 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                                                       .bold)),
                                                 ),
                                                 Text(
-                                                  management
-                                                      .managementPersonName,
+                                                  management.firstName,
                                                   style: GoogleFonts.lato(),
                                                 ),
                                               ],
@@ -296,7 +296,8 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                                                       .bold)),
                                                 ),
                                                 Text(
-                                                  management.emailAddress,
+                                                  management.mobileNumber
+                                                      .toString(),
                                                   style: GoogleFonts.lato(),
                                                 ),
                                               ],
@@ -316,9 +317,7 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                                                       .bold)),
                                                 ),
                                                 Text(
-                                                  designationList[management
-                                                          .designation]
-                                                      .categoryName,
+                                                  management.designation,
                                                   style: GoogleFonts.lato(),
                                                 ),
                                               ],

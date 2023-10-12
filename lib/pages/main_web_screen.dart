@@ -6,6 +6,7 @@ import 'package:ui/api/main_group_api.dart';
 import 'package:ui/api/message_view_api.dart';
 import 'package:ui/api/profile_api.dart';
 import 'package:ui/config/images.dart';
+import 'package:ui/model/classModel.dart';
 import 'package:ui/model/configurationModel.dart';
 import 'package:ui/model/group_info_model.dart';
 import 'package:ui/model/image_list_model.dart';
@@ -16,7 +17,6 @@ import 'package:ui/pages/group_info.dart';
 import 'package:ui/pages/chat_page.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ui/api/class_group_api.dart';
-import 'package:ui/model/class_group_model.dart';
 
 class MainWebScreen extends StatefulWidget {
   const MainWebScreen({

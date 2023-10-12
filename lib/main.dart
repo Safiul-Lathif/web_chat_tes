@@ -178,7 +178,7 @@ class _MyAppState extends State<MyApp> {
                   const NavigationRailDestination(
                       icon: Tooltip(
                           message: 'Home Work', child: Icon(Icons.home_work)),
-                      label: Text("Home Work")),
+                      label: Text("Work")),
                   const NavigationRailDestination(
                       icon: Tooltip(
                           message: 'News and Events',
