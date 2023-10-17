@@ -502,143 +502,186 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
                             builder: (context) {
                               return Scaffold(
                                 backgroundColor: Colors.transparent,
-                                body: AlertDialog(
-                                  title: Text(
-                                    "Are you sure you want to Submit Attendance?",
-                                    style: GoogleFonts.lato(fontSize: 17),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text("Cancel")),
-                                    TextButton(
-                                        onPressed: () async {
-                                          setState(() {
-                                            isSend = true;
-                                          });
-                                          if (absentList.isEmpty) {
-                                            await updateAttendanceList(
-                                                    attendanceList:
-                                                        widget.attendanceList,
-                                                    classConfig:
-                                                        widget.configId)
-                                                .then((value) {
-                                              if (value != null) {
-                                                widget.callback();
-                                                setState(() {
-                                                  isSend = false;
-                                                });
-                                                Navigator.pop(context);
-                                                _snackBar(
-                                                    "Attendance Updated Successfully");
-                                              } else {
-                                                Navigator.pop(context);
-                                                _snackBar(
-                                                    "Attendance not Updated");
-                                              }
-                                              setState(() {
-                                                isSend = false;
-                                              });
-                                            });
-                                          } else {
+                                body: StatefulBuilder(
+                                    builder: (context, setState) {
+                                  return AlertDialog(
+                                    title: Text(
+                                      "Are you sure you want to Submit Attendance?",
+                                      style: GoogleFonts.lato(fontSize: 17),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
                                             Navigator.pop(context);
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return AlertDialog(
-                                                  actions: [
-                                                    TextButton(
-                                                        onPressed: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: const Text(
-                                                            "Cancel")),
-                                                    TextButton(
-                                                      child:
-                                                          const Text("Submit"),
-                                                      onPressed: () async {
-                                                        await updateAttendanceList(
-                                                                attendanceList:
-                                                                    widget
-                                                                        .attendanceList,
-                                                                classConfig:
-                                                                    widget
-                                                                        .configId)
-                                                            .then((value) {
-                                                          if (value != null) {
-                                                            widget.callback();
-                                                            Navigator.pop(
-                                                                context);
-                                                            _snackBar(
-                                                                "Attendance Updated Successfully");
-                                                          } else {
-                                                            Navigator.pop(
-                                                                context);
-                                                            _snackBar(
-                                                                "Attendance not Updated");
-                                                          }
+                                          },
+                                          child: const Text("Cancel")),
+                                      TextButton(
+                                          onPressed: isSend
+                                              ? null
+                                              : () async {
+                                                  if (absentList.isEmpty) {
+                                                    setState(() {
+                                                      isSend = true;
+                                                    });
+                                                    await updateAttendanceList(
+                                                            attendanceList: widget
+                                                                .attendanceList,
+                                                            classConfig:
+                                                                widget.configId)
+                                                        .then((value) {
+                                                      if (value != null) {
+                                                        widget.callback();
+
+                                                        Navigator.pop(context);
+                                                        _snackBar(
+                                                            "Attendance Updated Successfully");
+                                                      } else {
+                                                        Navigator.pop(context);
+                                                        _snackBar(
+                                                            "Attendance not Updated");
+                                                      }
+                                                    });
+                                                    setState(() {
+                                                      isSend = false;
+                                                    });
+                                                  } else {
+                                                    Navigator.pop(context);
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return StatefulBuilder(
+                                                            builder: (context,
+                                                                setState) {
+                                                          return AlertDialog(
+                                                            actions: [
+                                                              TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  },
+                                                                  child: const Text(
+                                                                      "Cancel")),
+                                                              TextButton(
+                                                                onPressed: isSend
+                                                                    ? null
+                                                                    : () async {
+                                                                        setState(
+                                                                            () {
+                                                                          isSend =
+                                                                              true;
+                                                                        });
+                                                                        await updateAttendanceList(
+                                                                                attendanceList: widget.attendanceList,
+                                                                                classConfig: widget.configId)
+                                                                            .then((value) {
+                                                                          if (value !=
+                                                                              null) {
+                                                                            widget.callback();
+                                                                            Navigator.pop(context);
+                                                                            _snackBar("Attendance Updated Successfully");
+                                                                          } else {
+                                                                            Navigator.pop(context);
+                                                                            _snackBar("Attendance not Updated");
+                                                                          }
+                                                                        });
+                                                                        setState(
+                                                                            () {
+                                                                          isSend =
+                                                                              false;
+                                                                        });
+                                                                      },
+                                                                child: isSend
+                                                                    ? SizedBox(
+                                                                        width:
+                                                                            100,
+                                                                        child:
+                                                                            Row(
+                                                                          children: const [
+                                                                            Text("Submitting"),
+                                                                            SizedBox(
+                                                                                height: 10,
+                                                                                width: 10,
+                                                                                child: CircularProgressIndicator()),
+                                                                          ],
+                                                                        ),
+                                                                      )
+                                                                    : const Text(
+                                                                        "Submit"),
+                                                              )
+                                                            ],
+                                                            title: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Text(
+                                                                  "You've marked absent for these students",
+                                                                  style: SafeGoogleFont(
+                                                                      "Lato",
+                                                                      fontSize:
+                                                                          16,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      color: const Color(
+                                                                          0xff2A232D)),
+                                                                ),
+                                                                for (int i = 0;
+                                                                    i <
+                                                                        absentList
+                                                                            .length;
+                                                                    i++)
+                                                                  Text(
+                                                                    "${i + 1})  ${absentList[i].studentName}",
+                                                                    style: SafeGoogleFont(
+                                                                        "Lato",
+                                                                        fontSize:
+                                                                            16,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w500,
+                                                                        color: const Color(
+                                                                            0xff2A232D)),
+                                                                  ),
+                                                                Text(
+                                                                  "Make sure the notification will send to the parents!",
+                                                                  style: SafeGoogleFont(
+                                                                      "Lato",
+                                                                      fontSize:
+                                                                          16,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      color: const Color(
+                                                                          0xff2A232D)),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          );
                                                         });
                                                       },
-                                                    )
-                                                  ],
-                                                  title: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        "You've marked absent for these students",
-                                                        style: SafeGoogleFont(
-                                                            "Lato",
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color: const Color(
-                                                                0xff2A232D)),
-                                                      ),
-                                                      for (int i = 0;
-                                                          i < absentList.length;
-                                                          i++)
-                                                        Text(
-                                                          "${i + 1})  ${absentList[i].studentName}",
-                                                          style: SafeGoogleFont(
-                                                              "Lato",
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              color: const Color(
-                                                                  0xff2A232D)),
-                                                        ),
-                                                      Text(
-                                                        "Make sure the notification will send to the parents!",
-                                                        style: SafeGoogleFont(
-                                                            "Lato",
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color: const Color(
-                                                                0xff2A232D)),
-                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                          child: isSend
+                                              ? SizedBox(
+                                                  width: 100,
+                                                  child: Row(
+                                                    children: const [
+                                                      Text("Submitting"),
+                                                      SizedBox(
+                                                          height: 10,
+                                                          width: 10,
+                                                          child:
+                                                              CircularProgressIndicator()),
                                                     ],
                                                   ),
-                                                );
-                                              },
-                                            );
-                                          }
-                                        },
-                                        child: isSend
-                                            ? const SizedBox(
-                                                height: 10,
-                                                width: 10,
-                                                child:
-                                                    CircularProgressIndicator())
-                                            : const Text("Submit"))
-                                  ],
-                                ),
+                                                )
+                                              : const Text("Submit"))
+                                    ],
+                                  );
+                                }),
                               );
                             },
                           );
