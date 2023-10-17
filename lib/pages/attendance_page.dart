@@ -8,6 +8,8 @@ import 'package:ui/model/attendance/students_attendance_model.dart';
 import 'package:ui/widget/attendance/school_attendance_list.dart';
 import 'package:ui/widget/attendance/student_attendance_list.dart';
 
+import '../api/attendance/school_attendance_list_api.dart';
+
 class AttendancePage extends StatefulWidget {
   const AttendancePage({super.key});
 
@@ -19,6 +21,7 @@ class _AttendancePageState extends State<AttendancePage> {
   AttendanceModel? attendanceModel;
   List<StudentsAttendanceModel> studentList = [];
   List<AttendanceSubmitList> attendanceList = [];
+  SchoolAttendanceListModel? schoolAttendanceListModel;
   bool isLoading = true;
   @override
   void initState() {
@@ -38,6 +41,7 @@ class _AttendancePageState extends State<AttendancePage> {
     await getStudentsAttendanceList(id).then((value) {
       if (value != null) {
         setState(() {
+          attendanceList.clear();
           studentList = value;
           for (int i = 0; i < value.length; i++) {
             attendanceList.add(AttendanceSubmitList(
@@ -50,6 +54,7 @@ class _AttendancePageState extends State<AttendancePage> {
         });
       }
     });
+    getAttendance();
     setState(() {
       isLoading = false;
     });
@@ -68,6 +73,13 @@ class _AttendancePageState extends State<AttendancePage> {
   }
 
   void getAttendance() async {
+    await getSchoolAttendanceList().then((value) {
+      if (value != null) {
+        setState(() {
+          schoolAttendanceListModel = value;
+        });
+      }
+    });
     await getAttendanceInfo().then((value) {
       if (value != null) {
         setState(() {
@@ -107,6 +119,7 @@ class _AttendancePageState extends State<AttendancePage> {
               SizedBox(
                   width: MediaQuery.of(context).size.width * 0.4,
                   child: SchoolAttendanceList(
+                    attendanceModel: schoolAttendanceListModel,
                     callBack: getSelectedClass,
                   )),
               SizedBox(

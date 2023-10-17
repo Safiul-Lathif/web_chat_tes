@@ -1,19 +1,74 @@
+class UserDetails {
+  String name;
+  DateTime lastSeen;
+
+  UserDetails({
+    required this.name,
+    required this.lastSeen,
+  });
+
+  factory UserDetails.fromJson(Map<String, dynamic> json) => UserDetails(
+        name: json["name"],
+        lastSeen: DateTime.parse(json["last_seen"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "name": name,
+        "last_seen": lastSeen.toIso8601String(),
+      };
+}
+
 class MessageView {
-  List<Message> message;
+  MessageData message;
   UserDetails userDetails;
-  int unReadMessages;
+  int unReadMessage;
 
   MessageView({
     required this.message,
     required this.userDetails,
-    required this.unReadMessages,
+    required this.unReadMessage,
   });
 
   factory MessageView.fromJson(Map<String, dynamic> json) => MessageView(
-        message:
-            List<Message>.from(json["message"].map((x) => Message.fromJson(x))),
+        message: MessageData.fromJson(json["message"]),
         userDetails: UserDetails.fromJson(json["user_details"]),
-        unReadMessages: json["unreadmessages"],
+        unReadMessage: json["unreadmessages"],
+      );
+}
+
+class MessageData {
+  int total;
+  int perPage;
+  int currentPage;
+  int lastPage;
+  String nextPageUrl;
+  dynamic prevPageUrl;
+  int from;
+  int to;
+  List<Message> data;
+
+  MessageData({
+    required this.total,
+    required this.perPage,
+    required this.currentPage,
+    required this.lastPage,
+    required this.nextPageUrl,
+    required this.prevPageUrl,
+    required this.from,
+    required this.to,
+    required this.data,
+  });
+
+  factory MessageData.fromJson(Map<String, dynamic> json) => MessageData(
+        total: json["total"] ?? 0,
+        perPage: json["per_page"] ?? 0,
+        currentPage: json["current_page"] ?? 0,
+        lastPage: json["last_page"] ?? 0,
+        nextPageUrl: json["next_page_url"] ?? '',
+        prevPageUrl: json["prev_page_url"] ?? '',
+        from: json["from"] ?? 0,
+        to: json["to"] ?? 0,
+        data: List<Message>.from(json["data"].map((x) => Message.fromJson(x))),
       );
 }
 
@@ -35,7 +90,6 @@ class Message {
   int? deliveredUsers;
   int watched;
   int communicationType;
-  //Changed from Int to String
   int subjectId;
   String subjectName;
   String shortName;
@@ -46,6 +100,7 @@ class Message {
   int? moduleType;
   String? eventDate;
   String? eventTime;
+  int edited;
   int distributionType;
 
   Message(
@@ -75,6 +130,7 @@ class Message {
       this.newsEventsCategory,
       this.moduleType,
       this.eventDate,
+      required this.edited,
       this.eventTime,
       required this.distributionType});
 
@@ -106,27 +162,8 @@ class Message {
       description: json["description"] ?? '',
       newsEventsCategory: json["news_events_category"] ?? 0,
       moduleType: json["module_type"] ?? 0,
+      edited: json['edited'] ?? 0,
       eventDate: json['event_date'] ?? '',
       eventTime: json["event_time"] ?? '',
       distributionType: json['distribution_type'] ?? 0);
-}
-
-class UserDetails {
-  String name;
-  DateTime lastSeen;
-
-  UserDetails({
-    required this.name,
-    required this.lastSeen,
-  });
-
-  factory UserDetails.fromJson(Map<String, dynamic> json) => UserDetails(
-        name: json["name"],
-        lastSeen: DateTime.parse(json["last_seen"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "last_seen": lastSeen.toIso8601String(),
-      };
 }

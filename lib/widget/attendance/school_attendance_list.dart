@@ -7,8 +7,10 @@ import 'package:ui/model/attendance/attendance_model.dart';
 import 'package:ui/model/attendance/school_attendance_list_model.dart';
 
 class SchoolAttendanceList extends StatefulWidget {
-  const SchoolAttendanceList({super.key, required this.callBack});
+  SchoolAttendanceList(
+      {super.key, required this.callBack, required this.attendanceModel});
   final Function callBack;
+  SchoolAttendanceListModel? attendanceModel;
 
   @override
   State<SchoolAttendanceList> createState() => _SchoolAttendanceListState();
@@ -30,23 +32,11 @@ class _SchoolAttendanceListState extends State<SchoolAttendanceList> {
       if (value != null) {
         setState(() {
           attendanceModel = value;
+          widget.attendanceModel = value;
           widget.callBack(
               attendanceModel!.attendance[0].classConfigId.toString(),
               attendanceModel!.attendance[0].classSectionName.toString());
           selectedIndex = attendanceModel!.attendance[0].classConfigId;
-          AttendanceInfo.allAttendanceInfos.clear();
-          AttendanceInfo.allAttendanceInfos = [
-            AttendanceInfo(
-                'P',
-                [const Color(0xff64a78b), const Color(0xff69c767)],
-                value.schoolAttendance.presentTotal.toString(),
-                value.schoolAttendance.presentPercentage.toString()),
-            AttendanceInfo(
-                'A',
-                [Colors.pinkAccent, Colors.pink],
-                value.schoolAttendance.absentTotal.toString(),
-                value.schoolAttendance.absentPercentage.toString()),
-          ];
         });
       }
     });
@@ -148,7 +138,7 @@ class _SchoolAttendanceListState extends State<SchoolAttendanceList> {
                     height: 5,
                   ),
                   Text(
-                    "Attendance Left : ${attendanceModel!.leftStudents.toString()} Students",
+                    "Attendance Left : ${widget.attendanceModel!.leftStudents.toString()} Students",
                     style: GoogleFonts.lato(
                         textStyle: const TextStyle(
                             fontSize: 17,
@@ -159,7 +149,7 @@ class _SchoolAttendanceListState extends State<SchoolAttendanceList> {
                     height: 5,
                   ),
                   Text(
-                    "Total Classes : ${attendanceModel!.attendance.length.toString()}",
+                    "Total Classes : ${widget.attendanceModel!.attendance.length.toString()}",
                     style: GoogleFonts.lato(
                         textStyle: const TextStyle(
                             fontSize: 17,
@@ -227,10 +217,10 @@ class _SchoolAttendanceListState extends State<SchoolAttendanceList> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.6,
+                  Expanded(
                     child: ListView.builder(
-                      itemCount: attendanceModel!.attendance.length,
+                      shrinkWrap: true,
+                      itemCount: widget.attendanceModel!.attendance.length,
                       itemBuilder: (context, index) {
                         return Padding(
                           padding: const EdgeInsets.only(left: 20, right: 20),
@@ -240,13 +230,13 @@ class _SchoolAttendanceListState extends State<SchoolAttendanceList> {
                                 onTap: () {
                                   setState(() {
                                     widget.callBack(
-                                        attendanceModel!
+                                        widget.attendanceModel!
                                             .attendance[index].classConfigId
                                             .toString(),
-                                        attendanceModel!
+                                        widget.attendanceModel!
                                             .attendance[index].classSectionName
                                             .toString());
-                                    selectedIndex = attendanceModel!
+                                    selectedIndex = widget.attendanceModel!
                                         .attendance[index].classConfigId;
                                   });
                                 },
@@ -257,7 +247,7 @@ class _SchoolAttendanceListState extends State<SchoolAttendanceList> {
                                       width: MediaQuery.of(context).size.width *
                                           0.1,
                                       child: Text(
-                                        attendanceModel!
+                                        widget.attendanceModel!
                                             .attendance[index].classSectionName
                                             .toString(),
                                         textAlign: TextAlign.start,
@@ -275,7 +265,7 @@ class _SchoolAttendanceListState extends State<SchoolAttendanceList> {
                                           child: Column(
                                         children: [
                                           Text(
-                                            attendanceModel!
+                                            widget.attendanceModel!
                                                 .attendance[index].presentTotal
                                                 .toString(),
                                             textAlign: TextAlign.center,
@@ -286,7 +276,7 @@ class _SchoolAttendanceListState extends State<SchoolAttendanceList> {
                                             )),
                                           ),
                                           Text(
-                                            "${attendanceModel!.attendance[index].presentPercentage.toString()}%",
+                                            "${widget.attendanceModel!.attendance[index].presentPercentage.toString()}%",
                                             textAlign: TextAlign.center,
                                             style: GoogleFonts.lato(
                                                 textStyle: const TextStyle(
@@ -304,7 +294,7 @@ class _SchoolAttendanceListState extends State<SchoolAttendanceList> {
                                           child: Column(
                                         children: [
                                           Text(
-                                            attendanceModel!
+                                            widget.attendanceModel!
                                                 .attendance[index].absentTotal
                                                 .toString(),
                                             textAlign: TextAlign.center,
@@ -315,7 +305,7 @@ class _SchoolAttendanceListState extends State<SchoolAttendanceList> {
                                             )),
                                           ),
                                           Text(
-                                            "${attendanceModel!.attendance[index].absentPercentage.toString()}%",
+                                            "${widget.attendanceModel!.attendance[index].absentPercentage.toString()}%",
                                             textAlign: TextAlign.center,
                                             style: GoogleFonts.lato(
                                                 textStyle: const TextStyle(

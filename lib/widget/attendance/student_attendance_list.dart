@@ -37,6 +37,13 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
     return true;
   }
 
+  bool isSend = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,16 +126,15 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.83,
+                  Expanded(
                     child: ListView.builder(
+                      shrinkWrap: true,
                       itemCount: widget.studentList.length,
                       itemBuilder: (context, index) {
                         var student = widget.studentList[index];
                         student.attendanceStatus == 0
                             ? student.attendanceStatus = 1
                             : null;
-
                         return Column(
                           children: [
                             InkWell(
@@ -482,9 +488,6 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
                       },
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.3,
                     child: ElevatedButton(
@@ -499,7 +502,7 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
                             builder: (context) {
                               return Scaffold(
                                 backgroundColor: Colors.transparent,
-                                body: CupertinoAlertDialog(
+                                body: AlertDialog(
                                   title: Text(
                                     "Are you sure you want to Submit Attendance?",
                                     style: GoogleFonts.lato(fontSize: 17),
@@ -512,6 +515,9 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
                                         child: const Text("Cancel")),
                                     TextButton(
                                         onPressed: () async {
+                                          setState(() {
+                                            isSend = true;
+                                          });
                                           if (absentList.isEmpty) {
                                             await updateAttendanceList(
                                                     attendanceList:
@@ -521,6 +527,9 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
                                                 .then((value) {
                                               if (value != null) {
                                                 widget.callback();
+                                                setState(() {
+                                                  isSend = false;
+                                                });
                                                 Navigator.pop(context);
                                                 _snackBar(
                                                     "Attendance Updated Successfully");
@@ -529,13 +538,16 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
                                                 _snackBar(
                                                     "Attendance not Updated");
                                               }
+                                              setState(() {
+                                                isSend = false;
+                                              });
                                             });
                                           } else {
                                             Navigator.pop(context);
                                             showDialog(
                                               context: context,
                                               builder: (context) {
-                                                return CupertinoAlertDialog(
+                                                return AlertDialog(
                                                   actions: [
                                                     TextButton(
                                                         onPressed: () {
@@ -618,7 +630,13 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
                                             );
                                           }
                                         },
-                                        child: const Text("Submit"))
+                                        child: isSend
+                                            ? const SizedBox(
+                                                height: 10,
+                                                width: 10,
+                                                child:
+                                                    CircularProgressIndicator())
+                                            : const Text("Submit"))
                                   ],
                                 ),
                               );
@@ -632,7 +650,7 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
                         )),
                   ),
                   const SizedBox(
-                    height: 10,
+                    height: 30,
                   )
                 ],
               ),
@@ -644,7 +662,8 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
     final snackBar = SnackBar(
       content: Text(message),
       behavior: SnackBarBehavior.floating,
-      margin: const EdgeInsets.all(20),
+      margin: EdgeInsets.symmetric(
+          vertical: 20, horizontal: MediaQuery.of(context).size.width * 0.3),
       duration: const Duration(milliseconds: 1000),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

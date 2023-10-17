@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ui/api/group_info_api.dart';
 import 'package:ui/api/image_list_api.dart';
 import 'package:ui/api/main_group_api.dart';
-import 'package:ui/api/message_view_api.dart';
+import 'package:ui/api/messageviewAPI.dart';
 import 'package:ui/api/profile_api.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/model/classModel.dart';
@@ -76,7 +76,6 @@ class _MainWebScreenState extends State<MainWebScreen> {
   }
 
   MessageView? msgView;
-  List<GroupInfoModel>? groupInfo;
   List<ImageList>? imageList;
   grpInfoController(BuildContext context, bool isGrpInfo) {
     setState(() {
@@ -93,13 +92,15 @@ class _MainWebScreenState extends State<MainWebScreen> {
         id: id, classId: classId, className: className, name: name, role: role);
   }
 
+  String grpId = '';
+
   Future<void> getChatData(
       {required String id,
       required String className,
       required String name,
       required String role,
       required String classId}) async {
-    await getMsgFeed(id).then((value) {
+    await getMsgFeed(id, 1).then((value) {
       if (value != null) {
         if (mounted) {
           setState(() {
@@ -111,17 +112,12 @@ class _MainWebScreenState extends State<MainWebScreen> {
             userRole = role;
             userClassId = classId;
             isLoading = false;
+            grpId = id;
           });
         }
       }
     });
-    await getGroupInfo(id).then((value) {
-      if (value != null) {
-        setState(() {
-          groupInfo = value;
-        });
-      }
-    });
+
     await getImageList(id).then((value) {
       if (value != null) {
         setState(() {
@@ -197,8 +193,8 @@ class _MainWebScreenState extends State<MainWebScreen> {
                         fit: BoxFit.cover,
                       )),
                   child: GroupInfoWidget(
+                    id: grpId,
                     schoolName: userSchoolName,
-                    groupInfo: groupInfo,
                     imageList: imageList,
                     isLoading: isLoading,
                     callback: grpInfoController,

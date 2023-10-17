@@ -166,11 +166,11 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(15.0)),
                     child: ElevatedButton(
                         onPressed: () async {
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) =>
-                          //             UserLogin(name: "Management")));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      UserLogin(name: "Management")));
                         },
                         style: ElevatedButton.styleFrom(
                             shape: const StadiumBorder(),

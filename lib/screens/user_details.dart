@@ -158,50 +158,6 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                                   const SizedBox(
                                     height: 5,
                                   ),
-                                  Row(
-                                    children: [
-                                      const Text('Logout',
-                                          style: TextStyle(
-                                              color: Color(0xff575757),
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold)),
-                                      IconButton(
-                                          onPressed: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return AlertDialog(
-                                                  title: const Text(
-                                                      "Do you really want to logout ?"),
-                                                  actions: [
-                                                    ElevatedButton(
-                                                        onPressed: () async {
-                                                          Navigator.pop(
-                                                              context);
-                                                          SharedPreferences
-                                                              preferences =
-                                                              await SharedPreferences
-                                                                  .getInstance();
-                                                          await preferences
-                                                              .clear();
-                                                          navigateToLogin();
-                                                        },
-                                                        child:
-                                                            const Text("Yes")),
-                                                    ElevatedButton(
-                                                        onPressed: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: const Text("No"))
-                                                  ],
-                                                );
-                                              },
-                                            );
-                                          },
-                                          icon: const Icon(Icons.logout)),
-                                    ],
-                                  )
                                 ],
                               ),
                             ),
@@ -420,14 +376,6 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
               ),
       ),
     );
-  }
-
-  void navigateToLogin() async {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LoginPage(),
-        ));
   }
 
   dashboardCard(int index, String count, String logo, double percentage,

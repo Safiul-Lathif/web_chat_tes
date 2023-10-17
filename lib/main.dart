@@ -1,15 +1,15 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ui/api/profile_api.dart';
 import 'package:ui/model/profile_model.dart';
 import 'package:ui/pages/attendance_page.dart';
-import 'package:ui/pages/birthday_page.dart';
 import 'package:ui/pages/main_web_screen.dart';
-import 'package:ui/pages/settings_page.dart';
-import 'package:ui/screens/home_work_screen.dart';
-import 'package:ui/screens/newsAndEvents/news_event_screen.dart';
 import 'package:ui/screens/action_required_page.dart';
+import 'package:ui/screens/login_page.dart';
 import 'package:ui/screens/splash_screen.dart';
 import 'package:ui/screens/user_details.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -51,7 +51,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   ProfileModel? profiles;
-  int selectedIndex = 5;
+  int selectedIndex = 1;
   String role = '';
   @override
   void initState() {
@@ -82,11 +82,11 @@ class _MyAppState extends State<MyApp> {
     ),
     const MainWebScreen(),
     const ActionRequiredPage(),
-    const HomeWorkScreen(),
-    NewsEventsScreens(studentId: ''),
-    const BirthdayPage(),
+    // const HomeWorkScreen(),
+    // NewsEventsScreens(studentId: ''),
+    // const BirthdayPage(),
     const AttendancePage(),
-    SettingsPage(),
+    // SettingsPage(),
   ];
   Future<bool> exitApp() async {
     return await showDialog(
@@ -134,16 +134,20 @@ class _MyAppState extends State<MyApp> {
                 onDestinationSelected: (value) {
                   var data = base64.encode(userId.codeUnits);
                   var data2 = base64.encode(data.codeUnits);
-                  if (value == 8) {
+                  if (value == 4) {
                     launchUrl(Uri.parse(
                         "https://qaliteapi.timetoschool.com/apptoweblogin?id=$data2&menu=students"));
                     setState(() {
                       selectedIndex = 2;
                     });
                   } else {
-                    setState(() {
-                      selectedIndex = value;
-                    });
+                    if (value == 5) {
+                      logoutAlert();
+                    } else {
+                      setState(() {
+                        selectedIndex = value;
+                      });
+                    }
                   }
                 },
                 selectedIconTheme:
@@ -175,35 +179,48 @@ class _MyAppState extends State<MyApp> {
                       icon: Tooltip(
                           message: 'Action Required', child: Icon(Icons.info)),
                       label: Text("Action")),
-                  const NavigationRailDestination(
-                      icon: Tooltip(
-                          message: 'Home Work', child: Icon(Icons.home_work)),
-                      label: Text("Work")),
-                  const NavigationRailDestination(
-                      icon: Tooltip(
-                          message: 'News and Events',
-                          child: Icon(Icons.newspaper)),
-                      label: Text("News")),
-                  const NavigationRailDestination(
-                      icon: Tooltip(
-                          message: 'Birthday Wish',
-                          child: Icon(Icons.celebration)),
-                      label: Text("Birthday")),
-                  const NavigationRailDestination(
-                      icon: Tooltip(
+                  // const NavigationRailDestination(
+                  //     icon: Tooltip(
+                  //         message: 'Home Work', child: Icon(Icons.home_work)),
+                  //     label: Text("Work")),
+                  // const NavigationRailDestination(
+                  //     icon: Tooltip(
+                  //         message: 'News and Events',
+                  //         child: Icon(Icons.newspaper)),
+                  //     label: Text("News")),
+                  // const NavigationRailDestination(
+                  //     icon: Tooltip(
+                  //         message: 'Birthday Wish',
+                  //         child: Icon(Icons.celebration)),
+                  //     label: Text("Birthday")),
+                  NavigationRailDestination(
+                      icon: const Tooltip(
                           message: 'Student  Attendance',
                           child: Icon(Icons.class_)),
-                      label: Text("Class")),
-                  const NavigationRailDestination(
-                    icon: Tooltip(
-                        message: 'Settings', child: Icon(Icons.settings)),
-                    label: Text("Settings"),
-                  ),
+                      label: SizedBox(
+                        width: 50,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text("School"),
+                            FittedBox(child: Text("Attendance")),
+                          ],
+                        ),
+                      )),
+                  // const NavigationRailDestination(
+                  //   icon: Tooltip(
+                  //       message: 'Settings', child: Icon(Icons.settings)),
+                  //   label: Text("Settings"),
+                  // ),
                   const NavigationRailDestination(
                     icon: Tooltip(
                         message: 'User Management',
                         child: Icon(Icons.manage_accounts)),
                     label: Text("User"),
+                  ),
+                  const NavigationRailDestination(
+                    icon: Tooltip(message: 'logout', child: Icon(Icons.logout)),
+                    label: Text("Logout"),
                   ),
                 ],
                 selectedIndex: selectedIndex),
@@ -212,5 +229,43 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+
+  void navigateToLogin() async {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const LoginPage(),
+        ));
+  }
+
+  void logoutAlert() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Scaffold(
+              backgroundColor: Colors.transparent,
+              body: AlertDialog(
+                  title: Text(
+                    "Are you sure want to Logout?",
+                    style: GoogleFonts.lato(fontSize: 17),
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text("Cancel")),
+                    TextButton(
+                        onPressed: () async {
+                          Navigator.pop(context);
+                          SharedPreferences preferences =
+                              await SharedPreferences.getInstance();
+                          await preferences.clear();
+                          navigateToLogin();
+                        },
+                        child: const Text("Ok")),
+                  ]));
+        });
   }
 }

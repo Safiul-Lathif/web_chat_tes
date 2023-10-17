@@ -1,8 +1,8 @@
 // ignore_for_file: iterable_contains_unrelated_type, must_be_immutable
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:ui/api/group_info_api.dart';
 import 'package:ui/api/inactive_user_api.dart';
-import 'package:ui/custom/detail_page_image.dart';
 import 'package:ui/model/group_info_model.dart';
 import 'package:ui/model/image_list_model.dart';
 import 'package:ui/utils/utility.dart';
@@ -10,7 +10,7 @@ import 'package:ui/widget/profile_info.dart';
 
 class GroupInfoWidget extends StatefulWidget {
   final String schoolName;
-  List<GroupInfoModel>? groupInfo;
+  String id;
   List<ImageList>? imageList;
   bool isLoading;
   final Function callback;
@@ -18,7 +18,7 @@ class GroupInfoWidget extends StatefulWidget {
   GroupInfoWidget(
       {super.key,
       required this.schoolName,
-      required this.groupInfo,
+      required this.id,
       required this.imageList,
       required this.isLoading,
       required this.callback});
@@ -28,6 +28,18 @@ class GroupInfoWidget extends StatefulWidget {
 }
 
 class _GroupInfoWidgetState extends State<GroupInfoWidget> {
+  Iterable<ParticipantsList>? groupInfo;
+
+  int page = 1;
+
+  String stats = "";
+  String url = 'data';
+
+  final ScrollController _scrollController = ScrollController();
+  List<ParticipantsList> listOfParticipants = [];
+
+  int totalItem = 0;
+  bool isLoading = false;
   Future<bool> activeInactiveUser(
     String number,
     String id,
@@ -45,15 +57,56 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
                 child: const Text('No'),
               ),
               ElevatedButton(
-                onPressed: () async {
-                  // await removeFromGroup(number, '2', role, id);
-                },
+                onPressed: () async {},
                 child: const Text('Yes'),
               ),
             ],
           ),
         ) ??
         false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getGroupList(page);
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if (url != '') {
+          if (page != 0) {
+            _loadNextPage();
+          }
+        }
+      }
+    });
+  }
+
+  void _loadNextPage() {
+    setState(() {
+      page++;
+      isLoading = true;
+    });
+    getGroupList(page);
+  }
+
+  void getGroupList(int pageNumber) async {
+    await getGroupInfo(widget.id, pageNumber).then((value) {
+      if (value != null) {
+        setState(() {
+          listOfParticipants.addAll(value.data);
+          groupInfo = listOfParticipants;
+          totalItem = value.total;
+          url = value.nextPageUrl;
+        });
+      }
+      for (var i = 0; i < groupInfo!.length; i++) {
+        stats = groupInfo!.elementAt(i).appStatus;
+      }
+    });
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -78,7 +131,7 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
         ),
         Padding(
           padding: const EdgeInsets.only(left: 12, top: 17, right: 12),
-          child: widget.groupInfo == null || widget.imageList == null
+          child: groupInfo == null
               ? Lottie.network(
                   'https://assets8.lottiefiles.com/packages/lf20_fzmasdx7.json',
                   height: 50.0,
@@ -92,7 +145,7 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "${widget.groupInfo!.length} Members",
+                          "$totalItem Members",
                           style: TextStyle(
                               color: Colors.green.shade500,
                               fontSize: 16,
@@ -116,15 +169,17 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
                       height: 320,
                       child: ListView.builder(
                         shrinkWrap: true,
-                        itemCount: widget.groupInfo!.length,
+                        itemCount: groupInfo!.length,
+                        controller: _scrollController,
                         itemBuilder: (context, index) {
                           return Column(
                             children: [
                               Tooltip(
-                                message: widget.groupInfo![index].appStatus !=
-                                        "Not Installed"
-                                    ? 'Active User'
-                                    : 'InActive User',
+                                message:
+                                    groupInfo!.elementAt(index).appStatus !=
+                                            "Not Installed"
+                                        ? 'Active User'
+                                        : 'InActive User',
                                 child: ListTile(
                                   leading: Stack(
                                     children: [
@@ -134,7 +189,7 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
                                             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpCKq1XnPYYDaUIlwlsvmLPZ-9-rdK28RToA&usqp=CAU'),
                                         backgroundColor: Colors.transparent,
                                       ),
-                                      widget.groupInfo![index].appStatus !=
+                                      groupInfo!.elementAt(index).appStatus !=
                                               "Not Installed"
                                           ? const Positioned(
                                               bottom: 0,
@@ -154,9 +209,9 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
                                               )),
                                     ],
                                   ),
-                                  title: Text(widget.groupInfo![index].name),
+                                  title: Text(groupInfo!.elementAt(index).name),
                                   subtitle: Text(
-                                      widget.groupInfo![index].designation),
+                                      groupInfo!.elementAt(index).designation),
                                   onTap: () {
                                     showDialog(
                                       context: context,
@@ -164,28 +219,33 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
                                         type: MaterialType.transparency,
                                         child: Center(
                                             child: SizedBox(
-                                                width:
-                                                    MediaQuery.of(context).size.width *
-                                                        0.5,
+                                                width: MediaQuery.of(context).size.width *
+                                                    0.5,
                                                 height: MediaQuery.of(context)
                                                         .size
                                                         .height *
                                                     0.5,
                                                 child: ProfileInfo(
-                                                    lastSeen: widget.groupInfo![index].lastLogin != ''
-                                                        ? "Last Login:${Utility.convertDateFormat(widget.groupInfo![index].lastLogin, "dd-MMM-yyyy")} \t${Utility.convertTimeFormat(widget.groupInfo![index].lastLogin.split(' ').last)}"
+                                                    lastSeen: groupInfo!.elementAt(index).lastLogin != ''
+                                                        ? "Last Login:${Utility.convertDateFormat(groupInfo!.elementAt(index).lastLogin, "dd-MMM-yyyy")} \t${Utility.convertTimeFormat(groupInfo!.elementAt(index).lastLogin.split(' ').last)}"
                                                         : "",
-                                                    id: widget
-                                                        .groupInfo![index].id,
-                                                    role: widget
-                                                        .groupInfo![index]
+                                                    id: groupInfo!
+                                                        .elementAt(index)
+                                                        .id,
+                                                    role: groupInfo!
+                                                        .elementAt(index)
                                                         .userRole
                                                         .toString(),
-                                                    image: widget
-                                                        .groupInfo![index]
+                                                    image: groupInfo!
+                                                        .elementAt(index)
                                                         .profile,
-                                                    name: widget.groupInfo![index].name,
-                                                    mobileNumber: widget.groupInfo![index].mobileNumber.toString()))),
+                                                    name: groupInfo!
+                                                        .elementAt(index)
+                                                        .name,
+                                                    mobileNumber: groupInfo!
+                                                        .elementAt(index)
+                                                        .mobileNumber
+                                                        .toString()))),
                                       ),
                                     );
                                   },
@@ -215,73 +275,6 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
                     const SizedBox(
                       height: 6,
                     ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //   children: [
-                    //     Text(
-                    //       'Images(${widget.imageList!.length})',
-                    //       style: TextStyle(
-                    //           color: Colors.green.shade500,
-                    //           fontSize: 16,
-                    //           fontWeight: FontWeight.bold),
-                    //     ),
-                    //   ],
-                    // ),
-                    // const SizedBox(
-                    //   height: 10,
-                    // ),
-                    // widget.imageList!.isEmpty
-                    //     ? Container()
-                    //     : SizedBox(
-                    //         height: 80,
-                    //         child: GridView.builder(
-                    //           scrollDirection: Axis.horizontal,
-                    //           shrinkWrap: true,
-                    //           itemCount: widget.imageList!.length,
-                    //           gridDelegate:
-                    //               const SliverGridDelegateWithFixedCrossAxisCount(
-                    //             crossAxisCount: 1,
-                    //             crossAxisSpacing: 6,
-                    //             mainAxisSpacing: 7,
-                    //           ),
-                    //           itemBuilder: (context, index) {
-                    //             return InkWell(
-                    //               onTap: () {
-                    //                 Navigator.push(context,
-                    //                     MaterialPageRoute(builder: (_) {
-                    //                   return DetailScreen(
-                    //                     images: [
-                    //                       widget.imageList![index].image
-                    //                     ],
-                    //                     index: index,
-                    //                   );
-                    //                 }));
-                    //               },
-                    //               child: Container(
-                    //                 decoration: BoxDecoration(
-                    //                     image: DecorationImage(
-                    //                         image: NetworkImage(widget
-                    //                                 .imageList![index].image
-                    //                                 .contains("https://")
-                    //                             ? widget.imageList![index].image
-                    //                             : widget.imageList![index].image
-                    //                                     .contains("http://")
-                    //                                 ? widget
-                    //                                     .imageList![index].image
-                    //                                 //data.images.toString()
-                    //                                 : "http://${widget.imageList![index].image}"),
-                    //                         fit: BoxFit.fill),
-                    //                     borderRadius: const BorderRadius.only(
-                    //                       topRight: Radius.circular(5),
-                    //                       bottomLeft: Radius.circular(5),
-                    //                       bottomRight: Radius.circular(5),
-                    //                       topLeft: Radius.circular(5),
-                    //                     )),
-                    //               ),
-                    //             );
-                    //           },
-                    //         ),
-                    //       ),
                     const SizedBox(
                       height: 10,
                     ),
