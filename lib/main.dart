@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,9 +6,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ui/api/profile_api.dart';
 import 'package:ui/model/profile_model.dart';
 import 'package:ui/pages/attendance_page.dart';
+import 'package:ui/pages/birthday_page.dart';
 import 'package:ui/pages/main_web_screen.dart';
 import 'package:ui/screens/action_required_page.dart';
 import 'package:ui/screens/login_page.dart';
+import 'package:ui/screens/newsAndEvents/news_event_screen.dart';
+import 'package:ui/screens/searchScreen/search_screen.dart';
 import 'package:ui/screens/splash_screen.dart';
 import 'package:ui/screens/user_details.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -83,9 +85,11 @@ class _MyAppState extends State<MyApp> {
     const MainWebScreen(),
     const ActionRequiredPage(),
     // const HomeWorkScreen(),
-    // NewsEventsScreens(studentId: ''),
-    // const BirthdayPage(),
+    NewsEventsScreens(studentId: ''),
+    const BirthdayPage(),
     const AttendancePage(),
+    const SearchPage()
+    // searc
     // SettingsPage(),
   ];
   Future<bool> exitApp() async {
@@ -134,14 +138,14 @@ class _MyAppState extends State<MyApp> {
                 onDestinationSelected: (value) {
                   var data = base64.encode(userId.codeUnits);
                   var data2 = base64.encode(data.codeUnits);
-                  if (value == 4) {
+                  if (value == 7) {
                     launchUrl(Uri.parse(
                         "https://qaliteapi.timetoschool.com/apptoweblogin?id=$data2&menu=students"));
                     setState(() {
                       selectedIndex = 2;
                     });
                   } else {
-                    if (value == 5) {
+                    if (value == 8) {
                       logoutAlert();
                     } else {
                       setState(() {
@@ -183,16 +187,16 @@ class _MyAppState extends State<MyApp> {
                   //     icon: Tooltip(
                   //         message: 'Home Work', child: Icon(Icons.home_work)),
                   //     label: Text("Work")),
-                  // const NavigationRailDestination(
-                  //     icon: Tooltip(
-                  //         message: 'News and Events',
-                  //         child: Icon(Icons.newspaper)),
-                  //     label: Text("News")),
-                  // const NavigationRailDestination(
-                  //     icon: Tooltip(
-                  //         message: 'Birthday Wish',
-                  //         child: Icon(Icons.celebration)),
-                  //     label: Text("Birthday")),
+                  const NavigationRailDestination(
+                      icon: Tooltip(
+                          message: 'News and Events',
+                          child: Icon(Icons.newspaper)),
+                      label: Text("News")),
+                  const NavigationRailDestination(
+                      icon: Tooltip(
+                          message: 'Birthday Wish',
+                          child: Icon(Icons.celebration)),
+                      label: Text("Birthday")),
                   NavigationRailDestination(
                       icon: const Tooltip(
                           message: 'Student  Attendance',
@@ -207,6 +211,10 @@ class _MyAppState extends State<MyApp> {
                           ],
                         ),
                       )),
+                  const NavigationRailDestination(
+                    icon: Tooltip(message: 'Search', child: Icon(Icons.search)),
+                    label: Text('Search'),
+                  ),
                   // const NavigationRailDestination(
                   //   icon: Tooltip(
                   //       message: 'Settings', child: Icon(Icons.settings)),

@@ -5,26 +5,27 @@ import 'package:ui/config/strings.dart';
 import 'package:ui/model/search_parent_model.dart';
 import 'package:ui/utils/session_management.dart';
 
-Future<List<ParentSearchList>?> getParentList() async {
+Future<SearchParentModel?> getParentList(int pageNumber) async {
   var url = Uri.parse("${Strings.baseURL}api/user/all_parent_list");
   SessionManager pref = SessionManager();
   String? token = await pref.getAuthToken();
 
+  var map = <String, dynamic>{};
+  map["page"] = pageNumber.toString();
+  print("pagination of page  $pageNumber");
+
   try {
-    final response = await http
-        .post(url, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
+    final response = await http.post(url,
+        body: pageNumber == 0 ? null : map,
+        headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      List jsonResponse = jsonDecode(response.body);
-      return jsonResponse
-          .map((json) => ParentSearchList.fromJson(json))
-          .toList();
+      final jsonResponse = jsonDecode(response.body);
+      return SearchParentModel.fromJson(jsonResponse);
     } else {
-      // ignore: avoid_print
       print('Request failed with status: ${response.statusCode}.');
       return null;
     }
   } on Error catch (err) {
-    // ignore: avoid_print
     print(err);
     return null;
   }

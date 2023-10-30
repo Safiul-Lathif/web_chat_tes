@@ -183,10 +183,13 @@ class _ThirdCardState extends State<ThirdCard> {
                                                     MaterialPageRoute(
                                                         builder: (_) {
                                                   return DetailScreen(
-                                                    index: 0,
-                                                    images: widget.data.images!
-                                                        .toList(),
-                                                  );
+                                                      dateTime:
+                                                          widget.data.dateTime,
+                                                      title: widget.data.user,
+                                                      index: 0,
+                                                      images: widget
+                                                          .data.images!
+                                                          .toList());
                                                 }));
                                               },
                                               child: Container(
@@ -244,6 +247,11 @@ class _ThirdCardState extends State<ThirdCard> {
                                                             MaterialPageRoute(
                                                                 builder: (_) {
                                                           return DetailScreen(
+                                                              dateTime: widget
+                                                                  .data
+                                                                  .dateTime,
+                                                              title: widget
+                                                                  .data.user,
                                                               index: index,
                                                               images: widget
                                                                   .data.images!
@@ -449,11 +457,13 @@ class _ThirdCardState extends State<ThirdCard> {
                                                       MaterialPageRoute(
                                                           builder: (_) {
                                                     return DetailScreen(
-                                                      index: 0,
-                                                      images: widget
-                                                          .data.images!
-                                                          .toList(),
-                                                    );
+                                                        dateTime: widget
+                                                            .data.dateTime,
+                                                        title: widget.data.user,
+                                                        index: 0,
+                                                        images: widget
+                                                            .data.images!
+                                                            .toList());
                                                   }));
                                                 },
                                                 child: Container(
@@ -516,6 +526,11 @@ class _ThirdCardState extends State<ThirdCard> {
                                                               MaterialPageRoute(
                                                                   builder: (_) {
                                                             return DetailScreen(
+                                                                dateTime: widget
+                                                                    .data
+                                                                    .dateTime,
+                                                                title: widget
+                                                                    .data.user,
                                                                 index: index,
                                                                 images: widget
                                                                     .data

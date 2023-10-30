@@ -6,10 +6,11 @@ import 'package:ui/config/strings.dart';
 import 'package:ui/model/news&events/news_image_model.dart';
 import 'package:ui/utils/session_management.dart';
 
-Future<List<NewsImages>?> getAllNewsImage({required String studentId}) async {
+Future<ImagesList?> getAllNewsImage(
+    {required String studentId, required int pageNumber}) async {
   var url = Uri.parse(studentId == ''
-      ? "${Strings.baseURL}api/user/view_all_images"
-      : "${Strings.baseURL}api/user/view_all_images?student_id=$studentId");
+      ? "${Strings.baseURL}api/v2/view_all_images?page=$pageNumber"
+      : "${Strings.baseURL}api/v2/view_all_images?student_id=$studentId?page=$pageNumber");
   SessionManager pref = SessionManager();
   String? token = await pref.getAuthToken();
 
@@ -18,8 +19,7 @@ Future<List<NewsImages>?> getAllNewsImage({required String studentId}) async {
       HttpHeaders.authorizationHeader: 'Bearer $token',
     });
     if (response.statusCode == 200) {
-      List jsonResponse = jsonDecode(response.body);
-      return jsonResponse.map((json) => NewsImages.fromJson(json)).toList();
+      return ImagesList.fromJson(jsonDecode(response.body));
     } else {
       if (kDebugMode) {
         print(

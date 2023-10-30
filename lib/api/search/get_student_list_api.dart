@@ -7,17 +7,19 @@ import 'package:ui/utils/session_management.dart';
 
 import '../../model/search/student_list_model.dart';
 
-Future<List<StudentList>?> getStudentList() async {
+Future<StudentSearchList?> getStudentList(int pageNumber) async {
   var url = Uri.parse("${Strings.baseURL}api/user/all_student_list");
   SessionManager pref = SessionManager();
   String? token = await pref.getAuthToken();
+  var map = <String, dynamic>{};
+  map["page"] = pageNumber.toString();
   try {
-    final response = await http
-        .post(url, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
+    final response = await http.post(url,
+        body: pageNumber == 0 ? null : map,
+        headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      List jsonResponse = jsonDecode(response.body);
-      print(response.body);
-      return jsonResponse.map((json) => StudentList.fromJson(json)).toList();
+      final jsonResponse = jsonDecode(response.body);
+      return StudentSearchList.fromJson(jsonResponse);
     } else {
       print('Request failed with status: ${response.statusCode}.');
       return null;

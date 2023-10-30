@@ -20,8 +20,13 @@ class ImageScreenNews extends StatefulWidget {
 }
 
 class _ImageScreenNewsState extends State<ImageScreenNews> {
+  final ScrollController imageController = ScrollController();
+
   List<NewsImages>? newsImages;
   bool isLoading = true;
+  int pageNumber = 1;
+  int totalRecord = 0;
+  List<NewsImages> imageList = [];
   @override
   void initState() {
     super.initState();
@@ -29,28 +34,58 @@ class _ImageScreenNewsState extends State<ImageScreenNews> {
   }
 
   List<String> images = [];
+  String url = 'data';
   void initialize() async {
-    await getAllNewsImage(studentId: widget.studentId).then((value) {
+    getData();
+    imageController.addListener(() {
+      if (imageController.position.pixels ==
+          imageController.position.maxScrollExtent) {
+        if (url != '') {
+          if (pageNumber != 0) {
+            _loadNextPage();
+          }
+        }
+      }
+    });
+  }
+
+  void getData() async {
+    await getAllNewsImage(studentId: widget.studentId, pageNumber: pageNumber)
+        .then((value) {
       if (value != null) {
         if (mounted) {
           setState(() {
-            newsImages = value;
+            imageList.addAll(value.data);
+            newsImages = imageList;
             isLoading = false;
+            url = value.nextPageUrl;
           });
           getAllImage();
         }
       } else {
-        isLoading = false;
+        setState(() {
+          isLoading = false;
+        });
       }
     });
-    isLoading = false;
+  }
+
+  void _loadNextPage() {
+    setState(() {
+      isLoading = true;
+      print(pageNumber);
+      pageNumber++;
+    });
+    getData();
   }
 
   Future<void> getAllImage() async {
-    for (var i = 0; i < newsImages!.length; i++) {
-      setState(() {
-        images.add(newsImages![i].image);
-      });
+    for (var image in newsImages!) {
+      if (!images.contains(image.image)) {
+        setState(() {
+          images.add(image.image);
+        });
+      }
     }
   }
 
@@ -96,6 +131,7 @@ class _ImageScreenNewsState extends State<ImageScreenNews> {
                 ),
               ),
         body: Container(
+            // padding: const EdgeInsets.all(20),
             width: double.infinity,
             height: MediaQuery.of(context).size.height,
             decoration: BoxDecoration(
@@ -111,6 +147,7 @@ class _ImageScreenNewsState extends State<ImageScreenNews> {
                     removeTop: true,
                     context: context,
                     child: SingleChildScrollView(
+                      controller: imageController,
                       child: Padding(
                         padding: const EdgeInsets.all(1.0),
                         child: GridView.builder(
@@ -119,7 +156,7 @@ class _ImageScreenNewsState extends State<ImageScreenNews> {
                           itemCount: newsImages!.length,
                           gridDelegate:
                               const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 200),
+                                  maxCrossAxisExtent: 300),
                           itemBuilder: (context, index) {
                             return InkWell(
                               onLongPress: () {
@@ -135,6 +172,9 @@ class _ImageScreenNewsState extends State<ImageScreenNews> {
                                             builder: (context) => DetailScreen(
                                               index: index,
                                               images: images,
+                                              dateTime: DateTime.parse(
+                                                  newsImages![index].dateTime),
+                                              title: newsImages![index].user,
                                             ),
                                           ));
                                     }

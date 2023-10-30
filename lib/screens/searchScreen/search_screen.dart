@@ -1,17 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
+import 'package:number_pagination/number_pagination.dart';
+import 'package:ui/api/designation_list_api.dart';
 import 'package:ui/api/profile_api.dart';
 import 'package:ui/api/search/change_user_status.dart';
+import 'package:ui/api/search/get_admin_list_api.dart';
+import 'package:ui/api/search/get_student_list_api.dart';
 import 'package:ui/api/search_parent_api.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/loading_animator.dart';
+import 'package:ui/model/designation_list_model.dart';
 import 'package:ui/model/profile_model.dart';
 import 'package:ui/model/search_parent_model.dart';
 import 'package:ui/model/search_staff_model.dart';
 import 'package:ui/widget/parent_info.dart';
+import 'package:ui/widget/search_profile_admin.dart';
+import 'package:ui/widget/search_profile_management.dart';
+import 'package:ui/widget/search_profile_student.dart';
 import 'package:ui/widget/staff_info.dart';
+import '../../api/search/get_management_list_api.dart';
 import '../../api/search_staff_api.dart';
+import '../../config/const.dart';
+import '../../model/search/admin_list_model.dart';
+import '../../model/search/student_list_model.dart';
+import 'package:ui/model/search/management_list_model.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -23,85 +37,297 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   bool isSearch = false;
   String searchText = '';
+  String currentTab = 'Parent';
   TextEditingController controller = TextEditingController();
   Iterable<StaffSearchList>? listOfStaff;
   Iterable<ParentSearchList>? listOfParents;
+  Iterable<StudentList>? listOfStudent;
+  Iterable<ManagementList>? listOfManagement;
+  Iterable<AdminList>? listOfAdmin;
+
+  String parentName = '';
+  String url = 'data';
+
+  int pageNumber = 1;
+  int userStatus = 0;
+  List<StudentList> studentListData = [];
+  List<StaffSearchList> staffListData = [];
+  List<ParentSearchList> parentListData = [];
+  ParentSearchList? count;
+  List<AdminList> adminListData = [];
+  List<ManagementList> managementListData = [];
+
+  final ScrollController staffController = ScrollController();
+  final ScrollController studentController = ScrollController();
+  final ScrollController parentController = ScrollController();
+  final ScrollController adminController = ScrollController();
+  final ScrollController managementController = ScrollController();
+
+  int totalRecord = 0;
 
   @override
   void initState() {
     super.initState();
-    staffList();
     parentsList();
+    initialize();
+  }
+
+  void loadAdminData() {
+    clearData();
+    adminList();
+  }
+
+  void loadManagementData() {
+    clearData();
+    managementList();
+  }
+
+  void loadStaffData() {
+    clearData();
+    staffList();
+  }
+
+  List<DesignationList> managementTypeList = [];
+
+  void initialize() async {
+    staffController.addListener(() {
+      if (staffController.position.pixels ==
+          staffController.position.maxScrollExtent) {
+        if (listOfStaff!.length != totalRecord) {
+          if (pageNumber != 0) {
+            _loadNextPage(staffList);
+          }
+        }
+      }
+    });
+    studentController.addListener(() {
+      if (studentController.position.pixels ==
+          studentController.position.maxScrollExtent) {
+        if (listOfStudent!.length != totalRecord) {
+          if (pageNumber != 0) {
+            _loadNextPage(studentList);
+          }
+        }
+      }
+    });
+    parentController.addListener(() {
+      if (parentController.position.pixels ==
+          parentController.position.maxScrollExtent) {
+        if (listOfParents!.length != totalRecord) {
+          if (pageNumber != 0) {
+            _loadNextPage(parentsList);
+          }
+        }
+      }
+    });
+    adminController.addListener(() {
+      if (adminController.position.pixels ==
+          adminController.position.maxScrollExtent) {
+        if (listOfAdmin!.length != totalRecord) {
+          if (pageNumber != 0) {
+            _loadNextPage(adminList);
+          }
+        }
+      }
+    });
+    managementController.addListener(() {
+      if (managementController.position.pixels ==
+          managementController.position.maxScrollExtent) {
+        if (listOfManagement!.length != totalRecord) {
+          if (pageNumber != 0) {
+            _loadNextPage(managementList);
+          }
+        }
+      }
+    });
+    await getDesignationList().then((value) {
+      if (value != null) {
+        setState(() {
+          managementTypeList = value;
+        });
+      }
+    });
   }
 
   Future<void> staffList() async {
-    await getStaffList().then((value) {
+    await getStaffList(pageNumber).then((value) {
       if (value != null) {
         setState(() {
-          listOfStaff = value;
           isLoading = false;
+          staffListData = value.data;
+          listOfStaff = staffListData;
+          totalRecord = value.total;
+          url = value.nextPageUrl;
+          switch (userStatus) {
+            case 1:
+              {
+                var newFilteredStaffList = listOfStaff!
+                    .where((element) => element.userStatus == userStatus)
+                    .toList();
+                listOfStaff = newFilteredStaffList;
+                filter = true;
+              }
+              break;
+            case 2:
+              {
+                var newFilteredStaffList = listOfStaff!
+                    .where((element) => element.userStatus == userStatus)
+                    .toList();
+                listOfStaff = newFilteredStaffList;
+                filter = true;
+              }
+          }
         });
       }
     });
   }
 
-  Future<void> parentsList() async {
-    await getParentList().then((value) {
+  void parentsList() async {
+    await getParentList(pageNumber).then((value) {
       if (value != null) {
         setState(() {
-          listOfParents = value;
           isLoading = false;
+          parentListData = value.data;
+          listOfParents = parentListData;
+          totalRecord = value.total;
+          switch (userStatus) {
+            case 1:
+              {
+                var newFilteredStaffList = listOfParents!
+                    .where((element) => element.userStatus == userStatus)
+                    .toList();
+                listOfParents = newFilteredStaffList;
+                filter = true;
+              }
+              break;
+            case 2:
+              {
+                var newFilteredStaffList = listOfParents!
+                    .where((element) => element.userStatus == userStatus)
+                    .toList();
+                listOfParents = newFilteredStaffList;
+                filter = true;
+              }
+          }
         });
       }
     });
   }
 
-  Future<bool> profileInfo(
-    StaffSearchList staffSearchList,
-    ProfileModel profile,
-  ) async {
-    return await showDialog(
-            context: context,
-            builder: (context) => Material(
-                  type: MaterialType.transparency,
-                  child: Center(
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      height: MediaQuery.of(context).size.height * 0.5,
-                      child: StaffProfileInfo(
-                          staffProfile: staffSearchList, profileModel: profile),
-                    ),
-                  ),
-                )) ??
-        false;
+  Future<void> managementList() async {
+    await getManagementList(pageNumber).then((value) {
+      if (value != null) {
+        setState(() {
+          isLoading = false;
+          managementListData = value.data;
+          listOfManagement = managementListData;
+          totalRecord = value.total;
+          switch (userStatus) {
+            case 1:
+              {
+                var newFilteredStaffList = listOfManagement!
+                    .where((element) => element.userStatus == userStatus)
+                    .toList();
+                listOfManagement = newFilteredStaffList;
+                filter = true;
+              }
+              break;
+            case 2:
+              {
+                var newFilteredStaffList = listOfManagement!
+                    .where((element) => element.userStatus == userStatus)
+                    .toList();
+                listOfManagement = newFilteredStaffList;
+                filter = true;
+              }
+          }
+        });
+      }
+    });
   }
 
-  Future<bool> parentProfileInfo(
-    ParentSearchList parentSearchList,
-    ProfileModel profile,
-  ) async {
-    return await showDialog(
-            context: context,
-            builder: (context) => Material(
-                  type: MaterialType.transparency,
-                  child: Center(
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      height: MediaQuery.of(context).size.height * 0.5,
-                      child: ParentProfileInfo(
-                          parentProfile: parentSearchList,
-                          profileModel: profile),
-                    ),
-                  ),
-                )) ??
-        false;
+  Future<void> studentList() async {
+    await getStudentList(pageNumber).then((value) {
+      if (value != null) {
+        setState(() {
+          isLoading = false;
+          studentListData = value.data;
+          listOfStudent = studentListData;
+          totalRecord = value.total;
+          switch (userStatus) {
+            case 1:
+              {
+                var newFilteredStaffList = listOfStudent!
+                    .where((element) => element.userStatus == userStatus)
+                    .toList();
+                listOfStudent = newFilteredStaffList;
+                filter = true;
+              }
+              break;
+            case 2:
+              {
+                var newFilteredStaffList = listOfStudent!
+                    .where((element) => element.userStatus == userStatus)
+                    .toList();
+                listOfStudent = newFilteredStaffList;
+                filter = true;
+              }
+          }
+        });
+      }
+    });
+  }
+
+  Future<void> adminList() async {
+    await getAdminList(pageNumber).then((value) {
+      if (value != null) {
+        setState(() {
+          isLoading = false;
+          adminListData = value.data;
+          listOfAdmin = adminListData;
+          totalRecord = value.total;
+          switch (userStatus) {
+            case 1:
+              {
+                var newFilteredStaffList = listOfAdmin!
+                    .where((element) => element.userStatus == userStatus)
+                    .toList();
+                listOfAdmin = newFilteredStaffList;
+                filter = true;
+              }
+              break;
+            case 2:
+              {
+                var newFilteredStaffList = listOfAdmin!
+                    .where((element) => element.userStatus == userStatus)
+                    .toList();
+                listOfAdmin = newFilteredStaffList;
+                filter = true;
+              }
+          }
+        });
+      }
+    });
+  }
+
+  void _loadNextPage(Function callback) {
+    setState(() {
+      isLoading = true;
+      pageNumber++;
+    });
+    callback();
+  }
+
+  void nextPage(Function callback, int number) {
+    setState(() {
+      isLoading = true;
+      pageNumber == number;
+    });
+    callback();
   }
 
   Future<bool> activeInactiveUser(
-    int id,
-    String name,
-    String number,
-  ) async {
+      int id, String name, String number, String role) async {
     return await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -111,25 +337,181 @@ class _SearchPageState extends State<SearchPage> {
                 : "Do you want to Activate $name User?"),
             actions: [
               ElevatedButton(
+                style: buttonStyle,
                 onPressed: () => Navigator.of(context).pop(false),
                 child: const Text('No'),
               ),
               ElevatedButton(
-                onPressed: id == 1
-                    ? () async {
-                        // await changeUserStatus(number, '2').then((value) {
-                        //   _snackBar(value['message']);
-                        //   staffList();
-                        //   Navigator.pop(context);
-                        // });
+                style: buttonStyle,
+                onPressed: () {
+                  if (id != 1) {
+                    activateAnyUser(number, '1', role).then((value) {
+                      if (value != null) {
+                        _snackBar(value['message']);
+                        clearData();
+                        refreshData();
+                        Navigator.pop(context);
+                      } else {
+                        _snackBar("SomeThing Went Wrong");
                       }
-                    : () async {
-                        // await changeUserStatus(number, '1').then((value) {
-                        //   _snackBar(value['message']);
-                        //   staffList();
-                        //   Navigator.pop(context);
-                        // });
-                      },
+                    });
+                  } else {
+                    Navigator.pop(context);
+                    deactivateUser(id, name, number, role);
+                  }
+                },
+                child: const Text('Yes'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
+  Future<bool> deactivateUser(
+      int id, String name, String number, String role) async {
+    return await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(id == 1 ? 'Deactivate App  User' : 'Activate App User'),
+            content: Text(id == 1
+                ? 'Do you want to Deactivate App for $name User?'
+                : "Do you want to Activate App for $name User?"),
+            actions: [
+              ElevatedButton(
+                style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all(Colors.white),
+                    backgroundColor: MaterialStateProperty.all(Colors.green)),
+                onPressed: () async {
+                  await changeUserStatus(number, '2', role, 'no').then((value) {
+                    if (value != null) {
+                      _snackBar(value['message']);
+                      clearData();
+                      refreshData();
+
+                      Navigator.pop(context);
+                    } else {
+                      _snackBar("SomeThing Went Wrong");
+                    }
+                  });
+                },
+                child: const Text('No'),
+              ),
+              ElevatedButton(
+                style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all(Colors.white),
+                    backgroundColor: MaterialStateProperty.all(Colors.red)),
+                onPressed: () async {
+                  await changeUserStatus(number, '2', role, 'yes')
+                      .then((value) {
+                    if (value != null) {
+                      _snackBar(value['message']);
+                      clearData();
+                      refreshData();
+                      Navigator.pop(context);
+                    } else {
+                      _snackBar("SomeThing Went Wrong");
+                    }
+                  });
+                },
+                child: const Text('Yes'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
+  Future<bool> deactivateStudent(
+      int id, String name, String number, String userId) async {
+    return await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(id == 1 ? 'Deactivate App User' : 'Activate App User'),
+            content: Text(id == 1
+                ? 'Do you want to Deactivate App for $name User?'
+                : "Do you want to Activate App for $name User?"),
+            actions: [
+              ElevatedButton(
+                style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all(Colors.white),
+                    backgroundColor: MaterialStateProperty.all(Colors.green)),
+                onPressed: () async {
+                  await changeUserStatusStudent('2', userId, 'no')
+                      .then((value) {
+                    if (value != null) {
+                      _snackBar(value['message']);
+                      clearData();
+                      refreshData();
+                      Navigator.pop(context);
+                    } else {
+                      _snackBar("SomeThing Went Wrong");
+                    }
+                  });
+                },
+                child: const Text('No'),
+              ),
+              ElevatedButton(
+                style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all(Colors.white),
+                    backgroundColor: MaterialStateProperty.all(Colors.red)),
+                onPressed: () async {
+                  await changeUserStatusStudent('2', userId, 'yes')
+                      .then((value) {
+                    if (value != null) {
+                      _snackBar(value['message']);
+                      clearData();
+                      refreshData();
+
+                      Navigator.pop(context);
+                    } else {
+                      _snackBar("SomeThing Went Wrong");
+                    }
+                  });
+                },
+                child: const Text('Yes'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
+  Future<bool> activeInactiveStudent(
+      int id, String name, String number, String userId) async {
+    return await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(id == 1 ? 'Deactivate User' : 'Activate User'),
+            content: Text(id == 1
+                ? 'Do you want to Deactivate $name User?'
+                : "Do you want to Activate $name User?"),
+            actions: [
+              ElevatedButton(
+                style: buttonStyle,
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No'),
+              ),
+              ElevatedButton(
+                style: buttonStyle,
+                onPressed: () {
+                  if (id != 1) {
+                    changeUserStatusStudent('1', userId, '').then((value) {
+                      if (value != null) {
+                        _snackBar(value['message']);
+                        clearData();
+                        refreshData();
+
+                        Navigator.pop(context);
+                      } else {
+                        _snackBar("SomeThing Went Wrong");
+                      }
+                    });
+                  } else {
+                    Navigator.pop(context);
+                    deactivateStudent(id, name, number, userId);
+                  }
+                },
                 child: const Text('Yes'),
               ),
             ],
@@ -159,13 +541,161 @@ class _SearchPageState extends State<SearchPage> {
     fontSize: 27,
   );
 
+  void clearData() {
+    setState(() {
+      userStatus = 0;
+      listOfManagement = null;
+      managementListData = [];
+      listOfStudent = null;
+      studentListData = [];
+      listOfParents = null;
+      parentListData = [];
+      listOfStaff = null;
+      staffListData = [];
+      listOfAdmin = null;
+      adminListData = [];
+      pageNumber = 1;
+    });
+  }
+
+  void refreshData() async {
+    switch (currentTab) {
+      case 'Student':
+        {
+          studentList();
+        }
+        break;
+      case 'Parent':
+        {
+          parentsList();
+        }
+        break;
+      case 'Staff':
+        {
+          staffList();
+        }
+        break;
+      case 'Management':
+        {
+          managementList();
+        }
+        break;
+      case 'Admin':
+        {
+          adminList();
+        }
+    }
+  }
+
+  Future<bool> profileInfo(
+    StaffSearchList staffSearchList,
+    ProfileModel profile,
+  ) async {
+    return await showDialog(
+            context: context,
+            builder: (context) => Material(
+                  type: MaterialType.transparency,
+                  child: Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: StaffProfileInfo(
+                          staffProfile: staffSearchList, profileModel: profile),
+                    ),
+                  ),
+                )) ??
+        false;
+  }
+
+  Future<bool> adminProfileInfo(
+    AdminList adminSearchList,
+  ) async {
+    return await showDialog(
+            context: context,
+            builder: (context) => Material(
+                  type: MaterialType.transparency,
+                  child: Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: AdminProfileInfo(
+                        adminList: adminSearchList,
+                        role: '1',
+                      ),
+                    ),
+                  ),
+                )) ??
+        false;
+  }
+
+  Future<bool> managementProfileInfo(
+    ManagementList managementList,
+  ) async {
+    return await showDialog(
+            context: context,
+            builder: (context) => Material(
+                  type: MaterialType.transparency,
+                  child: Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: ManagementProfileInfo(
+                        managementList: managementList,
+                        role: 'Admin',
+                      ),
+                    ),
+                  ),
+                )) ??
+        false;
+  }
+
+  Future<bool> studentProfileInfo(
+    StudentList studentList,
+  ) async {
+    return await showDialog(
+            context: context,
+            builder: (context) => Material(
+                  type: MaterialType.transparency,
+                  child: Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: StudentProfileInfo(
+                        studentList: studentList,
+                      ),
+                    ),
+                  ),
+                )) ??
+        false;
+  }
+
+  Future<bool> parentProfileInfo(
+    ParentSearchList parentSearchList,
+    ProfileModel profile,
+  ) async {
+    return await showDialog(
+            context: context,
+            builder: (context) => Material(
+                  type: MaterialType.transparency,
+                  child: Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: ParentProfileInfo(
+                          parentProfile: parentSearchList,
+                          profileModel: profile),
+                    ),
+                  ),
+                )) ??
+        false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        //padding: const EdgeInsets.only(top: 13),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: Colors.blue.shade50,
@@ -182,7 +712,7 @@ class _SearchPageState extends State<SearchPage> {
               child: Row(
                 children: [
                   Text(
-                    "Search Parents & Staffs",
+                    "Search",
                     style: GoogleFonts.lato(
                         textStyle: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20)),
@@ -206,13 +736,40 @@ class _SearchPageState extends State<SearchPage> {
                       onTap: () {
                         setState(() {
                           isSearch = !isSearch;
+                          clearData();
+                          pageNumber = 0;
+                          refreshData();
                         });
                       },
                       onChanged: (value) {
                         setState(() {
                           searchText = value;
-                          searchNumber();
-                          searchTeacher();
+                          switch (currentTab) {
+                            case 'Student':
+                              {
+                                searchStudent();
+                              }
+                              break;
+                            case 'Parent':
+                              {
+                                searchNumber();
+                              }
+                              break;
+                            case 'Staff':
+                              {
+                                searchTeacher();
+                              }
+                              break;
+                            case 'Management':
+                              {
+                                searchManagement();
+                              }
+                              break;
+                            case 'Admin':
+                              {
+                                searchAdmin();
+                              }
+                          }
                         });
                       },
                       controller: controller,
@@ -250,6 +807,12 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                   Row(
                     children: [
+                      Text(
+                        "Total Users: $totalRecord  ",
+                        style: GoogleFonts.lato(
+                            textStyle: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20)),
+                      ),
                       SizedBox(
                           width: 40,
                           child: PopupMenuButton<int>(
@@ -258,59 +821,37 @@ class _SearchPageState extends State<SearchPage> {
                                 : Icons.filter_alt_off),
                             itemBuilder: (context) => [
                               PopupMenuItem(
-                                onTap: () async {
-                                  isLoading = true;
-                                  await getStaffList().then((value) {
-                                    if (value != null) {
-                                      setState(() {
-                                        listOfStaff = value;
-                                        var newFilteredStaffList = listOfStaff!
-                                            .where((element) =>
-                                                element.userStatus == 1)
-                                            .toList();
-                                        listOfStaff = newFilteredStaffList;
-                                        filter = true;
-                                        isLoading = false;
-                                      });
-                                    }
+                                onTap: () {
+                                  clearData();
+                                  setState(() {
+                                    userStatus = 1;
+                                    refreshData();
                                   });
                                 },
                                 value: 1,
-                                // row has two child icon and text.
                                 child: const Text("Active Users"),
                               ),
                               PopupMenuItem(
-                                onTap: () async {
-                                  isLoading = true;
-                                  await getStaffList().then((value) {
-                                    if (value != null) {
-                                      setState(() {
-                                        listOfStaff = value;
-                                        var newFilteredStaffList = listOfStaff!
-                                            .where((element) =>
-                                                element.userStatus == 2)
-                                            .toList();
-                                        listOfStaff = newFilteredStaffList;
-                                        filter = true;
-                                        isLoading = false;
-                                      });
-                                    }
+                                onTap: () {
+                                  clearData();
+                                  setState(() {
+                                    userStatus = 2;
+                                    refreshData();
                                   });
                                 },
                                 value: 2,
-                                // row has two child icon and text
-                                child: const Text("Inactive User"),
+                                child: const Text("DeActive  User"),
                               ),
                               PopupMenuItem(
                                 onTap: () {
+                                  clearData();
                                   setState(() {
-                                    isLoading = true;
-                                    staffList();
+                                    userStatus = 0;
                                     filter = false;
+                                    refreshData();
                                   });
                                 },
                                 value: 2,
-                                // row has two child icon and text
                                 child: const Text("Cancel"),
                               ),
                             ],
@@ -320,42 +861,30 @@ class _SearchPageState extends State<SearchPage> {
                         height: 40,
                         child: FormBuilderDropdown(
                           name: 'Staff',
+                          initialValue: currentTab,
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.only(left: 10),
-                            hintText: 'Staff',
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15)),
                           ),
-                          onChanged: (value) {
-                            setState(() {
-                              if (value == 'Staff') {
-                                listOfParents = [];
-                                getStaffList().then((value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      listOfStaff = value;
-                                    });
-                                  }
-                                });
-                              }
-                              if (value == 'Parents') {
-                                listOfStaff = [];
-                                getParentList().then((value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      listOfParents = value;
-                                    });
-                                  }
-                                });
-                              }
-                            });
-                          },
-                          items: ["Staff", "Parents"].map((item) {
+                          items: [
+                            "Staff",
+                            "Parent",
+                            "Admin",
+                            "Management",
+                            "Student"
+                          ].map((item) {
                             return DropdownMenuItem<String>(
                               value: item,
+                              onTap: () {
+                                setState(() {
+                                  clearData();
+                                  currentTab = item;
+                                  refreshData();
+                                });
+                              },
                               child: Row(
                                 children: [
-                                  // ignore: prefer_const_constructors
                                   SizedBox(
                                     width: 5,
                                   ),
@@ -373,402 +902,1334 @@ class _SearchPageState extends State<SearchPage> {
                 ],
               ),
             ),
-            listOfStaff == null || listOfParents == null
-                ? LoadingAnimator()
-                : listOfStaff!.isEmpty
-                    ? Container(
-                        height: MediaQuery.of(context).size.height * 0.83,
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          image: DecorationImage(
-                              colorFilter: ColorFilter.mode(
-                                  Colors.blue.withOpacity(0.2),
-                                  BlendMode.dstATop),
-                              image: const AssetImage(Images.bgImage),
-                              repeat: ImageRepeat.repeat),
-                        ),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              Container(
-                                padding:
-                                    const EdgeInsets.only(left: 20, right: 10),
-                                width: MediaQuery.of(context).size.width * 0.68,
-                                child: DataTable(
-                                    border:
-                                        TableBorder.all(color: Colors.black26),
-                                    sortAscending: true,
-                                    showCheckboxColumn: false,
-                                    columns: [
-                                      DataColumn(
-                                        label: Text(
-                                          'Id',
-                                          style: GoogleFonts.lato(
-                                              textStyle: const TextStyle(
-                                                  color: white)),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.83,
+              width: double.infinity,
+              child: Builder(
+                builder: (ctx) {
+                  switch (currentTab) {
+                    case 'Student':
+                      return listOfStudent == null
+                          ? LoadingAnimator()
+                          : studentListData.isEmpty
+                              ? Center(
+                                  child: Lottie.asset(
+                                    Animations.noData,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.9,
+                                    repeat: true,
+                                    reverse: true,
+                                    animate: true,
+                                  ),
+                                )
+                              : Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.83,
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.shade50,
+                                    image: DecorationImage(
+                                        colorFilter: ColorFilter.mode(
+                                            Colors.blue.withOpacity(0.2),
+                                            BlendMode.dstATop),
+                                        image: const AssetImage(Images.bgImage),
+                                        repeat: ImageRepeat.repeat),
+                                  ),
+                                  child: SingleChildScrollView(
+                                    controller: studentController,
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.only(
+                                              left: 20, right: 10),
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.8,
+                                          child: DataTable(
+                                              showCheckboxColumn: false,
+                                              border: TableBorder.all(
+                                                  color: Colors.black26),
+                                              sortAscending: true,
+                                              columns: [
+                                                DataColumn(
+                                                  label: Text(
+                                                    'No',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Name',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Class Name',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Roll Number',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Admission Number',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Gender',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Status',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                              ],
+                                              rows: [
+                                                for (int i = 0;
+                                                    i < listOfStudent!.length;
+                                                    i++)
+                                                  DataRow(
+                                                      onSelectChanged: (value) {
+                                                        studentProfileInfo(
+                                                            listOfStudent!
+                                                                .elementAt(i));
+                                                      },
+                                                      cells: [
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.04,
+                                                          child: Text(
+                                                            (i + 1).toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
+                                                            listOfStudent!
+                                                                .elementAt(i)
+                                                                .firstName
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
+                                                            listOfStudent!
+                                                                .elementAt(i)
+                                                                .studentListClass
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
+                                                            listOfStudent!
+                                                                .elementAt(i)
+                                                                .rollNumber
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
+                                                            listOfStudent!
+                                                                .elementAt(i)
+                                                                .admissionNumber
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
+                                                            listOfStudent!
+                                                                        .elementAt(
+                                                                            i)
+                                                                        .gender ==
+                                                                    1
+                                                                ? "Male"
+                                                                : "Female",
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                            width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.08,
+                                                            child: ElevatedButton(
+                                                                clipBehavior: Clip.antiAlias,
+                                                                style: ButtonStyle(
+                                                                    backgroundColor: MaterialStatePropertyAll(listOfStudent!.elementAt(i).userStatus == 1
+                                                                        ? Colors.green
+                                                                        : listOfStudent!.elementAt(i).userStatus == 3
+                                                                            ? Colors.yellow
+                                                                            : Colors.red)),
+                                                                onPressed: () {
+                                                                  activeInactiveStudent(
+                                                                    listOfStudent!
+                                                                        .elementAt(
+                                                                            i)
+                                                                        .userStatus,
+                                                                    listOfStudent!
+                                                                        .elementAt(
+                                                                            i)
+                                                                        .firstName,
+                                                                    listOfStudent!
+                                                                        .elementAt(
+                                                                            i)
+                                                                        .fatherMobile
+                                                                        .toString(),
+                                                                    listOfStudent!
+                                                                        .elementAt(
+                                                                            i)
+                                                                        .id
+                                                                        .toString(),
+                                                                  );
+                                                                },
+                                                                child: Text(listOfStudent!.elementAt(i).userStatus == 1
+                                                                    ? "Active"
+                                                                    : listOfStudent!.elementAt(i).userStatus == 3
+                                                                        ? "Par-active"
+                                                                        : "Inactive")))),
+                                                      ]),
+                                              ]),
                                         ),
-                                      ),
-                                      DataColumn(
-                                        label: Text(
-                                          'Name',
-                                          style: GoogleFonts.lato(
-                                              textStyle: const TextStyle(
-                                                  color: white)),
-                                        ),
-                                      ),
-                                      DataColumn(
-                                        label: Text(
-                                          'Mobile Number',
-                                          style: GoogleFonts.lato(
-                                              textStyle: const TextStyle(
-                                                  color: white)),
-                                        ),
-                                      ),
-                                      DataColumn(
-                                        label: Text(
-                                          'Role',
-                                          style: GoogleFonts.lato(
-                                              textStyle: const TextStyle(
-                                                  color: white)),
-                                        ),
-                                      ),
-                                      DataColumn(
-                                        label: Text(
-                                          'Type',
-                                          style: GoogleFonts.lato(
-                                              textStyle: const TextStyle(
-                                                  color: white)),
-                                        ),
-                                      ),
-                                      DataColumn(
-                                        label: Text(
-                                          'Student Name',
-                                          style: GoogleFonts.lato(
-                                              textStyle: const TextStyle(
-                                                  color: white)),
-                                        ),
-                                      ),
-                                    ],
-                                    rows: [
-                                      for (int i = 0;
-                                          i < listOfParents!.length;
-                                          i++)
-                                        DataRow(
-                                            onSelectChanged: (value) async {
-                                              await getProfile(
-                                                      id: listOfParents!
-                                                          .elementAt(i)
-                                                          .id
-                                                          .toString(),
-                                                      role: "3")
-                                                  .then((value) {
-                                                if (value != null) {
-                                                  parentProfileInfo(
-                                                      listOfParents!
-                                                          .elementAt(i),
-                                                      value);
-                                                }
+                                        if (pageNumber != 0)
+                                          NumberPagination(
+                                            onPageChanged: (int number) {
+                                              setState(() {
+                                                pageNumber = number;
                                               });
+                                              nextPage(studentList, number);
                                             },
-                                            cells: [
-                                              DataCell(SizedBox(
-                                                child: Text(
-                                                  listOfParents!
-                                                      .elementAt(i)
-                                                      .id
-                                                      .toString(),
-                                                  style: GoogleFonts.lato(
-                                                      textStyle:
-                                                          const TextStyle(
-                                                              color: white)),
+                                            pageTotal:
+                                                (totalRecord / 10).ceil(),
+                                            pageInit: pageNumber,
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                    case 'Staff':
+                      return listOfStaff == null
+                          ? LoadingAnimator()
+                          : staffListData.isEmpty
+                              ? Center(
+                                  child: Lottie.asset(
+                                    Animations.noData,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.9,
+                                    repeat: true,
+                                    reverse: true,
+                                    animate: true,
+                                  ),
+                                )
+                              : Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.83,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.8,
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.shade50,
+                                    image: DecorationImage(
+                                        colorFilter: ColorFilter.mode(
+                                            Colors.blue.withOpacity(0.2),
+                                            BlendMode.dstATop),
+                                        image: const AssetImage(Images.bgImage),
+                                        repeat: ImageRepeat.repeat),
+                                  ),
+                                  child: SingleChildScrollView(
+                                    controller: staffController,
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.only(
+                                              left: 20, right: 20),
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.8,
+                                          child: DataTable(
+                                              showCheckboxColumn: false,
+                                              border: TableBorder.all(
+                                                  color: Colors.black26),
+                                              sortAscending: true,
+                                              columns: [
+                                                DataColumn(
+                                                  label: Text(
+                                                    'No',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
                                                 ),
-                                              )),
-                                              DataCell(SizedBox(
-                                                child: Text(
-                                                  listOfParents!
-                                                      .elementAt(i)
-                                                      .firstName
-                                                      .toString(),
-                                                  style: GoogleFonts.lato(
-                                                      textStyle:
-                                                          const TextStyle(
-                                                              color: white)),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Name',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
                                                 ),
-                                              )),
-                                              DataCell(SizedBox(
-                                                child: Text(
-                                                  listOfParents!
-                                                      .elementAt(i)
-                                                      .mobileNumber
-                                                      .toString(),
-                                                  style: GoogleFonts.lato(
-                                                      textStyle:
-                                                          const TextStyle(
-                                                              color: white)),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Mobile Number',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
                                                 ),
-                                              )),
-                                              DataCell(SizedBox(
-                                                child: Text(
-                                                  (listOfParents!
-                                                              .elementAt(i)
-                                                              .userCategory ==
-                                                          1
-                                                      ? 'Father'
-                                                      : 'Mother'),
-                                                  style: GoogleFonts.lato(
-                                                      textStyle:
-                                                          const TextStyle(
-                                                              color: white)),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Role',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
                                                 ),
-                                              )),
-                                              DataCell(SizedBox(
-                                                child: Text(
-                                                  'PARENTS',
-                                                  style: GoogleFonts.lato(
-                                                      textStyle:
-                                                          const TextStyle(
-                                                              color: white)),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Employee Number',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
                                                 ),
-                                              )),
-                                              DataCell(SizedBox(
-                                                child: Text(
-                                                  listOfParents!
-                                                      .elementAt(i)
-                                                      .studentName
-                                                      .toString(),
-                                                  style: GoogleFonts.lato(
-                                                      textStyle:
-                                                          const TextStyle(
-                                                              color: white)),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Status',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
                                                 ),
-                                              )),
-                                            ]),
-                                    ]),
-                              )
-                            ],
-                          ),
-                        ),
-                      )
-                    : Container(
-                        height: MediaQuery.of(context).size.height * 0.83,
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          image: DecorationImage(
-                              colorFilter: ColorFilter.mode(
-                                  Colors.blue.withOpacity(0.2),
-                                  BlendMode.dstATop),
-                              image: const AssetImage(Images.bgImage),
-                              repeat: ImageRepeat.repeat),
-                        ),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              DataTable(
-                                  showCheckboxColumn: false,
-                                  border:
-                                      TableBorder.all(color: Colors.black26),
-                                  sortAscending: true,
-                                  columns: [
-                                    DataColumn(
-                                      label: Text(
-                                        'Id',
-                                        style: GoogleFonts.lato(
-                                            textStyle:
-                                                const TextStyle(color: white)),
-                                      ),
-                                    ),
-                                    DataColumn(
-                                      label: Text(
-                                        'Name',
-                                        style: GoogleFonts.lato(
-                                            textStyle:
-                                                const TextStyle(color: white)),
-                                      ),
-                                    ),
-                                    DataColumn(
-                                      label: Text(
-                                        'Mobile Number',
-                                        style: GoogleFonts.lato(
-                                            textStyle:
-                                                const TextStyle(color: white)),
-                                      ),
-                                    ),
-                                    DataColumn(
-                                      label: Text(
-                                        'Role',
-                                        style: GoogleFonts.lato(
-                                            textStyle:
-                                                const TextStyle(color: white)),
-                                      ),
-                                    ),
-                                    DataColumn(
-                                      label: Text(
-                                        'Type',
-                                        style: GoogleFonts.lato(
-                                            textStyle:
-                                                const TextStyle(color: white)),
-                                      ),
-                                    ),
-                                    DataColumn(
-                                      label: Text(
-                                        'Class Name',
-                                        style: GoogleFonts.lato(
-                                            textStyle:
-                                                const TextStyle(color: white)),
-                                      ),
-                                    ),
-                                    DataColumn(
-                                      label: Text(
-                                        'Status',
-                                        style: GoogleFonts.lato(
-                                            textStyle:
-                                                const TextStyle(color: white)),
-                                      ),
-                                    ),
-                                  ],
-                                  rows: [
-                                    for (int i = 0;
-                                        i < listOfStaff!.length;
-                                        i++)
-                                      DataRow(
-                                          onSelectChanged: (value) async {
-                                            await getProfile(
-                                                    id: listOfStaff!
-                                                        .elementAt(i)
-                                                        .id
-                                                        .toString(),
-                                                    role: "2")
-                                                .then((value) {
-                                              if (value != null) {
-                                                profileInfo(
-                                                    listOfStaff!.elementAt(i),
-                                                    value);
-                                              }
-                                            });
-                                          },
-                                          cells: [
-                                            DataCell(SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.04,
-                                              child: Text(
-                                                listOfStaff!
-                                                    .elementAt(i)
-                                                    .id
-                                                    .toString(),
-                                                style: GoogleFonts.lato(
-                                                    textStyle: const TextStyle(
-                                                        color: white)),
-                                              ),
-                                            )),
-                                            DataCell(SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.08,
-                                              child: Text(
-                                                listOfStaff!
-                                                    .elementAt(i)
-                                                    .firstName
-                                                    .toString(),
-                                                style: GoogleFonts.lato(
-                                                    textStyle: const TextStyle(
-                                                        color: white)),
-                                              ),
-                                            )),
-                                            DataCell(SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.08,
-                                              child: Text(
-                                                listOfStaff!
-                                                    .elementAt(i)
-                                                    .mobileNumber
-                                                    .toString(),
-                                                style: GoogleFonts.lato(
-                                                    textStyle: const TextStyle(
-                                                        color: white)),
-                                              ),
-                                            )),
-                                            DataCell(SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.08,
-                                              child: Text(
-                                                listOfStaff!
-                                                    .elementAt(i)
-                                                    .userCategory
-                                                    .toString(),
-                                                style: GoogleFonts.lato(
-                                                    textStyle: const TextStyle(
-                                                        color: white)),
-                                              ),
-                                            )),
-                                            DataCell(SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.08,
-                                              child: Text(
-                                                'STAFF',
-                                                style: GoogleFonts.lato(
-                                                    textStyle: const TextStyle(
-                                                        color: white)),
-                                              ),
-                                            )),
-                                            DataCell(SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.08,
-                                              child: Text(
-                                                listOfStaff!
-                                                            .elementAt(i)
-                                                            .staffSearchListClass ==
-                                                        ''
-                                                    ? 'N/A'
-                                                    : listOfStaff!
-                                                        .elementAt(i)
-                                                        .staffSearchListClass,
-                                                style: GoogleFonts.lato(
-                                                    textStyle: const TextStyle(
-                                                        color: white)),
-                                              ),
-                                            )),
-                                            DataCell(SizedBox(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.08,
-                                                child: listOfStaff!.elementAt(i).userStatus == 1
-                                                    ? ElevatedButton(
-                                                        clipBehavior: Clip
-                                                            .antiAlias,
-                                                        style: const ButtonStyle(
-                                                            backgroundColor: MaterialStatePropertyAll(
-                                                                Colors.green)),
-                                                        onPressed: () => activeInactiveUser(
+                                              ],
+                                              rows: [
+                                                for (int i = 0;
+                                                    i < listOfStaff!.length;
+                                                    i++)
+                                                  DataRow(
+                                                      onSelectChanged:
+                                                          (value) async {
+                                                        await getProfile(
+                                                                id: listOfStaff!
+                                                                    .elementAt(
+                                                                        i)
+                                                                    .id
+                                                                    .toString(),
+                                                                role: "2")
+                                                            .then((value) {
+                                                          if (value != null) {
+                                                            profileInfo(
+                                                                listOfStaff!
+                                                                    .elementAt(
+                                                                        i),
+                                                                value);
+                                                          }
+                                                        });
+                                                      },
+                                                      cells: [
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.04,
+                                                          child: Text(
+                                                            (i + 1).toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
                                                             listOfStaff!
                                                                 .elementAt(i)
-                                                                .userStatus,
-                                                            listOfStaff!
-                                                                .elementAt(i)
-                                                                .firstName,
+                                                                .firstName
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
                                                             listOfStaff!
                                                                 .elementAt(i)
                                                                 .mobileNumber
-                                                                .toString()),
-                                                        child: const Text("Active"))
-                                                    : ElevatedButton(clipBehavior: Clip.antiAlias, style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.red)), onPressed: () => activeInactiveUser(listOfStaff!.elementAt(i).userStatus, listOfStaff!.elementAt(i).firstName, listOfStaff!.elementAt(i).mobileNumber.toString()), child: const Text("Inactive")))),
-                                          ]),
-                                  ])
-                            ],
-                          ),
-                        ),
-                      )
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
+                                                            listOfStaff!
+                                                                .elementAt(i)
+                                                                .userCategory
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
+                                                            listOfStaff!
+                                                                        .elementAt(
+                                                                            i)
+                                                                        .employeeNo ==
+                                                                    ''
+                                                                ? 'N/A'
+                                                                : listOfStaff!
+                                                                    .elementAt(
+                                                                        i)
+                                                                    .employeeNo,
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                            width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.08,
+                                                            child: ElevatedButton(
+                                                                clipBehavior: Clip.antiAlias,
+                                                                style: ButtonStyle(
+                                                                    backgroundColor: MaterialStatePropertyAll(listOfStaff!.elementAt(i).userStatus == 1
+                                                                        ? Colors.green
+                                                                        : listOfStaff!.elementAt(i).userStatus == 3
+                                                                            ? Colors.yellow
+                                                                            : Colors.red)),
+                                                                onPressed: () {
+                                                                  activeInactiveUser(
+                                                                      listOfStaff!
+                                                                          .elementAt(
+                                                                              i)
+                                                                          .userStatus,
+                                                                      listOfStaff!
+                                                                          .elementAt(
+                                                                              i)
+                                                                          .firstName,
+                                                                      listOfStaff!
+                                                                          .elementAt(
+                                                                              i)
+                                                                          .mobileNumber
+                                                                          .toString(),
+                                                                      '2');
+                                                                },
+                                                                child: Text(listOfStaff!.elementAt(i).userStatus == 1
+                                                                    ? "Active"
+                                                                    : listOfStaff!.elementAt(i).userStatus == 3
+                                                                        ? "Par-active"
+                                                                        : "Inactive")))),
+                                                      ]),
+                                              ]),
+                                        ),
+                                        if (pageNumber != 0)
+                                          NumberPagination(
+                                            onPageChanged: (int number) {
+                                              //do somthing for selected page
+                                              setState(() {
+                                                pageNumber = number;
+                                              });
+                                              nextPage(staffList, number);
+                                            },
+                                            pageTotal:
+                                                (totalRecord / 10).ceil(),
+                                            pageInit: pageNumber,
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                    case 'Parent':
+                      return listOfParents == null
+                          ? LoadingAnimator()
+                          : parentListData.isEmpty
+                              ? Center(
+                                  child: Lottie.asset(
+                                    Animations.noData,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.9,
+                                    repeat: true,
+                                    reverse: true,
+                                    animate: true,
+                                  ),
+                                )
+                              : Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.83,
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.shade50,
+                                    image: DecorationImage(
+                                        colorFilter: ColorFilter.mode(
+                                            Colors.blue.withOpacity(0.2),
+                                            BlendMode.dstATop),
+                                        image: const AssetImage(Images.bgImage),
+                                        repeat: ImageRepeat.repeat),
+                                  ),
+                                  child: SingleChildScrollView(
+                                    controller: parentController,
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.only(
+                                              left: 20, right: 10),
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.8,
+                                          child: DataTable(
+                                              border: TableBorder.all(
+                                                  color: Colors.black26),
+                                              sortAscending: true,
+                                              showCheckboxColumn: false,
+                                              columns: [
+                                                DataColumn(
+                                                  label: Text(
+                                                    'No',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Name',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Mobile Number',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Class Name',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Role',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Student Name',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Status',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                              ],
+                                              rows: [
+                                                for (int i = 0;
+                                                    i < listOfParents!.length;
+                                                    i++)
+                                                  DataRow(
+                                                      onSelectChanged:
+                                                          (value) async {
+                                                        await getProfile(
+                                                                id: listOfParents!
+                                                                    .elementAt(
+                                                                        i)
+                                                                    .id
+                                                                    .toString(),
+                                                                role: "3")
+                                                            .then((value) {
+                                                          if (value != null) {
+                                                            parentProfileInfo(
+                                                                listOfParents!
+                                                                    .elementAt(
+                                                                        i),
+                                                                value);
+                                                          }
+                                                        });
+                                                      },
+                                                      cells: [
+                                                        DataCell(SizedBox(
+                                                          child: Text(
+                                                            (i + 1).toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          child: Text(
+                                                            listOfParents!
+                                                                .elementAt(i)
+                                                                .firstName
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          child: Text(
+                                                            listOfParents!
+                                                                .elementAt(i)
+                                                                .mobileNumber
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          child: Text(
+                                                            listOfParents!
+                                                                .elementAt(i)
+                                                                .className
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          child: Text(
+                                                            (listOfParents!
+                                                                        .elementAt(
+                                                                            i)
+                                                                        .userCategory ==
+                                                                    1
+                                                                ? 'Father'
+                                                                : 'Mother'),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          child: Text(
+                                                            listOfParents!
+                                                                .elementAt(i)
+                                                                .studentName
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                            width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.08,
+                                                            child: ElevatedButton(
+                                                                clipBehavior: Clip.antiAlias,
+                                                                style: ButtonStyle(
+                                                                    backgroundColor: MaterialStatePropertyAll(listOfParents!.elementAt(i).userStatus == 1
+                                                                        ? Colors.green
+                                                                        : listOfParents!.elementAt(i).userStatus == 3
+                                                                            ? Colors.yellow
+                                                                            : Colors.red)),
+                                                                onPressed: () {},
+                                                                child: Text(listOfParents!.elementAt(i).userStatus == 1
+                                                                    ? "Active"
+                                                                    : listOfParents!.elementAt(i).userStatus == 3
+                                                                        ? "Par-active"
+                                                                        : "Inactive")))),
+                                                      ]),
+                                              ]),
+                                        ),
+                                        if (pageNumber != 0)
+                                          NumberPagination(
+                                            onPageChanged: (int number) {
+                                              //do somthing for selected page
+                                              setState(() {
+                                                pageNumber = number;
+                                              });
+                                              nextPage(parentsList, number);
+                                            },
+                                            pageTotal:
+                                                (totalRecord / 10).ceil(),
+                                            pageInit: pageNumber,
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+
+                    case 'Management':
+                      return listOfManagement == null
+                          ? LoadingAnimator()
+                          : managementListData.isEmpty
+                              ? Center(
+                                  child: Lottie.asset(
+                                    Animations.noData,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.9,
+                                    repeat: true,
+                                    reverse: true,
+                                    animate: true,
+                                  ),
+                                )
+                              : Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.83,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.shade50,
+                                    image: DecorationImage(
+                                        colorFilter: ColorFilter.mode(
+                                            Colors.blue.withOpacity(0.2),
+                                            BlendMode.dstATop),
+                                        image: const AssetImage(Images.bgImage),
+                                        repeat: ImageRepeat.repeat),
+                                  ),
+                                  child: SingleChildScrollView(
+                                    controller: managementController,
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.only(
+                                              left: 20, right: 20),
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.8,
+                                          child: DataTable(
+                                              showCheckboxColumn: false,
+                                              border: TableBorder.all(
+                                                  color: Colors.black26),
+                                              sortAscending: true,
+                                              columns: [
+                                                DataColumn(
+                                                  label: Text(
+                                                    'No',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Name',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Mobile Number',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Designation',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Employee Number',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Status',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                              ],
+                                              rows: [
+                                                for (int i = 0;
+                                                    i <
+                                                        listOfManagement!
+                                                            .length;
+                                                    i++)
+                                                  DataRow(
+                                                      onSelectChanged:
+                                                          (value) async {
+                                                        managementProfileInfo(
+                                                            listOfManagement!
+                                                                .elementAt(i));
+                                                      },
+                                                      cells: [
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.04,
+                                                          child: Text(
+                                                            (i + 1).toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
+                                                            listOfManagement!
+                                                                .elementAt(i)
+                                                                .firstName
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
+                                                            listOfManagement!
+                                                                .elementAt(i)
+                                                                .mobileNumber
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
+                                                            managementTypeList
+                                                                .firstWhere((element) =>
+                                                                    element
+                                                                        .id ==
+                                                                    listOfManagement!
+                                                                        .elementAt(
+                                                                            i)
+                                                                        .userCategory)
+                                                                .categoryName,
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
+                                                            listOfManagement!
+                                                                        .elementAt(
+                                                                            i)
+                                                                        .employeeNo ==
+                                                                    ''
+                                                                ? 'N/A'
+                                                                : listOfManagement!
+                                                                    .elementAt(
+                                                                        i)
+                                                                    .employeeNo!,
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                            width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.08,
+                                                            child: ElevatedButton(
+                                                                clipBehavior: Clip.antiAlias,
+                                                                style: ButtonStyle(
+                                                                    backgroundColor: MaterialStatePropertyAll(listOfManagement!.elementAt(i).userStatus == 1
+                                                                        ? Colors.green
+                                                                        : listOfManagement!.elementAt(i).userStatus == 3
+                                                                            ? Colors.yellow
+                                                                            : Colors.red)),
+                                                                onPressed: () {
+                                                                  activeInactiveUser(
+                                                                      listOfManagement!
+                                                                          .elementAt(
+                                                                              i)
+                                                                          .userStatus,
+                                                                      listOfManagement!
+                                                                          .elementAt(
+                                                                              i)
+                                                                          .firstName,
+                                                                      listOfManagement!
+                                                                          .elementAt(
+                                                                              i)
+                                                                          .mobileNumber
+                                                                          .toString(),
+                                                                      '5');
+                                                                },
+                                                                child: Text(listOfManagement!.elementAt(i).userStatus == 1
+                                                                    ? "Active"
+                                                                    : listOfManagement!.elementAt(i).userStatus == 3
+                                                                        ? "Par-active"
+                                                                        : "Inactive")))),
+                                                      ]),
+                                              ]),
+                                        ),
+                                        if (pageNumber != 0)
+                                          NumberPagination(
+                                            onPageChanged: (int number) {
+                                              //do somthing for selected page
+                                              setState(() {
+                                                pageNumber = number;
+                                              });
+                                              nextPage(managementList, number);
+                                            },
+                                            pageTotal:
+                                                (totalRecord / 10).ceil(),
+                                            pageInit: pageNumber,
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+
+                    case 'Admin':
+                      return listOfAdmin == null
+                          ? LoadingAnimator()
+                          : adminListData.isEmpty
+                              ? Center(
+                                  child: Lottie.asset(
+                                    Animations.noData,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.9,
+                                    repeat: true,
+                                    reverse: true,
+                                    animate: true,
+                                  ),
+                                )
+                              : Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.83,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.8,
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.shade50,
+                                    image: DecorationImage(
+                                        colorFilter: ColorFilter.mode(
+                                            Colors.blue.withOpacity(0.2),
+                                            BlendMode.dstATop),
+                                        image: const AssetImage(Images.bgImage),
+                                        repeat: ImageRepeat.repeat),
+                                  ),
+                                  child: SingleChildScrollView(
+                                    controller: adminController,
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.only(
+                                              left: 20, right: 20),
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.8,
+                                          child: DataTable(
+                                              showCheckboxColumn: false,
+                                              border: TableBorder.all(
+                                                  color: Colors.black26),
+                                              sortAscending: true,
+                                              columns: [
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Id',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Name',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Mobile Number',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Employee Number',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
+                                                    'Status',
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: white)),
+                                                  ),
+                                                ),
+                                              ],
+                                              rows: [
+                                                for (int i = 0;
+                                                    i < listOfAdmin!.length;
+                                                    i++)
+                                                  DataRow(
+                                                      onSelectChanged:
+                                                          (value) async {
+                                                        adminProfileInfo(
+                                                            listOfAdmin!
+                                                                .elementAt(i));
+                                                      },
+                                                      cells: [
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.04,
+                                                          child: Text(
+                                                            listOfAdmin!
+                                                                .elementAt(i)
+                                                                .id
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
+                                                            listOfAdmin!
+                                                                .elementAt(i)
+                                                                .firstName
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
+                                                            listOfAdmin!
+                                                                .elementAt(i)
+                                                                .mobileNumber
+                                                                .toString(),
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.08,
+                                                          child: Text(
+                                                            listOfAdmin!
+                                                                        .elementAt(
+                                                                            i)
+                                                                        .employeeNo ==
+                                                                    ''
+                                                                ? 'N/A'
+                                                                : listOfAdmin!
+                                                                    .elementAt(
+                                                                        i)
+                                                                    .employeeNo,
+                                                            style: GoogleFonts.lato(
+                                                                textStyle:
+                                                                    const TextStyle(
+                                                                        color:
+                                                                            white)),
+                                                          ),
+                                                        )),
+                                                        DataCell(SizedBox(
+                                                            width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.08,
+                                                            child: ElevatedButton(
+                                                                clipBehavior: Clip.antiAlias,
+                                                                style: ButtonStyle(
+                                                                    backgroundColor: MaterialStatePropertyAll(listOfAdmin!.elementAt(i).userStatus == 1
+                                                                        ? Colors.green
+                                                                        : listOfAdmin!.elementAt(i).userStatus == 3
+                                                                            ? Colors.yellow
+                                                                            : Colors.red)),
+                                                                onPressed: () {
+                                                                  activeInactiveUser(
+                                                                      listOfAdmin!
+                                                                          .elementAt(
+                                                                              i)
+                                                                          .userStatus,
+                                                                      listOfAdmin!
+                                                                          .elementAt(
+                                                                              i)
+                                                                          .firstName,
+                                                                      listOfAdmin!
+                                                                          .elementAt(
+                                                                              i)
+                                                                          .mobileNumber
+                                                                          .toString(),
+                                                                      '1');
+                                                                },
+                                                                child: Text(listOfAdmin!.elementAt(i).userStatus == 1
+                                                                    ? "Active"
+                                                                    : listOfAdmin!.elementAt(i).userStatus == 3
+                                                                        ? "Par-active"
+                                                                        : "Inactive")))),
+                                                      ]),
+                                              ]),
+                                        ),
+                                        if (pageNumber != 0)
+                                          NumberPagination(
+                                            onPageChanged: (int number) {
+                                              //do somthing for selected page
+                                              setState(() {
+                                                pageNumber = number;
+                                              });
+                                              nextPage(adminList, number);
+                                            },
+                                            pageTotal:
+                                                (totalRecord / 10).ceil(),
+                                            pageInit: pageNumber,
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                    default:
+                      return Container();
+                  }
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -791,6 +2252,33 @@ class _SearchPageState extends State<SearchPage> {
       return name.contains(text);
     });
     setState(() => listOfStaff = listOfData);
+  }
+
+  void searchAdmin() {
+    final listOfData = listOfAdmin!.where((element) {
+      final name = element.firstName.toLowerCase();
+      final text = searchText.toLowerCase();
+      return name.contains(text);
+    });
+    setState(() => listOfAdmin = listOfData);
+  }
+
+  void searchManagement() {
+    final listOfData = listOfManagement!.where((element) {
+      final name = element.firstName.toLowerCase();
+      final text = searchText.toLowerCase();
+      return name.contains(text);
+    });
+    setState(() => listOfManagement = listOfData);
+  }
+
+  void searchStudent() {
+    final listOfData = listOfStudent!.where((element) {
+      final name = element.firstName.toLowerCase();
+      final text = searchText.toLowerCase();
+      return name.contains(text);
+    });
+    setState(() => listOfStudent = listOfData);
   }
 }
 

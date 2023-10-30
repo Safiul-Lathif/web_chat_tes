@@ -3,21 +3,24 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:ui/config/strings.dart';
+import 'package:ui/model/search/management_list_model.dart';
 import 'package:ui/utils/session_management.dart';
 
-import '../../model/management_list.dart';
-
-Future<List<ManagementList>?> getManagementList() async {
+Future<SearchManagementModel?> getManagementList(int pageNumber) async {
   var url = Uri.parse("${Strings.baseURL}api/user/all_management_list");
   SessionManager pref = SessionManager();
   String? token = await pref.getAuthToken();
+  var map = <String, dynamic>{};
+  map["page"] = pageNumber.toString();
+  print("pagination of page  $pageNumber");
   try {
-    final response = await http
-        .post(url, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
+    final response = await http.post(url,
+        body: pageNumber == 0 ? null : map,
+        headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      List jsonResponse = jsonDecode(response.body);
+      final jsonResponse = jsonDecode(response.body);
       print(response.body);
-      return jsonResponse.map((json) => ManagementList.fromJson(json)).toList();
+      return SearchManagementModel.fromJson(jsonResponse);
     } else {
       print('management:- Request failed with status: ${response.statusCode}.');
       return null;
