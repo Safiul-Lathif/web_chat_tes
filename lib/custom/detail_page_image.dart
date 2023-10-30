@@ -5,14 +5,22 @@ import 'package:http/http.dart' as http;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:share_plus/share_plus.dart';
 
 class DetailScreen extends StatefulWidget {
-  DetailScreen({super.key, required this.images, required this.index});
+  DetailScreen(
+      {super.key,
+      required this.images,
+      required this.index,
+      required this.dateTime,
+      required this.title});
   List<String> images;
   int index;
+  String title;
+  DateTime dateTime;
   @override
   State<DetailScreen> createState() => _DetailScreenState();
 }
@@ -62,11 +70,12 @@ class _DetailScreenState extends State<DetailScreen> {
     }
   }
 
-  double angle = 0;
+  int angle = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           flexibleSpace: Container(
             decoration: BoxDecoration(
                 color: Colors.blue.shade50,
@@ -78,52 +87,85 @@ class _DetailScreenState extends State<DetailScreen> {
                   fit: BoxFit.cover,
                 )),
           ),
-          title: Text(
-            "Image(${currentPage + 1}/${widget.images.length})",
-            style: const TextStyle(color: Colors.black),
+          title: ListTile(
+            contentPadding: const EdgeInsets.all(0),
+            title: Text(
+              "${widget.title} -Image(${currentPage + 1}/${widget.images.length})",
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Text(
+                DateFormat('d MMMM, yyyy,hh:mm a').format(widget.dateTime)),
+            leading: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.black,
+                )),
+            trailing: PopupMenuButton<int>(
+                icon: const Icon(
+                  Icons.more_vert,
+                  size: 27,
+                  color: Colors.black,
+                ),
+                itemBuilder: (context) => [
+                      PopupMenuItem(
+                          onTap: () async {
+                            HapticFeedback.vibrate();
+                            var path = '';
+                            final url = Uri.parse(widget.images[currentPage]);
+                            final response = await http.get(url);
+                            final bytes = response.bodyBytes;
+                            final temp = await getTemporaryDirectory();
+                            path = '${temp.path}/Image.jpg';
+                            File(path).writeAsBytes(bytes);
+                            await Share.shareFiles(
+                              [path],
+                            );
+                          },
+                          child: const Text("Share")),
+                      PopupMenuItem(
+                          onTap: () =>
+                              _saveImage(context, widget.images[currentPage]),
+                          child: const Text("Save")),
+                      PopupMenuItem(
+                          onTap: () {
+                            setState(() {
+                              switch (angle) {
+                                case 0:
+                                  {
+                                    angle = 1;
+                                  }
+                                  break;
+                                case 1:
+                                  {
+                                    angle = 2;
+                                  }
+                                  break;
+                                case 2:
+                                  {
+                                    angle = 3;
+                                  }
+                                  break;
+                                case 3:
+                                  {
+                                    angle = 4;
+                                  }
+                                  break;
+                                default:
+                                  angle = 0;
+                              }
+                            });
+                          },
+                          child: const Text("Rotate")),
+                    ]),
           ),
-          actions: [
-            // IconButton(
-            //     onPressed: () async {
-            //       HapticFeedback.vibrate();
-            //       var path = '';
-            //       final url = Uri.parse(widget.images[currentPage]);
-            //       final response = await http.get(url);
-            //       final bytes = response.bodyBytes;
-            //       final temp = await getTemporaryDirectory();
-            //       path = '${temp.path}/Image.jpg';
-            //       File(path).writeAsBytes(bytes);
-            //       await Share.shareFiles(
-            //         [path],
-            //       );
-            //     },
-            //     icon: const Icon(Icons.share)),
-            // IconButton(
-            //     onPressed: () {
-            //       setState(() {
-            //         if (angle == 1.55) {
-            //           angle = 0;
-            //         } else {
-            //           angle = 1.55;
-            //         }
-            //       });
-            //     },
-            //     icon: const Icon(Icons.rotate_90_degrees_ccw)),
-            // IconButton(
-            //     onPressed: () =>
-            //         _saveImage(context, widget.images[currentPage]),
-            //     icon: const Icon(Icons.download))
-          ],
-          centerTitle: true,
+          //  Text(
+          //   "Image(${currentPage + 1}/${widget.images.length})",
+          //   style: const TextStyle(color: Colors.black),
+          // ),
           elevation: 0,
-          leading: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                color: Colors.black,
-              )),
           backgroundColor: Colors.blue.shade50,
         ),
         body: Container(
@@ -140,8 +182,8 @@ class _DetailScreenState extends State<DetailScreen> {
                 ? Center(
                     child: CarouselSlider(
                       items: List.generate(widget.images.length, (index) {
-                        return Transform.rotate(
-                          angle: angle,
+                        return RotatedBox(
+                          quarterTurns: angle,
                           child: SingleImageView(
                             image: widget.images[index],
                           ),
@@ -151,6 +193,7 @@ class _DetailScreenState extends State<DetailScreen> {
                           onPageChanged: (index, reason) {
                             setState(() {
                               currentPage = index;
+                              angle = 0;
                             });
                           },
                           viewportFraction: 1,
@@ -159,8 +202,8 @@ class _DetailScreenState extends State<DetailScreen> {
                       carouselController: _controller,
                     ),
                   )
-                : Transform.rotate(
-                    angle: angle,
+                : RotatedBox(
+                    quarterTurns: angle,
                     child: SingleImageView(
                       image: widget.images[0],
                     ),
@@ -188,7 +231,7 @@ class SingleImageView extends StatelessWidget {
                     Colors.blue.withOpacity(0.2), BlendMode.dstATop),
                 image: const NetworkImage(
                     'https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg'),
-                fit: BoxFit.contain,
+                // fit: BoxFit.contain,
               )),
           imageProvider: NetworkImage(
             image.contains("https://")

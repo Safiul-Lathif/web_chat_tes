@@ -7,6 +7,12 @@ class Images {
   static const String timeIcon = "assets/icons/time.png";
   static const String homeWork = "assets/images/home-work.png";
   static const String userProfile = 'assets/images/userprofilesymbol.png';
+  static const String profile = 'assets/images/profile.png';
+}
+
+class Animations {
+  Animations._();
+  static const String noData = 'assets/lottie/no_data.json';
 }
 
 class Chat {

@@ -11,6 +11,8 @@ import 'package:ui/api/news&events/event_accept_decline_api.dart';
 import 'package:ui/api/news&events/single_news_event.dart';
 import 'package:ui/custom/detail_page_image.dart';
 import 'package:ui/custom/loading_animator.dart';
+import 'package:ui/model/news&events/single_news_events_model.dart';
+import 'package:ui/utils/session_management.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -18,10 +20,14 @@ import '../../../Utils/utility.dart';
 import '../../../model/news&events/events_feed_model.dart';
 
 class DetailsPageEvents extends StatefulWidget {
-  DetailsPageEvents({super.key, required this.eventFeed, required this.isPast});
-  UpcomingEvent eventFeed;
+  DetailsPageEvents(
+      {super.key,
+      required this.isPast,
+      required this.eventId,
+      required this.accessiblePerson});
   bool isPast;
-
+  String eventId;
+  bool accessiblePerson;
   @override
   State<DetailsPageEvents> createState() => _DetailsPageEventsState();
 }
@@ -30,13 +36,19 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
   bool isAccepted = false;
   bool isDeclined = false;
   bool isLoading = false;
+  late SingleEvent eventFeed;
+  List<String> images = [];
 
   void getIndividualEvent() async {
     isLoading = true;
-    await getSingleEvent(widget.eventFeed.id.toString()).then((value) {
+    await getSingleEvent(widget.eventId).then((value) {
       setState(() {
-        widget.eventFeed = value!;
-        switch (widget.eventFeed.acceptStatus) {
+        images.clear();
+        eventFeed = value!;
+        for (int i = 0; i < value.images.length; i++) {
+          images.add(value.images[i].image);
+        }
+        switch (eventFeed.acceptStatus) {
           case 1:
             {
               isAccepted = true;
@@ -55,18 +67,36 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
               isDeclined = false;
             }
         }
+        isLoading = false;
       });
     });
-    isLoading = false;
   }
 
   @override
   void initState() {
     super.initState();
     getIndividualEvent();
+    getRole();
+  }
+
+  String userRole = '';
+
+  Future getRole() async {
+    var role = await SessionManager().getRole();
+    setState(() {
+      userRole = role.toUpperCase();
+      if (userRole == 'MANAGEMENT' || userRole == 'ADMIN') {
+        widget.accessiblePerson = true;
+      }
+    });
   }
 
   bool playVideo = false;
+
+  Future<bool> goBack() async {
+    Navigator.pop(context, true);
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +126,7 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
                             image: DecorationImage(
-                                image: NetworkImage(widget.eventFeed.images[0]),
+                                image: NetworkImage(eventFeed.images[0].image),
                                 fit: BoxFit.cover)),
                         child: Padding(
                           padding: const EdgeInsets.only(top: 50, left: 10),
@@ -114,7 +144,7 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                       Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
-                          widget.eventFeed.title,
+                          eventFeed.title,
                           style: GoogleFonts.lato(
                             textStyle: const TextStyle(
                               fontSize: 20,
@@ -149,8 +179,7 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                         }
                                       : () {
                                           eventAcceptDecline(
-                                                  id: widget.eventFeed.id
-                                                      .toString(),
+                                                  id: eventFeed.id.toString(),
                                                   status: '2')
                                               .then((value) {
                                             getIndividualEvent();
@@ -179,9 +208,9 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                         width: 5,
                                       ),
                                       Text(
-                                        widget.eventFeed.declined == 0
+                                        eventFeed.declined == 0
                                             ? "Declined"
-                                            : "Declined (${widget.eventFeed.declined.toString()})",
+                                            : "Declined (${eventFeed.declined.toString()})",
                                         style: TextStyle(
                                           color: Colors.white,
                                         ),
@@ -213,8 +242,7 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                         }
                                       : () {
                                           eventAcceptDecline(
-                                                  id: widget.eventFeed.id
-                                                      .toString(),
+                                                  id: eventFeed.id.toString(),
                                                   status: '1')
                                               .then((value) {
                                             getIndividualEvent();
@@ -242,9 +270,9 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                         width: 5,
                                       ),
                                       Text(
-                                        widget.eventFeed.accepted == 0
+                                        eventFeed.accepted == 0
                                             ? "Accepted"
-                                            : "Accepted(${widget.eventFeed.accepted.toString()})",
+                                            : "Accepted(${eventFeed.accepted.toString()})",
                                         style: const TextStyle(
                                           color: Colors.white,
                                         ),
@@ -263,10 +291,10 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                             //       var path = '';
                             //       HapticFeedback.vibrate();
                             //       for (int i = 0;
-                            //           i < widget.eventFeed.images.length;
+                            //           i < eventFeed.images.length;
                             //           i++) {
                             //         final url =
-                            //             Uri.parse(widget.eventFeed.images[i]);
+                            //             Uri.parse(eventFeed.images[i]);
                             //         final response = await http.get(url);
                             //         final bytes = response.bodyBytes;
                             //         final temp = await getTemporaryDirectory();
@@ -275,9 +303,9 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                             //         File(paths[i]).writeAsBytes(bytes);
                             //       }
                             //       await Share.shareFiles(paths,
-                            //           text: widget.eventFeed.description == ''
-                            //               ? "Title: ${widget.eventFeed.title}"
-                            //               : "Title: ${widget.eventFeed.title} \nDescription:${widget.eventFeed.description}");
+                            //           text: eventFeed.description == ''
+                            //               ? "Title: ${eventFeed.title}"
+                            //               : "Title: ${eventFeed.title} \nDescription:${eventFeed.description}");
                             //     },
                             //     icon: const Icon(
                             //       Icons.share,
@@ -300,10 +328,10 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                     });
                                     HapticFeedback.vibrate();
                                     for (int i = 0;
-                                        i < widget.eventFeed.images.length;
+                                        i < eventFeed.images.length;
                                         i++) {
                                       final url =
-                                          Uri.parse(widget.eventFeed.images[i]);
+                                          Uri.parse(eventFeed.images[i].image);
                                       final response = await http.get(url);
                                       final bytes = response.bodyBytes;
                                       final temp =
@@ -329,7 +357,7 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                     });
                                     HapticFeedback.vibrate();
                                     final url =
-                                        Uri.parse(widget.eventFeed.images[0]);
+                                        Uri.parse(eventFeed.images[0].image);
                                     final response = await http.get(url);
                                     final bytes = response.bodyBytes;
                                     final temp = await getTemporaryDirectory();
@@ -338,9 +366,9 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                     File(path).writeAsBytes(bytes);
 
                                     await Share.shareFiles(paths,
-                                        text: widget.eventFeed.description == ''
-                                            ? "Title: ${widget.eventFeed.title}"
-                                            : "Title: ${widget.eventFeed.title} \nDescription:${widget.eventFeed.description}");
+                                        text: eventFeed.description == ''
+                                            ? "Title: ${eventFeed.title}"
+                                            : "Title: ${eventFeed.title} \nDescription:${eventFeed.description}");
                                   },
                                   value: 2,
                                   child: const Text("Send Content"),
@@ -353,21 +381,21 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                       const SizedBox(
                         height: 20,
                       ),
-                      if (widget.eventFeed.description != '')
+                      if (eventFeed.description != '')
                         Padding(
                           padding: const EdgeInsets.only(left: 10, right: 10),
                           child: Text(
-                            widget.eventFeed.description.toString(),
+                            eventFeed.description.toString(),
                             textAlign: TextAlign.justify,
                             style: const TextStyle(fontSize: 15),
                           ),
                         ),
-                      widget.eventFeed.images.length >= 2
+                      eventFeed.images.length >= 2
                           ? SizedBox(
                               width: MediaQuery.of(context).size.width,
                               height: MediaQuery.of(context).size.height * 0.25,
                               child: CarouselSlider.builder(
-                                  itemCount: widget.eventFeed.images.length,
+                                  itemCount: eventFeed.images.length,
                                   options: CarouselOptions(
                                     autoPlay: true,
                                     viewportFraction: 0.8,
@@ -383,10 +411,11 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       DetailScreen(
+                                                          title: eventFeed.user,
+                                                          dateTime: eventFeed
+                                                              .eventDate,
                                                           index: itemIndex,
-                                                          images: widget
-                                                              .eventFeed
-                                                              .images)));
+                                                          images: images)));
                                         },
                                         child: Container(
                                           margin: const EdgeInsets.all(10),
@@ -396,15 +425,14 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                                     Radius.circular(20)),
                                             image: DecorationImage(
                                                 fit: BoxFit.cover,
-                                                image: NetworkImage(widget
-                                                    .eventFeed
-                                                    .images[itemIndex])),
+                                                image: NetworkImage(eventFeed
+                                                    .images[itemIndex].image)),
                                           ),
                                         ),
                                       )),
                             )
                           : Container(),
-                      if (widget.eventFeed.youtubeLink != '')
+                      if (eventFeed.youtubeLink != '')
                         Column(
                           children: [
                             Padding(
@@ -421,7 +449,7 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                         return YoutubePlayer(
                                           controller: YoutubePlayerController(
                                             initialVideoId:
-                                                "${YoutubePlayer.convertUrlToId(widget.eventFeed.youtubeLink)}",
+                                                "${YoutubePlayer.convertUrlToId(eventFeed.youtubeLink)}",
                                             flags: const YoutubePlayerFlags(
                                               enableCaption: true,
                                               captionLanguage: 'en',
@@ -447,7 +475,7 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                         color: Colors.white,
                                         image: DecorationImage(
                                             image: NetworkImage(
-                                                'https://img.youtube.com/vi/${YoutubePlayer.convertUrlToId(widget.eventFeed.youtubeLink)}/0.jpg'),
+                                                'https://img.youtube.com/vi/${YoutubePlayer.convertUrlToId(eventFeed.youtubeLink)}/0.jpg'),
                                             fit: BoxFit.cover),
                                       ),
                                       child: const Icon(
@@ -460,8 +488,7 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                             ),
                             TextButton(
                                 onPressed: () {
-                                  launchUrl(
-                                      Uri.parse(widget.eventFeed.youtubeLink),
+                                  launchUrl(Uri.parse(eventFeed.youtubeLink),
                                       mode: LaunchMode.externalApplication);
                                 },
                                 child: const Text(

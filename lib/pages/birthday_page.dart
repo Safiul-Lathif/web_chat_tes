@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:ui/Utils/utility.dart';
 import 'package:ui/api/birthday/get_birthday_api.dart';
 import 'package:ui/api/birthday/send_birthday_api.dart';
+import 'package:ui/config/images.dart';
 import 'package:ui/custom/leading_image.dart';
 import 'package:ui/custom/loading_animator.dart';
 import 'package:ui/model/birthday/birthday_model.dart';
@@ -67,7 +68,7 @@ class _BirthdayPageState extends State<BirthdayPage> {
               : studentList.isEmpty
                   ? Center(
                       child: Lottie.asset(
-                        'assets/lottie/no_data.json',
+                        Animations.noData,
                         width: MediaQuery.of(context).size.width * 0.5,
                         height: MediaQuery.of(context).size.height * 0.5,
                         repeat: true,

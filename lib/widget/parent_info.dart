@@ -27,8 +27,8 @@ class _ParentProfileInfoState extends State<ParentProfileInfo> {
     return SingleChildScrollView(
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.blueGrey.shade300,
-            borderRadius: const BorderRadius.all(Radius.circular(20))),
+          color: Colors.blueGrey.shade300,
+        ),
         child: Column(children: [
           const SizedBox(
             height: 20,

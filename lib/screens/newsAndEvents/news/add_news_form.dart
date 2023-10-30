@@ -71,11 +71,10 @@ class _AddNewsFormState extends State<AddNewsForm> {
         decoration: BoxDecoration(
           color: Colors.blue.shade50,
           image: DecorationImage(
-            colorFilter: ColorFilter.mode(
-                Colors.blue.withOpacity(0.2), BlendMode.dstATop),
-            image: const AssetImage("assets/images/bg_image_tes.jpg"),
-            fit: BoxFit.fill,
-          ),
+              colorFilter: ColorFilter.mode(
+                  Colors.blue.withOpacity(0.2), BlendMode.dstATop),
+              image: const AssetImage("assets/images/bg_image_tes.jpg"),
+              repeat: ImageRepeat.repeat),
         ),
         child: SingleChildScrollView(
           child: Form(
@@ -88,7 +87,6 @@ class _AddNewsFormState extends State<AddNewsForm> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(),
                     Container(),
                     Text(
                       "Add Latest News Here!!",

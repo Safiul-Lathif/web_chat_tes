@@ -7,18 +7,21 @@ import 'package:ui/config/strings.dart';
 import 'package:ui/model/news&events/news_feed_model.dart';
 import 'package:ui/utils/session_management.dart';
 
-Future<NewsFeedMain?> getNewsFeed({required String studentId}) async {
+Future<NewsFeedMain?> getNewsFeed(
+    {required String studentId, required int pageNumber}) async {
   var url = Uri.parse(studentId == ''
-      ? "${Strings.baseURL}api/user/mainscreen_view_newsevents"
-      : "${Strings.baseURL}api/user/mainscreen_view_newsevents?student_id=$studentId");
+      ? "${Strings.baseURL}api/v2/mainscreen_view_newsevents?page=$pageNumber"
+      : "${Strings.baseURL}api/v2/mainscreen_view_newsevents?student_id=$studentId&page=$pageNumber");
   SessionManager pref = SessionManager();
   String? token = await pref.getAuthToken();
+  print(token);
+
   try {
     final response = await http
         .get(url, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
       print(response.body);
+      final jsonResponse = jsonDecode(response.body);
       return NewsFeedMain.fromJson(jsonResponse);
     } else {
       if (kDebugMode) {

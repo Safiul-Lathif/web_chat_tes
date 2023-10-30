@@ -1,11 +1,11 @@
 // ignore_for_file: must_be_immutable
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ui/screens/newsAndEvents/event/event_screen.dart';
 import 'package:ui/screens/newsAndEvents/images/images_screen.dart';
 import 'package:ui/screens/newsAndEvents/news/news_screen.dart';
 import 'package:ui/utils/session_management.dart';
+import 'package:vertical_tabs_flutter/vertical_tabs.dart';
 
 class NewsEventsScreens extends StatefulWidget {
   NewsEventsScreens({super.key, required this.studentId});
@@ -36,89 +36,50 @@ class _NewsEventsScreensState extends State<NewsEventsScreens> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          // leading: IconButton(
-          //     onPressed: () => Navigator.pop(context),
-          //     icon: const Icon(
-          //       Icons.arrow_back_ios,
-          //       color: Colors.black,
-          //     )),
-          // systemOverlayStyle: SystemUiOverlayStyle.dark,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                image: DecorationImage(
-                  colorFilter: ColorFilter.mode(
-                      Colors.blue.withOpacity(0.3), BlendMode.dstATop),
-                  image: const AssetImage("assets/images/bg_image_tes.jpg"),
-                  fit: BoxFit.cover,
-                )),
-          ),
-          // elevation: 0,
-          // actions: [
-          //   Align(
-          //     alignment: Alignment.centerRight,
-          //     child: Text(
-          //       DateFormat('d MMMM, yyyy').format(DateTime.now()),
-          //       style: const TextStyle(
-          //           fontSize: 14,
-          //           fontWeight: FontWeight.bold,
-          //           color: Colors.black),
-          //     ),
-          //   ),
-          //   const SizedBox(
-          //     width: 20,
-          //   )
-          // ],
-          bottom: const TabBar(
-            indicatorColor: Colors.black,
-            tabs: [
-              Tab(
-                  icon: Text(
-                "News",
-                style: TextStyle(color: Colors.black),
-              )),
-              Tab(
-                  icon: Text(
-                "Events",
-                style: TextStyle(color: Colors.black),
-              )),
-              Tab(
-                  icon: Text(
-                "Images",
-                style: TextStyle(color: Colors.black),
-              )),
-            ],
+    return Scaffold(
+        body: VerticalTabs(
+      tabsWidth: 250,
+      direction: TextDirection.ltr,
+      changePageDuration: const Duration(milliseconds: 500),
+      tabs: <Tab>[
+        Tab(
+          icon: Text(
+            "News",
+            style: GoogleFonts.lato(
+                textStyle:
+                    const TextStyle(fontWeight: FontWeight.w400, fontSize: 16)),
           ),
         ),
-        body: Container(
-          decoration: BoxDecoration(
-              color: Colors.blue.shade50,
-              image: DecorationImage(
-                  colorFilter: ColorFilter.mode(
-                      Colors.blue.withOpacity(0.3), BlendMode.dstATop),
-                  image: const AssetImage("assets/images/bg_image_tes.jpg"),
-                  repeat: ImageRepeat.repeatX)),
-          child: TabBarView(
-            children: [
-              NewsScreen(
-                accessiblePerson: accessiblePerson,
-                studentId: widget.studentId,
-              ),
-              EventScreen(
-                accessiblePerson: accessiblePerson,
-                studentId: widget.studentId,
-              ),
-              ImageScreenNews(
-                studentId: widget.studentId,
-              )
-            ],
+        Tab(
+          icon: Text(
+            "Events",
+            style: GoogleFonts.lato(
+                textStyle:
+                    const TextStyle(fontWeight: FontWeight.w400, fontSize: 16)),
           ),
         ),
-      ),
-    );
+        Tab(
+          icon: Text(
+            "Images",
+            style: GoogleFonts.lato(
+                textStyle:
+                    const TextStyle(fontWeight: FontWeight.w400, fontSize: 16)),
+          ),
+        ),
+      ],
+      contents: [
+        NewsScreen(
+          accessiblePerson: accessiblePerson,
+          studentId: widget.studentId,
+        ),
+        EventScreen(
+          accessiblePerson: accessiblePerson,
+          studentId: widget.studentId,
+        ),
+        ImageScreenNews(
+          studentId: widget.studentId,
+        )
+      ],
+    ));
   }
 }

@@ -9,16 +9,21 @@ import 'package:share_plus/share_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:ui/Utils/Utility.dart';
 import 'package:ui/api/news&events/like_dislike_api.dart';
-import 'package:ui/api/news&events/single_news_event.dart';
 import 'package:ui/custom/detail_page_image.dart';
 import 'package:ui/custom/loading_animator.dart';
 import 'package:ui/model/news&events/news_feed_model.dart';
+import 'package:ui/model/news&events/single_news_events_model.dart';
+import 'package:ui/utils/session_management.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
+import '../../api/news&events/single_news_event.dart';
+
 class DetailsPageNews extends StatefulWidget {
-  DetailsPageNews({super.key, required this.newsFeed});
-  Latest newsFeed;
+  DetailsPageNews(
+      {super.key, required this.newsId, required this.accessiblePerson});
+  String newsId;
+  bool accessiblePerson;
 
   @override
   State<DetailsPageNews> createState() => _DetailsPageNewsState();
@@ -27,33 +32,57 @@ class DetailsPageNews extends StatefulWidget {
 class _DetailsPageNewsState extends State<DetailsPageNews> {
   bool isFav = false;
   bool isLoading = false;
+  late SingleNewsEvents newsFeed;
+  List<String> images = [];
   @override
   void initState() {
     super.initState();
     getNewsIndividual();
+    getRole();
+  }
+
+  String userRole = '';
+
+  Future getRole() async {
+    var role = await SessionManager().getRole();
+    setState(() {
+      userRole = role.toUpperCase();
+      if (userRole == 'MANAGEMENT' || userRole == 'ADMIN') {
+        widget.accessiblePerson = true;
+      }
+    });
   }
 
   void getNewsIndividual() async {
     isLoading = true;
-    await getSingleNews(widget.newsFeed.id.toString()).then((value) {
+    await getSingleNews(widget.newsId).then((value) {
       setState(() {
-        widget.newsFeed = value!;
-        isFav = widget.newsFeed.like;
+        images.clear();
+        newsFeed = value!;
+        isFav = newsFeed.like;
+        for (int i = 0; i < value.images.length; i++) {
+          images.add(value.images[i].image);
+        }
       });
     });
     isLoading = false;
   }
 
   void getIndividualNews() async {
-    await getSingleNews(widget.newsFeed.id.toString()).then((value) {
+    await getSingleNews(newsFeed.id.toString()).then((value) {
       setState(() {
-        widget.newsFeed = value!;
-        isFav = widget.newsFeed.like;
+        newsFeed = value!;
+        isFav = newsFeed.like;
       });
     });
   }
 
   bool playVideo = false;
+
+  Future<bool> goBack() async {
+    Navigator.pop(context, true);
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +113,7 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                       decoration: BoxDecoration(
                           image: DecorationImage(
                               image: NetworkImage(
-                                widget.newsFeed.images[0],
+                                newsFeed.images[0].image,
                               ),
                               fit: BoxFit.cover)),
                       child: Padding(
@@ -104,7 +133,7 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                       padding:
                           const EdgeInsets.only(top: 10, left: 10, right: 10),
                       child: Text(
-                        widget.newsFeed.title,
+                        newsFeed.title,
                         style: GoogleFonts.lato(
                           textStyle: const TextStyle(
                             fontSize: 20,
@@ -129,8 +158,7 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                                       ? () {
                                           HapticFeedback.vibrate();
                                           likeDislikeNews(
-                                                  id: widget.newsFeed.id
-                                                      .toString(),
+                                                  id: newsFeed.id.toString(),
                                                   status: '2')
                                               .then(
                                             (value) {
@@ -146,8 +174,7 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                                       : () {
                                           HapticFeedback.vibrate();
                                           likeDislikeNews(
-                                                  id: widget.newsFeed.id
-                                                      .toString(),
+                                                  id: newsFeed.id.toString(),
                                                   status: '1')
                                               .then(
                                             (value) {
@@ -170,9 +197,9 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                                           Icons.favorite_border,
                                           size: 30,
                                         )),
-                              if (widget.newsFeed.totalLike != 0)
+                              if (newsFeed.totalLike != 0)
                                 Text(
-                                  " ${widget.newsFeed.totalLike.toString()} ${widget.newsFeed.totalLike == 1 ? 'like' : "likes"}",
+                                  " ${newsFeed.totalLike.toString()} ${newsFeed.totalLike == 1 ? 'like' : "likes"}",
                                   style: GoogleFonts.lato(
                                     textStyle: const TextStyle(
                                         fontSize: 15,
@@ -202,10 +229,10 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                                       });
                                       HapticFeedback.vibrate();
                                       for (int i = 0;
-                                          i < widget.newsFeed.images.length;
+                                          i < newsFeed.images.length;
                                           i++) {
-                                        final url = Uri.parse(
-                                            widget.newsFeed.images[i]);
+                                        final url =
+                                            Uri.parse(newsFeed.images[i].image);
                                         final response = await http.get(url);
                                         final bytes = response.bodyBytes;
                                         final temp =
@@ -231,7 +258,7 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                                       });
                                       HapticFeedback.vibrate();
                                       final url =
-                                          Uri.parse(widget.newsFeed.images[0]);
+                                          Uri.parse(newsFeed.images[0].image);
                                       final response = await http.get(url);
                                       final bytes = response.bodyBytes;
                                       final temp =
@@ -241,10 +268,9 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                                       File(path).writeAsBytes(bytes);
 
                                       await Share.shareFiles(paths,
-                                          text: widget.newsFeed.description ==
-                                                  ''
-                                              ? "Title: ${widget.newsFeed.title}"
-                                              : "Title: ${widget.newsFeed.title} \nDescription:${widget.newsFeed.description}");
+                                          text: newsFeed.description == ''
+                                              ? "Title: ${newsFeed.title}"
+                                              : "Title: ${newsFeed.title} \nDescription:${newsFeed.description}");
                                     },
                                     value: 2,
                                     child: const Text("Send Content"),
@@ -265,23 +291,23 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                         ],
                       ),
                     ),
-                    if (widget.newsFeed.description != null)
+                    if (newsFeed.description != null)
                       Padding(
                         padding:
                             const EdgeInsets.only(left: 10, right: 10, top: 10),
                         child: Text(
-                          widget.newsFeed.description.toString(),
+                          newsFeed.description.toString(),
                           textAlign: TextAlign.justify,
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
-                    widget.newsFeed.newsEventsCategory == 4 ||
-                            widget.newsFeed.newsEventsCategory == 5
+                    newsFeed.newsEventsCategory == 4 ||
+                            newsFeed.newsEventsCategory == 5
                         ? SizedBox(
                             height: MediaQuery.of(context).size.height * 0.25,
                             width: MediaQuery.of(context).size.width,
                             child: CarouselSlider.builder(
-                                itemCount: widget.newsFeed.images.length,
+                                itemCount: newsFeed.images.length,
                                 options: CarouselOptions(
                                   autoPlay: true,
                                   viewportFraction: 0.8,
@@ -296,9 +322,12 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     DetailScreen(
-                                                        index: itemIndex,
-                                                        images: widget
-                                                            .newsFeed.images)));
+                                                      index: itemIndex,
+                                                      images: images,
+                                                      dateTime:
+                                                          newsFeed.dateTime,
+                                                      title: newsFeed.user,
+                                                    )));
                                       },
                                       child: Container(
                                         margin: const EdgeInsets.all(10),
@@ -307,23 +336,23 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                                               Radius.circular(20)),
                                           image: DecorationImage(
                                               fit: BoxFit.cover,
-                                              image: NetworkImage(widget
-                                                  .newsFeed.images[itemIndex])),
+                                              image: NetworkImage(
+                                                  images[itemIndex])),
                                         ),
                                       ),
                                     )),
                           )
                         : Container(),
-                    if (widget.newsFeed.addonDescription != null)
+                    if (newsFeed.addonDescription != null)
                       Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
-                          widget.newsFeed.addonDescription.toString(),
+                          newsFeed.addonDescription.toString(),
                           textAlign: TextAlign.justify,
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
-                    if (widget.newsFeed.youtubeLink != '')
+                    if (newsFeed.youtubeLink != '')
                       Column(
                         children: [
                           Padding(
@@ -343,7 +372,7 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                                       return YoutubePlayer(
                                         controller: YoutubePlayerController(
                                           initialVideoId:
-                                              "${YoutubePlayer.convertUrlToId(widget.newsFeed.youtubeLink)}",
+                                              "${YoutubePlayer.convertUrlToId(newsFeed.youtubeLink)}",
                                           flags: const YoutubePlayerFlags(
                                             enableCaption: true,
                                             captionLanguage: 'en',
@@ -369,7 +398,7 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                                       color: Colors.white,
                                       image: DecorationImage(
                                           image: NetworkImage(
-                                              'https://img.youtube.com/vi/${YoutubePlayer.convertUrlToId(widget.newsFeed.youtubeLink)}/0.jpg'),
+                                              'https://img.youtube.com/vi/${YoutubePlayer.convertUrlToId(newsFeed.youtubeLink)}/0.jpg'),
                                           fit: BoxFit.cover),
                                     ),
                                     child: const Icon(
@@ -382,8 +411,7 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                           ),
                           TextButton(
                               onPressed: () {
-                                launchUrl(
-                                    Uri.parse(widget.newsFeed.youtubeLink),
+                                launchUrl(Uri.parse(newsFeed.youtubeLink),
                                     mode: LaunchMode.externalApplication);
                               },
                               child: const Text(

@@ -15,8 +15,8 @@ import 'package:ui/custom/filelistviewnew.dart';
 import 'package:ui/model/all_group_list.dart';
 import 'package:ui/model/classModel.dart';
 import 'package:ui/model/group/student_group_list_model.dart';
-import 'package:ui/model/management_list.dart';
 import 'package:ui/model/search/admin_list_model.dart';
+import 'package:ui/model/search/management_list_model.dart';
 import 'package:ui/utils/utils_file.dart';
 import '../api/group/student_group_list.dart';
 import '../api/message_visible_count_api.dart';
@@ -147,21 +147,21 @@ class _MessageWidgetState extends State<MessageWidget> {
       });
     } else if (widget.name.toUpperCase() == "ADMIN-MANAGEMENT") {
       if (widget.role.toUpperCase() == "MANAGEMENT") {
-        await getAdminList().then((value) {
+        await getAdminList(0).then((value) {
           setState(() {
             dropDownTitle = "Select Individual Admin";
-            listOfAdmin = value!;
-            for (int i = 0; i < value.length; i++) {
+            listOfAdmin = value!.data;
+            for (int i = 0; i < value.data.length; i++) {
               menuItems.add(listOfAdmin[i].firstName);
             }
           });
         });
       } else {
-        await getManagementList().then((value) => {
+        await getManagementList(0).then((value) => {
               setState(() {
                 dropDownTitle = "Select Individual Management";
-                managementList = value!;
-                for (int i = 0; i < value.length; i++) {
+                managementList = value!.data;
+                for (int i = 0; i < value.data.length; i++) {
                   menuItems.add(managementList[i].firstName);
                 }
               })

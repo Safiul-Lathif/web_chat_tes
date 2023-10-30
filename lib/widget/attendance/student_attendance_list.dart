@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ui/api/attendance/update_attendance_api.dart';
+import 'package:ui/config/images.dart';
 import 'package:ui/model/attendance/attendance_model.dart';
 import 'package:ui/model/attendance/school_attendance_list_model.dart';
 import 'package:ui/utils/utils_file.dart';
@@ -38,11 +39,6 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
   }
 
   bool isSend = false;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +56,7 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
         child: widget.studentList.isEmpty
             ? Center(
                 child: Lottie.asset(
-                  'assets/lottie/no_data.json',
+                  Animations.noData,
                   width: MediaQuery.of(context).size.width * 0.3,
                   repeat: true,
                   reverse: true,

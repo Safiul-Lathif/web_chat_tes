@@ -4,10 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:ui/config/strings.dart';
 import 'package:ui/model/news&events/events_feed_model.dart';
+import 'package:ui/model/news&events/single_news_events_model.dart';
 import 'package:ui/utils/session_management.dart';
 import '../../model/news&events/news_feed_model.dart';
 
-Future<Latest?> getSingleNews(String id) async {
+Future<SingleNewsEvents?> getSingleNews(String id) async {
   var url = Uri.parse("${Strings.baseURL}api/user/view_individual_news_events");
   SessionManager pref = SessionManager();
   String? token = await pref.getAuthToken();
@@ -19,7 +20,7 @@ Future<Latest?> getSingleNews(String id) async {
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
       print(response.body);
-      return Latest.fromJson(jsonResponse);
+      return SingleNewsEvents.fromJson(jsonResponse);
     } else {
       print(
           ' Single news events:- Request failed with status: ${response.statusCode}.');
@@ -33,7 +34,7 @@ Future<Latest?> getSingleNews(String id) async {
   }
 }
 
-Future<UpcomingEvent?> getSingleEvent(String id) async {
+Future<SingleEvent?> getSingleEvent(String id) async {
   var url = Uri.parse("${Strings.baseURL}api/user/view_individual_news_events");
   SessionManager pref = SessionManager();
   String? token = await pref.getAuthToken();
@@ -44,10 +45,7 @@ Future<UpcomingEvent?> getSingleEvent(String id) async {
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      if (kDebugMode) {
-        print(response.body);
-      }
-      return UpcomingEvent.fromJson(jsonResponse);
+      return SingleEvent.fromJson(jsonResponse);
     } else {
       if (kDebugMode) {
         print(
@@ -62,3 +60,33 @@ Future<UpcomingEvent?> getSingleEvent(String id) async {
     return null;
   }
 }
+
+// Future<UpcomingEvent?> getSingleEvent(String id) async {
+//   var url = Uri.parse("${Strings.baseURL}api/user/view_individual_news_events");
+//   SessionManager pref = SessionManager();
+//   String? token = await pref.getAuthToken();
+//   var map = <String, dynamic>{};
+//   map["news_events_id"] = id;
+//   try {
+//     final response = await http.post(url,
+//         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
+//     if (response.statusCode == 200) {
+//       final jsonResponse = jsonDecode(response.body);
+//       if (kDebugMode) {
+//         print(response.body);
+//       }
+//       return UpcomingEvent.fromJson(jsonResponse);
+//     } else {
+//       if (kDebugMode) {
+//         print(
+//             ' Single news events:- Request failed with status: ${response.statusCode}.');
+//       }
+//       return null;
+//     }
+//   } on Error catch (err) {
+//     if (kDebugMode) {
+//       print("Error on Single news events:- $err");
+//     }
+//     return null;
+//   }
+

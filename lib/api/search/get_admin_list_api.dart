@@ -6,17 +6,21 @@ import 'package:ui/config/strings.dart';
 import 'package:ui/model/search/admin_list_model.dart';
 import 'package:ui/utils/session_management.dart';
 
-Future<List<AdminList>?> getAdminList() async {
+Future<SearchAdminModel?> getAdminList(int pageNumber) async {
   var url = Uri.parse("${Strings.baseURL}api/user/all_admin_list");
   SessionManager pref = SessionManager();
   String? token = await pref.getAuthToken();
+
+  var map = <String, dynamic>{};
+  map["page"] = pageNumber.toString();
+  print("pagination of page  $pageNumber");
   try {
-    final response = await http
-        .post(url, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
+    final response = await http.post(url,
+        body: pageNumber == 0 ? null : map,
+        headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      List jsonResponse = jsonDecode(response.body);
-      print(response.body);
-      return jsonResponse.map((json) => AdminList.fromJson(json)).toList();
+      final jsonResponse = jsonDecode(response.body);
+      return SearchAdminModel.fromJson(jsonResponse);
     } else {
       print('management:- Request failed with status: ${response.statusCode}.');
       return null;

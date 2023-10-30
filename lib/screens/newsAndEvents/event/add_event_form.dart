@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
-import 'package:multiselect/multiselect.dart';
 import 'package:ui/Utils/utility.dart';
 import 'package:ui/api/class_group_api.dart';
 import 'package:ui/api/news&events/send_events_api.dart';
@@ -114,11 +113,10 @@ class _AddEventFormState extends State<AddEventForm> {
         decoration: BoxDecoration(
           color: Colors.blue.shade50,
           image: DecorationImage(
-            colorFilter: ColorFilter.mode(
-                Colors.blue.withOpacity(0.2), BlendMode.dstATop),
-            image: const AssetImage("assets/images/bg_image_tes.jpg"),
-            fit: BoxFit.fill,
-          ),
+              colorFilter: ColorFilter.mode(
+                  Colors.blue.withOpacity(0.2), BlendMode.dstATop),
+              image: const AssetImage("assets/images/bg_image_tes.jpg"),
+              repeat: ImageRepeat.repeat),
         ),
         child: SingleChildScrollView(
           child: Form(
@@ -131,7 +129,6 @@ class _AddEventFormState extends State<AddEventForm> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(),
                     Container(),
                     Text(
                       "Add Latest Events Here!!",

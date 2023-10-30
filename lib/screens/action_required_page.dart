@@ -323,13 +323,20 @@ class _ActionRequiredState extends State<ActionRequired> {
                                                                     builder:
                                                                         (_) {
                                                               return DetailScreen(
-                                                                images: widget
-                                                                    .actionRequired[
-                                                                        index]
-                                                                    .images
-                                                                    .toList(),
-                                                                index: index,
-                                                              );
+                                                                  dateTime: widget
+                                                                      .actionRequired[
+                                                                          index]
+                                                                      .dateTime,
+                                                                  title: widget
+                                                                      .actionRequired[
+                                                                          index]
+                                                                      .staffName!,
+                                                                  index: index,
+                                                                  images: widget
+                                                                      .actionRequired[
+                                                                          index]
+                                                                      .images
+                                                                      .toList());
                                                             }));
                                                           },
                                                           child: Container(
@@ -415,7 +422,7 @@ class _ActionRequiredState extends State<ActionRequired> {
                                                                               () {
                                                                             Navigator.push(context,
                                                                                 MaterialPageRoute(builder: (_) {
-                                                                              return DetailScreen(index: index, images: widget.actionRequired[index].images.toList());
+                                                                              return DetailScreen(dateTime: widget.actionRequired[index].dateTime, title: widget.actionRequired[index].staffName!, index: index, images: widget.actionRequired[index].images.toList());
                                                                             }));
                                                                           },
                                                                           child:
