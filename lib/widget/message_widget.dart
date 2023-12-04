@@ -1,10 +1,13 @@
 // ignore_for_file: file_names, must_be_immutable
+import 'dart:io';
+
 import 'package:expandable_text/expandable_text.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:ui/Utils/Utility.dart';
 import 'package:ui/api/class_group_api.dart';
 import 'package:ui/api/search/get_admin_list_api.dart';
@@ -22,6 +25,7 @@ import '../api/group/student_group_list.dart';
 import '../api/message_visible_count_api.dart';
 import '../api/search/get_management_list_api.dart';
 import '../model/message_visiblecount.dart';
+// import 'package:filepicker_windows/filepicker_windows.dart';
 
 class MessageWidget extends StatefulWidget {
   MessageWidget({
@@ -64,6 +68,9 @@ class _MessageWidgetState extends State<MessageWidget> {
   ImagePicker picker = ImagePicker();
 
   List<PlatformFile> image = [];
+  List<Uint8List> images = [];
+  List<XFile> img = [];
+
   List<PlatformFile> document = [];
   List<PlatformFile> material = [];
   double sizeInMb = 0.0;
@@ -94,6 +101,27 @@ class _MessageWidgetState extends State<MessageWidget> {
         material.addAll(result.files);
       });
     }
+  }
+
+  void pickFile() {
+    // final file = OpenFilePicker()
+    //   ..filterSpecification = {
+    //     'Word Document (*.doc)': '*.doc',
+    //     'Web Page (*.htm; *.html)': '*.htm;*.html',
+    //     'Text Document (*.txt)': '*.txt',
+    //     'All Files': '*.*'
+    //   }
+    //   ..defaultFilterIndex = 0
+    //   ..defaultExtension = 'doc'
+    //   ..title = 'Select a document';
+
+    // final result = file.getFile();
+    // if (result != null) {
+    //   // setState(() {
+    //   //   document.addAll(result.path as Iterable<PlatformFile>);
+    //   // });
+    //   print(result.path);
+    // }
   }
 
   MessageVisibleCount? msgCount;
@@ -856,7 +884,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                                                 ),
                                               )
                                             : FileListViewNew(
-                                                file: image,
+                                                file: images,
                                                 iconPath: Images.folderImg)
                                       ],
                                     ),
@@ -1493,7 +1521,7 @@ class _MessageWidgetState extends State<MessageWidget> {
     } else if (imgController.text.isNotEmpty && image.isNotEmpty) {
       category = 2;
       await sendImg(
-              img: image,
+              img: images,
               distType: distributionType.toString(),
               msgCategory: category.toString(),
               groupId: widget.id,
@@ -1506,7 +1534,7 @@ class _MessageWidgetState extends State<MessageWidget> {
     } else if (imgController.text.isEmpty && image.isNotEmpty) {
       category = 3;
       await sendImg(
-              img: image,
+              img: images,
               distType: distributionType.toString(),
               msgCategory: category.toString(),
               groupId: widget.id,
@@ -1618,6 +1646,7 @@ class _MessageWidgetState extends State<MessageWidget> {
     if (result != null) {
       setState(() {
         image.addAll(result.files);
+        images.add(result.files.first.bytes!);
       });
     }
   }

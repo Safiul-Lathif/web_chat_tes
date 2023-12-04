@@ -1,3 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
 class SearchAdminModel {
   int total;
   int perPage;
@@ -47,6 +50,7 @@ class AdminList {
   String designation;
   String profileImage;
   String userId;
+  dynamic emailId;
 
   AdminList(
       {required this.id,
@@ -56,6 +60,7 @@ class AdminList {
       this.dob,
       this.doj,
       this.employeeNo,
+      this.emailId,
       required this.profileImage,
       required this.designation,
       required this.userId});
@@ -71,5 +76,47 @@ class AdminList {
         designation: json["designation"] ?? '',
         profileImage: json["profile_image"] ?? '',
         userId: json["user_id"] ?? '',
+        emailId: json["email_id"] ?? '',
       );
+
+  static AdminList adminModelData = AdminList(
+      id: 0,
+      firstName: '',
+      mobileNumber: 0,
+      userStatus: 0,
+      profileImage: '',
+      designation: '',
+      userId: '',
+      dob: '',
+      doj: '',
+      employeeNo: '',
+      emailId: '');
+  static AdminList clearData = AdminList(
+      id: 0,
+      firstName: '',
+      mobileNumber: 0,
+      userStatus: 0,
+      profileImage: '',
+      designation: '',
+      userId: '',
+      dob: '',
+      doj: '',
+      employeeNo: '',
+      emailId: '');
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'firstName': firstName,
+      'mobileNumber': mobileNumber,
+      'userStatus': userStatus,
+      'dob': dob,
+      'doj': doj,
+      'employeeNo': employeeNo,
+      'designation': designation,
+      'profileImage': profileImage,
+      'userId': userId,
+      'emailId': emailId,
+    };
+  }
 }

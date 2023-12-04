@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:time_remaining/time_remaining.dart';
 import 'package:ui/Utils/Utility.dart';
 import 'package:ui/api/approve_home_work_api.dart';
@@ -19,12 +20,10 @@ class HomeWorkPage extends StatefulWidget {
     super.key,
     required this.isParent,
     required this.classId,
-    required this.date,
     this.className,
   });
   final bool isParent;
   final String classId;
-  DateTime date;
   String? className;
 
   @override
@@ -55,6 +54,9 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
 
   List<String> notifyId = [];
   String dates = "";
+  DateTime _selectedDay = DateTime.now();
+  DateTime _focusedDay = DateTime.now();
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -62,15 +64,16 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
     setState(() {
       extensions = ['xlsx', 'pdf', 'jpg', 'jpeg', 'doc'];
     });
-    dates = Utility.convertDateFormat(widget.date.toString(), "yyyy-MM-dd");
-    initialize();
+    dates = Utility.convertDateFormat(_selectedDay.toString(), "yyyy-MM-dd");
+    initialize(dates);
   }
 
-  void initialize() async {
-    await getStaffHomework(dates, widget.classId).then((value) {
+  void initialize(newDate) async {
+    await getStaffHomework(newDate, widget.classId).then((value) {
       if (value != null) {
         setState(() {
           staffHomework = value;
+          isLoading = false;
         });
       }
     });
@@ -126,14 +129,14 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
                       ),
                       Text(
                         Utility.convertDateFormat(
-                            widget.date.toString(), "dd MMMM yyyy"),
+                            _focusedDay.toString(), "dd MMMM yyyy"),
                         style: Theme.of(context).textTheme.titleLarge!.copyWith(
                             color: Colors.black, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                 ),
-                staffHomework == null || staffHomework!.isEmpty
+                isLoading
                     ? Center(
                         child: SizedBox(
                           height: 400,
@@ -460,14 +463,13 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
                                                                     staffHomework![index]
                                                                             .homeworkContent !=
                                                                         null ||
-                                                                widget.date
+                                                                _selectedDay
                                                                         .day !=
                                                                     DateTime.now()
                                                                         .day
                                                             ? Container(
                                                                 width: 350,
-                                                                height: widget
-                                                                            .date
+                                                                height: _selectedDay
                                                                             .day ==
                                                                         DateTime.now()
                                                                             .day
@@ -634,10 +636,14 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
                                                         staffHomework![index]
                                                                         .approvalStatus ==
                                                                     0 &&
-                                                                widget.date
+                                                                _selectedDay
                                                                         .day ==
                                                                     DateTime.now()
-                                                                        .day
+                                                                        .day &&
+                                                                _selectedDay
+                                                                        .month ==
+                                                                    DateTime.now()
+                                                                        .month
                                                             ? SizedBox(
                                                                 height: 40,
                                                                 child: ElevatedButton(
@@ -1107,7 +1113,8 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
                                       ),
                                     ))
                                   : Container(),
-                              widget.date.day == DateTime.now().day
+                              _selectedDay.day == DateTime.now().day &&
+                                      _selectedDay.month == DateTime.now().month
                                   ? Center(
                                       child: SizedBox(
                                         height: 40,
@@ -1150,6 +1157,29 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
                                     )
                                   : Container(),
                             ],
+                          ),
+                          Expanded(
+                            child: Card(
+                              color: Colors.grey.shade300,
+                              child: TableCalendar(
+                                firstDay: DateTime.utc(2022, 10, 16),
+                                lastDay: DateTime.utc(2050, 3, 14),
+                                focusedDay: _focusedDay,
+                                selectedDayPredicate: (day) {
+                                  return isSameDay(_selectedDay, day);
+                                },
+                                onDaySelected: (selectedDay, focusedDay) {
+                                  setState(() {
+                                    _selectedDay = selectedDay;
+                                    _focusedDay = focusedDay;
+                                    // update `_focusedDay` here as well
+                                    var date = Utility.convertDateFormat(
+                                        _selectedDay.toString(), "yyyy-MM-dd");
+                                    initialize(date);
+                                  });
+                                },
+                              ),
+                            ),
                           ),
                         ],
                       ),

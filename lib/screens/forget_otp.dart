@@ -4,7 +4,6 @@ import 'package:otp_autofill/otp_autofill.dart';
 import 'package:sms_otp_auto_verify/sms_otp_auto_verify.dart';
 import 'package:ui/api/loginApi.dart';
 import 'package:ui/config/images.dart';
-import 'package:ui/config/size_config.dart';
 import 'package:ui/screens/forget_change_password.dart';
 
 class ForgotOtpPage extends StatefulWidget {

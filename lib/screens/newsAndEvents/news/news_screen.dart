@@ -9,7 +9,6 @@ import 'package:ui/api/news&events/delete_news_api.dart';
 import 'package:ui/api/news&events/news_feed_api.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/loading_animator.dart';
-import 'package:ui/custom/no_data_widget.dart';
 import 'package:ui/model/news&events/news_feed_model.dart';
 import 'package:ui/screens/newsAndEvents/news/add_news_form.dart';
 import '../details_page_news.dart';
@@ -83,7 +82,9 @@ class _NewsScreenState extends State<NewsScreen> {
       if (value != null) {
         if (mounted) {
           setState(() {
-            newsFeed ??= value;
+            if (pageNumber == 1) {
+              newsFeed = value;
+            }
             newsList.addAll(value.old.data);
             oldNews = newsList;
             totalCount = value.old.total;
@@ -99,11 +100,18 @@ class _NewsScreenState extends State<NewsScreen> {
     });
   }
 
+  void updateLatestNews() {
+    setState(() {
+      pageNumber = 1;
+      newsList.clear();
+      initialize();
+    });
+  }
+
   void _loadNextPage() {
     setState(() {
       isLoading = true;
       pageNumber++;
-      print(pageNumber);
     });
     initialize();
   }
@@ -151,7 +159,8 @@ class _NewsScreenState extends State<NewsScreen> {
                               .push(MaterialPageRoute(
                                 builder: (context) => const AddNewsForm(),
                               ))
-                              .then((value) => value ? initialize() : null);
+                              .then(
+                                  (value) => value ? updateLatestNews() : null);
                         },
                         child: Container(
                           padding: const EdgeInsets.all(10),
@@ -182,252 +191,229 @@ class _NewsScreenState extends State<NewsScreen> {
               ]),
               SizedBox(
                   width: MediaQuery.of(context).size.width,
-                  child:  oldNews.isEmpty
+                  child: oldNews.isEmpty
                       ? LoadingAnimator()
-                      :  Container(
-                              padding: const EdgeInsets.all(10.0),
-                              child: MediaQuery.removePadding(
-                                removeTop: true,
-                                context: context,
-                                child: GridView.builder(
-                                  shrinkWrap: true,
-                                  physics: const ScrollPhysics(),
-                                  itemCount: oldNews.length + 1,
-                                  gridDelegate:
-                                      const SliverGridDelegateWithMaxCrossAxisExtent(
-                                          maxCrossAxisExtent: 350,
-                                          childAspectRatio: 0.8,
-                                          crossAxisSpacing: 20,
-                                          mainAxisSpacing: 20),
-                                  itemBuilder: (context, index) {
-                                    if (index == 0) {
-                                      return InkWell(
-                                        onLongPress: widget.accessiblePerson
-                                            ? () {
-                                                deleteNewsAlert(newsFeed!
-                                                    .latest.id
-                                                    .toString());
-                                              }
-                                            : null,
-                                        onTap: () => navigateToDetailsPage(
-                                            newsId:
-                                                newsFeed!.latest.id.toString(),
-                                            accessiblePerson:
-                                                widget.accessiblePerson),
-                                        child: Stack(
-                                          children: [
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                  color: Colors.black,
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(15)),
-                                                  image: DecorationImage(
-                                                    colorFilter:
-                                                        ColorFilter.mode(
-                                                            Colors
-                                                                .blue
-                                                                .withOpacity(
-                                                                    0.3),
-                                                            BlendMode.dstATop),
-                                                    image: const AssetImage(
-                                                        "assets/images/bg_image_tes.jpg"),
-                                                    fit: BoxFit.fill,
-                                                  )),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(15)),
-                                                child: Column(
-                                                  children: [
-                                                    newsFeed!.latest.images
-                                                            .isEmpty
-                                                        ? Container(
-                                                            width:
-                                                                MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Text(
-                                                              newsFeed!
-                                                                  .latest.title
-                                                                  .capitalize(),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              maxLines: 2,
-                                                              style: GoogleFonts.lato(
-                                                                  textStyle: const TextStyle(
-                                                                      fontSize:
-                                                                          19,
-                                                                      color: Colors
-                                                                          .white,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold)),
-                                                            ),
-                                                          )
-                                                        : Image.network(
-                                                            newsFeed!.latest
+                      : Container(
+                          padding: const EdgeInsets.all(10.0),
+                          child: MediaQuery.removePadding(
+                            removeTop: true,
+                            context: context,
+                            child: GridView.builder(
+                              shrinkWrap: true,
+                              physics: const ScrollPhysics(),
+                              itemCount: oldNews.length + 1,
+                              gridDelegate:
+                                  const SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 350,
+                                      childAspectRatio: 0.8,
+                                      crossAxisSpacing: 20,
+                                      mainAxisSpacing: 20),
+                              itemBuilder: (context, index) {
+                                if (index == 0) {
+                                  return InkWell(
+                                    onLongPress: widget.accessiblePerson
+                                        ? () {
+                                            deleteNewsAlert(
+                                                newsFeed!.latest.id.toString());
+                                          }
+                                        : null,
+                                    onTap: () => navigateToDetailsPage(
+                                        newsId: newsFeed!.latest.id.toString(),
+                                        accessiblePerson:
+                                            widget.accessiblePerson),
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.black,
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                      Radius.circular(15)),
+                                              image: DecorationImage(
+                                                colorFilter: ColorFilter.mode(
+                                                    Colors.blue
+                                                        .withOpacity(0.3),
+                                                    BlendMode.dstATop),
+                                                image: const AssetImage(
+                                                    "assets/images/bg_image_tes.jpg"),
+                                                fit: BoxFit.fill,
+                                              )),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(15)),
+                                            child: Column(
+                                              children: [
+                                                newsFeed!.latest.images.isEmpty
+                                                    ? Container(
+                                                        width: MediaQuery.of(
+                                                                context)
+                                                            .size
+                                                            .width,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                          newsFeed!.latest.title
+                                                              .capitalize(),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          maxLines: 2,
+                                                          style: GoogleFonts.lato(
+                                                              textStyle: const TextStyle(
+                                                                  fontSize: 19,
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold)),
+                                                        ),
+                                                      )
+                                                    : Image.network(
+                                                        newsFeed!.latest
+                                                                .images[0]
+                                                                .contains(
+                                                                    "https://")
+                                                            ? newsFeed!.latest
+                                                                .images[0]
+                                                            : newsFeed!.latest
                                                                     .images[0]
                                                                     .contains(
-                                                                        "https://")
+                                                                        "http://")
                                                                 ? newsFeed!
                                                                     .latest
                                                                     .images[0]
-                                                                : newsFeed!
-                                                                        .latest
-                                                                        .images[
-                                                                            0]
-                                                                        .contains(
-                                                                            "http://")
-                                                                    ? newsFeed!
-                                                                        .latest
-                                                                        .images[0]
-                                                                    : "http://${newsFeed!.latest.images[0]}",
-                                                            height: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .height *
-                                                                0.4,
-                                                            fit: BoxFit.cover,
-                                                            width:
-                                                                MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
-                                                          ),
-                                                    newsFeed!.latest.images
-                                                            .isEmpty
-                                                        ? Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(5.0),
-                                                            child: Text(
-                                                              newsFeed!.latest
-                                                                  .description
-                                                                  .toString(),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              maxLines: 3,
-                                                              style: GoogleFonts.lato(
-                                                                  textStyle: const TextStyle(
-                                                                      fontSize:
-                                                                          15,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: Colors
-                                                                          .white)),
-                                                            ),
-                                                          )
-                                                        : Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(5.0),
-                                                            child: Text(
-                                                              newsFeed!
-                                                                  .latest.title,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              maxLines: 3,
-                                                              style: GoogleFonts.lato(
-                                                                  textStyle: const TextStyle(
-                                                                      fontSize:
-                                                                          16,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: Colors
-                                                                          .white)),
-                                                            ),
-                                                          )
+                                                                : "http://${newsFeed!.latest.images[0]}",
+                                                        height: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .height *
+                                                            0.4,
+                                                        fit: BoxFit.cover,
+                                                        width: MediaQuery.of(
+                                                                context)
+                                                            .size
+                                                            .width,
+                                                      ),
+                                                newsFeed!.latest.images.isEmpty
+                                                    ? Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5.0),
+                                                        child: Text(
+                                                          newsFeed!.latest
+                                                              .description
+                                                              .toString(),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          maxLines: 3,
+                                                          style: GoogleFonts.lato(
+                                                              textStyle: const TextStyle(
+                                                                  fontSize: 15,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: Colors
+                                                                      .white)),
+                                                        ),
+                                                      )
+                                                    : Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(5.0),
+                                                        child: Text(
+                                                          newsFeed!
+                                                              .latest.title,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          maxLines: 3,
+                                                          style: GoogleFonts.lato(
+                                                              textStyle: const TextStyle(
+                                                                  fontSize: 16,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: Colors
+                                                                      .white)),
+                                                        ),
+                                                      )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                            top: 10,
+                                            right: 15,
+                                            child: Container(
+                                              height: 17,
+                                              width: 40,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    const BorderRadius.only(
+                                                        bottomRight:
+                                                            Radius.circular(7),
+                                                        topRight:
+                                                            Radius.circular(7)),
+                                                gradient: LinearGradient(
+                                                  colors: [
+                                                    Colors.green.shade900,
+                                                    Colors.green.shade600,
+                                                    Colors.green.shade500
                                                   ],
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
                                                 ),
                                               ),
-                                            ),
-                                            Positioned(
-                                                top: 10,
-                                                right: 15,
-                                                child: Container(
-                                                  height: 17,
-                                                  width: 40,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        const BorderRadius.only(
-                                                            bottomRight:
-                                                                Radius.circular(
-                                                                    7),
-                                                            topRight:
-                                                                Radius.circular(
-                                                                    7)),
-                                                    gradient: LinearGradient(
-                                                      colors: [
-                                                        Colors.green.shade900,
-                                                        Colors.green.shade600,
-                                                        Colors.green.shade500
-                                                      ],
-                                                      begin: Alignment.topLeft,
-                                                      end:
-                                                          Alignment.bottomRight,
-                                                    ),
-                                                  ),
-                                                  child: Center(
-                                                    child: Text("Latest",
-                                                        style: GoogleFonts.lato(
-                                                            textStyle: const TextStyle(
+                                              child: Center(
+                                                child: Text("Latest",
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold,
                                                                 fontSize: 8,
                                                                 color: Colors
                                                                     .white))),
-                                                  ),
-                                                )),
-                                          ],
-                                        ),
-                                      );
-                                    }
+                                              ),
+                                            )),
+                                      ],
+                                    ),
+                                  );
+                                }
 
-                                    switch (
-                                        oldNews[index - 1].newsEventsCategory) {
-                                      case 1:
-                                        {
-                                          return textWidget(index - 1);
-                                        }
-                                      case 2:
-                                        {
-                                          return imageWidget(index - 1);
-                                        }
-                                      case 3:
-                                        {
-                                          return imageWithCaptionWidget(
-                                              index - 1);
-                                        }
-                                      case 4:
-                                        {
-                                          return multiImageWithTitle(index - 1);
-                                        }
-                                      case 5:
-                                        {
-                                          return multiImageWithCaptionWidget(
-                                              index - 1);
-                                        }
+                                switch (oldNews[index - 1].newsEventsCategory) {
+                                  case 1:
+                                    {
+                                      return textWidget(index - 1);
                                     }
-                                    return Text(
-                                      oldNews[index - 1]
-                                          .newsEventsCategory
-                                          .toString(),
-                                    );
-                                  },
-                                ),
-                              ),
-                            )),
+                                  case 2:
+                                    {
+                                      return imageWidget(index - 1);
+                                    }
+                                  case 3:
+                                    {
+                                      return imageWithCaptionWidget(index - 1);
+                                    }
+                                  case 4:
+                                    {
+                                      return multiImageWithTitle(index - 1);
+                                    }
+                                  case 5:
+                                    {
+                                      return multiImageWithCaptionWidget(
+                                          index - 1);
+                                    }
+                                }
+                                return Text(
+                                  oldNews[index - 1]
+                                      .newsEventsCategory
+                                      .toString(),
+                                );
+                              },
+                            ),
+                          ),
+                        )),
             ],
           ),
         ),

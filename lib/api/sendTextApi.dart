@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:share_plus/share_plus.dart';
 import 'package:ui/config/strings.dart';
 import 'package:ui/utils/session_management.dart';
 
@@ -51,7 +52,7 @@ Future<dynamic> sendText(
 Future<dynamic> sendImg(
     {
     //Ticket No 31
-    required List<PlatformFile> img,
+    required List<Uint8List> img,
     required String distType,
     required String msgCategory,
     required String groupId,
@@ -66,8 +67,8 @@ Future<dynamic> sendImg(
   var request = http.MultipartRequest("POST", url);
   // map["chat_message"] = msg;
   for (int i = 0; img.length > i; i++) {
-    request.files
-        .add(await http.MultipartFile.fromPath('attachment[$i]', img[i].path!));
+    request.files.add(await http.MultipartFile.fromString(
+        'attachment[$i]', String.fromCharCodes(img[i])));
   }
   for (int i = 0; i < classIds.length; i++) {
     request.fields['visible_to[$i]'] = classIds[i];

@@ -1,4 +1,4 @@
-class SearchManagementModel {
+class SearchStaffModel {
   int total;
   int perPage;
   int currentPage;
@@ -7,9 +7,9 @@ class SearchManagementModel {
   dynamic prevPageUrl;
   int from;
   int to;
-  List<ManagementList> data;
+  List<StaffSearchList> data;
 
-  SearchManagementModel({
+  SearchStaffModel({
     required this.total,
     required this.perPage,
     required this.currentPage,
@@ -21,8 +21,8 @@ class SearchManagementModel {
     required this.data,
   });
 
-  factory SearchManagementModel.fromJson(Map<String, dynamic> json) =>
-      SearchManagementModel(
+  factory SearchStaffModel.fromJson(Map<String, dynamic> json) =>
+      SearchStaffModel(
         total: json["total"] ?? 0,
         perPage: json["per_page"] ?? 0,
         currentPage: json["current_page"] ?? 0,
@@ -31,30 +31,30 @@ class SearchManagementModel {
         prevPageUrl: json["prev_page_url"] ?? '',
         from: json["from"] ?? 0,
         to: json["to"] ?? 0,
-        data: List<ManagementList>.from(
-            json["data"].map((x) => ManagementList.fromJson(x))),
+        data: List<StaffSearchList>.from(
+            json["data"].map((x) => StaffSearchList.fromJson(x))),
       );
 }
 
-class ManagementList {
+class StaffSearchList {
   int id;
   String firstName;
   int mobileNumber;
-  int? userCategory;
+  String userCategory;
   int userStatus;
   dynamic dob;
   dynamic doj;
   String? employeeNo;
-  String designation;
+  int designation;
   String profileImage;
   String userId;
   String emailId;
 
-  ManagementList(
+  StaffSearchList(
       {required this.id,
       required this.firstName,
       required this.mobileNumber,
-      this.userCategory,
+      required this.userCategory,
       required this.userStatus,
       this.dob,
       this.doj,
@@ -64,19 +64,20 @@ class ManagementList {
       required this.userId,
       required this.emailId});
 
-  factory ManagementList.fromJson(Map<String, dynamic> json) => ManagementList(
-      id: json["id"] ?? 0,
-      firstName: json["first_name"] ?? '',
-      mobileNumber: json["mobile_number"] ?? 0,
-      userCategory: json["user_category"] ?? 0,
-      userStatus: json["user_status"] ?? 0,
-      dob: json["dob"] ?? '',
-      doj: json["doj"] ?? '',
-      employeeNo: json["employee_no"] ?? '',
-      designation: json["designation"] ?? '',
-      profileImage: json["profile_image"] ?? '',
-      userId: json["user_id"] ?? '',
-      emailId: json['email_id'] ?? '');
+  factory StaffSearchList.fromJson(Map<String, dynamic> json) =>
+      StaffSearchList(
+          id: json["id"] ?? 0,
+          firstName: json["first_name"] ?? '',
+          mobileNumber: json["mobile_number"] ?? 0,
+          userCategory: json["user_category"] ?? '',
+          userStatus: json["user_status"] ?? 0,
+          dob: json["dob"] ?? '',
+          doj: json["doj"] ?? '',
+          employeeNo: json["employee_no"] ?? '',
+          designation: json["designation"] ?? 0,
+          profileImage: json["profile_image"] ?? '',
+          userId: json["user_id"] ?? '',
+          emailId: json['email_id'] ?? '');
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -89,33 +90,33 @@ class ManagementList {
       'doj': doj,
       'employeeNo': employeeNo,
       'designation': designation,
-      'profileImage': profileImage,
+      'profile_image': profileImage,
       'userId': userId,
       'email_address': emailId
     };
   }
 
-  static ManagementList managementModelData = ManagementList(
+  static StaffSearchList staffModelData = StaffSearchList(
       id: 0,
       firstName: '',
       mobileNumber: 0,
       userStatus: 0,
       profileImage: '',
-      designation: '',
-      userCategory: 0,
+      designation: 0,
+      userCategory: '',
       userId: '',
       dob: '',
       doj: '',
       employeeNo: '',
       emailId: '');
-  static ManagementList clearData = ManagementList(
+  static StaffSearchList clearData = StaffSearchList(
       id: 0,
       firstName: '',
       mobileNumber: 0,
       userStatus: 0,
       profileImage: '',
-      userCategory: 0,
-      designation: '',
+      userCategory: '',
+      designation: 0,
       userId: '',
       dob: '',
       doj: '',
