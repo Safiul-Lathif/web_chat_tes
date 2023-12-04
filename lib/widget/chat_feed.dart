@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:ui/api/chat/un_read_count.dart';
 import 'package:ui/card/QuotesCard.dart';
 import 'package:ui/card/approved_card.dart';
 import 'package:ui/card/attendance_card.dart';
@@ -140,10 +141,16 @@ class _NewsFeedInfoState extends State<NewsFeedInfo> {
   }
 
   void initTimer() {
-    const dur = Duration(seconds: 5);
+    var dur = Duration(seconds: widget.role.toUpperCase() == "PARENT" ? 60 : 5);
     if (timer != null && timer!.isActive) return;
     timer = Timer.periodic(dur, (Timer timer) async {
-      await getChatData(id: widget.id);
+      int countRead = 0;
+      await getUnreadCount().then((value) async {
+        countRead = value['unread_count'];
+        if (countRead > 0) {
+          await getChatData(id: widget.id);
+        }
+      });
     });
   }
 
@@ -161,6 +168,15 @@ class _NewsFeedInfoState extends State<NewsFeedInfo> {
               totalCount = value.message.total;
               isLoading = false;
             });
+          }
+          try {
+            var notificationId =
+                value.message.data.first.notificationId.toString();
+            var communicationType =
+                value.message.data.first.communicationType.toString();
+            getNotificationData(notificationId, communicationType);
+          } catch (e) {
+            return null;
           }
         }
         if (totalCount != value.message.total) {

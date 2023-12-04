@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:ui/Utils/utility.dart';
 import 'package:ui/api/DivisionlistApi.dart';
+import 'package:ui/api/addEditUser/add_edit_management_api.dart';
 import 'package:ui/api/deleteApi.dart';
 import 'package:ui/api/designation_list_api.dart';
-import 'package:ui/api/excelAPiservice.dart';
-import 'package:ui/api/management_list_api.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/loading_animator.dart';
 import 'package:ui/model/DivisionlistModel.dart';
 import 'package:ui/model/designation_list_model.dart';
-import 'package:ui/model/management_list.dart';
+import '../../api/search/get_management_list_api.dart';
+import '../../model/search/management_list_model.dart';
 
 class ManagementWidget extends StatefulWidget {
   const ManagementWidget({super.key});
@@ -24,7 +26,9 @@ class _ManagementWidgetState extends State<ManagementWidget> {
   List<Division> divisions = [];
   List<DesignationList> designationList = [];
 
-  List<ManagementList>? managementList;
+  List<ManagementList> managementList = [];
+  List<XFile> selectedPicture = [];
+
   int divisionId = 0;
   bool isLoading = true;
   int designation = 0;
@@ -52,10 +56,10 @@ class _ManagementWidgetState extends State<ManagementWidget> {
   }
 
   void getListOfManagement() async {
-    await getManagementList().then((value) {
+    await getManagementList(0).then((value) {
       if (value != null) {
         setState(() {
-          managementList = value;
+          managementList = value.data;
           isLoading = false;
         });
       }
@@ -72,6 +76,7 @@ class _ManagementWidgetState extends State<ManagementWidget> {
 
   bool onError = false;
   bool isEdit = false;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +87,7 @@ class _ManagementWidgetState extends State<ManagementWidget> {
           setState(() {
             isEdit = false;
           });
-          addEditPopUp();
+          addEditPopUp(ManagementList.managementModelData);
         },
         icon: const Icon(Icons.add),
         label: const Text("Add Management"),
@@ -114,7 +119,7 @@ class _ManagementWidgetState extends State<ManagementWidget> {
             height: MediaQuery.of(context).size.height * 0.83,
             child: managementList == null || designationList.isEmpty
                 ? LoadingAnimator()
-                : managementList!.isEmpty
+                : managementList.isEmpty
                     ? Center(
                         child: Text(
                           "No Management here click add button to add the Managements",
@@ -123,11 +128,14 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                       )
                     : GridView.builder(
                         gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4, childAspectRatio: 2.1),
-                        itemCount: managementList!.length,
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 330,
+                                childAspectRatio: 4 / 2,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10),
+                        itemCount: managementList.length,
                         itemBuilder: (context, index) {
-                          var management = managementList![index];
+                          var management = managementList[index];
                           return InkWell(
                             onTap: () {
                               showDialog(
@@ -184,11 +192,9 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                                 numberController.text =
                                                     management.mobileNumber
                                                         .toString();
-                                                // designation =
-                                                //     management.designation;
                                               });
                                               Navigator.pop(context);
-                                              addEditPopUp();
+                                              addEditPopUp(management);
                                             },
                                             child: Container(
                                                 width: double.infinity,
@@ -235,7 +241,7 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                                 },
                                               ),
                                             ),
-                                      Padding(
+                                      Container(
                                         padding: const EdgeInsets.all(5),
                                         child: Column(
                                           mainAxisAlignment:
@@ -295,10 +301,14 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                                                   FontWeight
                                                                       .bold)),
                                                 ),
-                                                Text(
-                                                  management.mobileNumber
-                                                      .toString(),
-                                                  style: GoogleFonts.lato(),
+                                                FittedBox(
+                                                  child: Text(
+                                                    management.emailId == ''
+                                                        ? "N/A"
+                                                        : management.emailId
+                                                            .toString(),
+                                                    style: GoogleFonts.lato(),
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -337,132 +347,284 @@ class _ManagementWidgetState extends State<ManagementWidget> {
     );
   }
 
-  addEditPopUp() {
+  final TextEditingController dobController = TextEditingController();
+  final TextEditingController dojController = TextEditingController();
+  DateTime selectedDate = DateTime.now();
+  List<DesignationList> managementTypeList = [];
+
+  Future<void> _selectDate(
+      BuildContext context, String field, ManagementList managementList) async {
+    setState(() {
+      selectedDate = DateTime.now();
+    });
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        initialDatePickerMode: DatePickerMode.day,
+        firstDate: DateTime(1900),
+        lastDate: DateTime.now());
+    if (picked != null) {
+      setState(() {
+        selectedDate = picked;
+        switch (field) {
+          case 'dob':
+            managementList.dob = DateFormat.yMd().format(selectedDate);
+            dobController.text = managementList.dob;
+            break;
+          case 'doj':
+            managementList.doj = DateFormat.yMd().format(selectedDate);
+            dojController.text = managementList.doj;
+        }
+      });
+    }
+  }
+
+  addEditPopUp(ManagementList managementList) {
     return showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text(isEdit ? "Edit Management" : "Add Management"),
-          actions: [
-            TextButton(
-                onPressed: () async {
-                  isEdit
-                      ? await editManualDataManagement(
-                          id: userId,
-                          mail: mailController.text.toString(),
-                          mob: numberController.text.toString(),
-                          name: nameController.text.toString(),
-                          designation: designation.toString(),
-                        ).then((value) {
-                          if (value != null) {
-                            getListOfManagement();
-                            Utility.displaySnackBar(context, value);
-                          } else {
-                            Utility.displaySnackBar(context, "error");
-                          }
-                          Navigator.pop(context);
-                        })
-                      : await manualDataManagement(
-                          configType: "managements",
-                          updateType: "manual",
-                          mail: mailController.text,
-                          mobileNumber: numberController.text,
-                          name: nameController.text,
-                          designation: designation.toString(),
-                        ).then((value) {
-                          getListOfManagement();
-                          if (value != null) {
-                            Utility.displaySnackBar(context, value["message"]);
-                          } else {
-                            Utility.displaySnackBar(context, "error");
-                          }
-                          Navigator.pop(context);
-                        });
-                },
-                child: const Text("Submit")),
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text("Cancel"))
-          ],
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                FormBuilderTextField(
-                  name: 'User name',
-                  controller: nameController,
-                  decoration: InputDecoration(
-                      border: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black)),
-                      hintText: 'type User name ',
-                      focusedBorder: const OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.black, width: 1)),
-                      labelStyle: TextStyle(color: Colors.grey.shade800),
-                      contentPadding:
-                          const EdgeInsets.only(left: 10, top: 4, bottom: 4)),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                FormBuilderTextField(
-                  controller: numberController,
-                  name: 'User Number',
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                      border: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black)),
-                      hintText: 'type User Number ',
-                      focusedBorder: const OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.black, width: 1)),
-                      labelStyle: TextStyle(color: Colors.grey.shade800),
-                      contentPadding:
-                          const EdgeInsets.only(left: 10, top: 4, bottom: 4)),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                FormBuilderTextField(
-                  controller: mailController,
-                  name: 'User email',
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                      border: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black)),
-                      hintText: 'type User email ',
-                      focusedBorder: const OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.black, width: 1)),
-                      labelStyle: TextStyle(color: Colors.grey.shade800),
-                      contentPadding:
-                          const EdgeInsets.only(left: 10, top: 4, bottom: 4)),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                DropdownButtonFormField<dynamic>(
-                  isExpanded: true,
-                  value: designation,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  items: designationList.map<DropdownMenuItem<dynamic>>((item) {
-                    return DropdownMenuItem(
-                      value: item.id,
-                      child: Text(item.categoryName),
-                    );
-                  }).toList(),
-                  onChanged: (newValue) async {
-                    setState(() {
-                      designation = newValue;
-                    });
+        return Form(
+          key: _formKey,
+          child: AlertDialog(
+            title: Text(isEdit ? "Edit Management" : "Add Management"),
+            actions: [
+              TextButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      await addEditManagement(
+                              managementList, selectedPicture, isEdit, '')
+                          .then((value) {
+                        if (value != null) {
+                          Utility.displaySnackBar(
+                              context,
+                              isEdit
+                                  ? "Management Updated Scuessfully"
+                                  : 'Management added scuessfully');
+                          Navigator.pop(context, true);
+                        } else {
+                          Utility.displaySnackBar(
+                              context, 'Something went wrong please try again');
+                          Navigator.pop(context, true);
+                        }
+                      });
+                    }
                   },
+                  child: const Text("Submit")),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Cancel"))
+            ],
+            content: SingleChildScrollView(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.65,
+                child: Wrap(
+                  alignment: WrapAlignment.spaceEvenly,
+                  runSpacing: 15,
+                  children: [
+                    FormTextWidget(
+                        isValidate: true,
+                        keyboardType: TextInputType.name,
+                        isEnabled: true,
+                        initialValue: managementList.firstName,
+                        hintText: 'Management Name',
+                        onChanged: (value) {
+                          setState(() {
+                            managementList.firstName = value!;
+                          });
+                        }),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      child: FormBuilderDropdown(
+                        initialValue: managementList.designation == ''
+                            ? null
+                            : managementList.designation,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.only(
+                              top: 5, bottom: 5, left: 15),
+                          filled: true,
+                          hintText: 'Select User Category',
+                          disabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black45),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black45),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          fillColor: Colors.grey.shade100,
+                          hintStyle: TextStyle(color: Colors.blueGrey.shade500),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
+                        name: 'userCategory',
+                        items: managementTypeList
+                            .map<DropdownMenuItem<dynamic>>((item) {
+                          return DropdownMenuItem(
+                            value: item.categoryName,
+                            child: Text(item.categoryName),
+                            onTap: () {
+                              setState(() {
+                                managementList.userCategory = item.id;
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    FormTextWidget(
+                        isValidate: true,
+                        isEnabled: true,
+                        keyboardType: TextInputType.number,
+                        initialValue: managementList.mobileNumber == 0
+                            ? ''
+                            : managementList.mobileNumber.toString(),
+                        hintText: 'Mobile Number',
+                        onChanged: (value) {
+                          setState(() {
+                            managementList.mobileNumber = int.parse(value!);
+                          });
+                        }),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    FormTextWidget(
+                        isValidate: false,
+                        isEnabled: true,
+                        keyboardType: TextInputType.emailAddress,
+                        initialValue: managementList.emailId,
+                        hintText: 'Email Address',
+                        onChanged: (value) {
+                          setState(() {
+                            managementList.emailId = value!;
+                          });
+                        }),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    FormTextWidget(
+                        isValidate: false,
+                        isEnabled: true,
+                        keyboardType: TextInputType.name,
+                        initialValue: managementList.employeeNo,
+                        hintText: 'Employee Number',
+                        onChanged: (value) {
+                          setState(() {
+                            managementList.employeeNo = value!;
+                          });
+                        }),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        _selectDate(context, 'dob', managementList);
+                      },
+                      child: FormTextWidget(
+                          isValidate: true,
+                          isEnabled: false,
+                          keyboardType: TextInputType.name,
+                          controller: dobController,
+                          hintText: 'Date Of Birth',
+                          onChanged: (value) {}),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        _selectDate(context, 'doj', managementList);
+                      },
+                      child: FormTextWidget(
+                          isValidate: false,
+                          isEnabled: false,
+                          keyboardType: TextInputType.name,
+                          controller: dojController,
+                          hintText: 'Date Of Join',
+                          onChanged: (value) {}),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         );
       },
+    );
+  }
+}
+
+class FormTextWidget extends StatelessWidget {
+  const FormTextWidget(
+      {super.key,
+      required this.keyboardType,
+      this.initialValue,
+      required this.hintText,
+      required this.onChanged,
+      required this.isEnabled,
+      required this.isValidate,
+      this.controller});
+  final TextInputType keyboardType;
+  final dynamic initialValue;
+  final String hintText;
+  final Function(String?) onChanged;
+  final bool isEnabled;
+  final bool isValidate;
+
+  final TextEditingController? controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.3,
+      child: FormBuilderTextField(
+        keyboardType: keyboardType,
+        name: "name",
+        initialValue: initialValue,
+        validator: !isValidate
+            ? null
+            : (value) {
+                if (value == null || value.isEmpty) {
+                  return '$hintText is required in this field';
+                }
+                if (keyboardType == TextInputType.number &&
+                    value.length != 10) {
+                  return 'Enter valid mobile number';
+                }
+                return null;
+              },
+        enabled: isEnabled,
+        maxLength: keyboardType == TextInputType.number ? 10 : null,
+        controller: initialValue == null ? controller : null,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.only(top: 5, bottom: 5, left: 15),
+          filled: true,
+          hintText: hintText,
+          disabledBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.black45),
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          enabledBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.black45),
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          fillColor: Colors.grey.shade100,
+          hintStyle: TextStyle(color: Colors.blueGrey.shade500),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        onChanged: onChanged,
+      ),
     );
   }
 }

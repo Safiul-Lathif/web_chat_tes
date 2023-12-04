@@ -91,7 +91,7 @@ class _BirthdayPageState extends State<BirthdayPage> {
                           padding: const EdgeInsets.all(10),
                           constraints: BoxConstraints(
                               maxHeight:
-                                  MediaQuery.of(context).size.height * 0.6),
+                                  MediaQuery.of(context).size.height * 0.55),
                           child: GridView.builder(
                             shrinkWrap: true,
                             gridDelegate:
@@ -123,9 +123,7 @@ class _BirthdayPageState extends State<BirthdayPage> {
                             },
                           ),
                         ),
-                        const SizedBox(
-                          height: 20,
-                        ),
+                        Spacer(),
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.9,
                           child: FormBuilderTextField(
@@ -135,7 +133,7 @@ class _BirthdayPageState extends State<BirthdayPage> {
                               });
                             },
                             name: 'BirthDay Wishes',
-                            maxLines: null,
+                            maxLines: 10,
                             initialValue:
                                 birthdayList!.text.split('*wardname*,').last,
                             decoration: InputDecoration(
@@ -148,24 +146,35 @@ class _BirthdayPageState extends State<BirthdayPage> {
                                 labelStyle:
                                     TextStyle(color: Colors.grey.shade800),
                                 contentPadding: const EdgeInsets.only(
-                                    left: 10, top: 4, bottom: 4)),
+                                    left: 10, top: 20, bottom: 4)),
                           ),
                         ),
                         const SizedBox(
                           height: 20,
                         ),
-                        ElevatedButton(
-                            style: ButtonStyle(
-                                foregroundColor: const MaterialStatePropertyAll(
-                                    Colors.white),
-                                backgroundColor: MaterialStatePropertyAll(
-                                    Colors.grey.shade600)),
-                            onPressed: onSendingBirthday,
-                            child: const Text(
-                              "Submit",
-                            )),
-                        const SizedBox(
-                          height: 20,
+                        Container(
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black38)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              ElevatedButton(
+                                  style: ButtonStyle(
+                                      foregroundColor:
+                                          const MaterialStatePropertyAll(
+                                              Colors.white),
+                                      backgroundColor: MaterialStatePropertyAll(
+                                          Colors.grey.shade600)),
+                                  onPressed: onSendingBirthday,
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text(
+                                      "Submit",
+                                    ),
+                                  )),
+                            ],
+                          ),
                         ),
                       ],
                     ),

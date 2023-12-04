@@ -132,7 +132,6 @@ class _HomeWorkScreenState extends State<HomeWorkScreen> {
                                               classId: classGroup!
                                                   .classGroup[index].classConfig
                                                   .toString(),
-                                              date: _selectedDate,
                                               className: classGroup!
                                                   .classGroup[index].groupName,
                                             ),

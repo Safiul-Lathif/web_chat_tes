@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ui/api/dashboard/dashboard_api.dart';
 import 'package:ui/api/main_group_api.dart';
 import 'package:ui/api/profile_api.dart';
@@ -11,7 +10,7 @@ import 'package:ui/config/images.dart';
 import 'package:ui/model/dashboard/dashboard_model.dart';
 import 'package:ui/model/main_group_model.dart';
 import 'package:ui/model/profile_model.dart';
-import 'package:ui/screens/login_page.dart';
+import 'package:ui/screens/forget_password.dart';
 
 class UserDetailsScreen extends StatefulWidget {
   UserDetailsScreen(
@@ -34,10 +33,31 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   int installed = 0;
   Dashboard? dashboard;
   int selectedIndex = 0;
+  String roles = '';
   @override
   void initState() {
     super.initState();
     initialize();
+    if (widget.role == "admin") {
+      setState(() {
+        roles = "1";
+      });
+    } else if (widget.role == "Parent") {
+      setState(() {
+        roles = "3";
+      });
+    } else if (widget.role == "staff") {
+      setState(() {
+        roles = "2";
+      });
+    } else if (widget.role == "management") {
+      setState(() {
+        roles = "5";
+      });
+    }
+
+    print("role ${widget.role}");
+    print("roles $roles");
   }
 
   void initialize() async {
@@ -153,6 +173,34 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                                             color: Color(0xff575757),
                                             fontSize: 18,
                                           )),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Row(
+                                    children: [
+                                      const Text('Forget password',
+                                          style: TextStyle(
+                                              color: Color(0xff575757),
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold)),
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                      IconButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ForgotPassword(
+                                                          name: 'Admin',
+                                                          role: '1'),
+                                                ));
+                                          },
+                                          icon: const Icon(
+                                              Icons.password_rounded))
                                     ],
                                   ),
                                   const SizedBox(

@@ -63,19 +63,8 @@ Future<dynamic> addData({
   token =
       // "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vdWF0bGl0ZWFwaS50aW1ldG9zY2hvb2wuY29tL2FwaS91c2VyL2xvZ2luIiwiaWF0IjoxNjczMjY4MDg3LCJleHAiOjE3MDQ4MDQwODcsIm5iZiI6MTY3MzI2ODA4NywianRpIjoiTzBqOEU5UjhaTVFjc0t3SiIsInN1YiI6IjEiLCJwcnYiOiIxYmMyNDY0NzA5NjkzYTM3NDc0NWQyMThkMTVmZmNhMGMyODZmYzk1In0.UCjO9gcvlotExGWb17tOSWllya3nYe75VqxEwmjAVsE";
       (await pref.getAuthToken())!;
-  // Map data = {
-  // var map = <String, dynamic>{};
-  // map["configuration_type"] = configtype;
-  // map["update_type"] = updatetyep;
-  // map["import_file"] = file;
-  //};
-  var request = http.MultipartRequest("POST", url);
 
-  // if (data.isNotEmpty) {
-  //   for (int i = 0; 10 > i; i++) {
-  //     request.files.add(
-  //         await http.MultipartFile.fromPath('import_file', data[0].!));
-  //   }
+  var request = http.MultipartRequest("POST", url);
   for (int i = 0; i < data.length; i++) {
     if (configType == "classes") {
       request.fields['data[$i][class_name]'] = data[i];
@@ -242,20 +231,6 @@ Future<dynamic> editManualDataStaff({
       (await pref.getAuthToken())!;
   // Map data = {
   var map = <String, dynamic>{};
-  // map["configuration_type"] = configtype;
-  // map["update_type"] = updatetyep;
-  // map["import_file"] = file;
-  //};
-  // var request = http.MultipartRequest("POST", url);
-
-  // if (data.isNotEmpty) {
-  //   for (int i = 0; 10 > i; i++) {
-  //     request.files.add(
-  //         await http.MultipartFile.fromPath('import_file', data[0].!));
-  //   }
-  // for (int i = 0; i < photo.length; i++) {
-  //   request.fields['data[$i][photo]'] = photo[i];
-  // }
 
   map['staff_name'] = name;
   map['mobile_number'] = mob;

@@ -18,7 +18,7 @@ class SettingsPage extends StatelessWidget {
     {"name": "Class", "pages": const ClassWidget()},
     {"name": "Sections", "pages": const SectionWidget()},
     {"name": "Subject", "pages": const SubjectWidget()},
-    {"name": "Review Section", "pages": Container()},
+    // {"name": "Review Section", "pages": Container()},
     {"name": "Staff", "pages": const StaffWidget()},
     {"name": "Management", "pages": const ManagementWidget()},
     {"name": "Student", "pages": const StudentWidget()},
