@@ -2,8 +2,10 @@
 
 import 'package:flutter/material.dart';
 
-bool USER_STATUS = true;
-bool ROLE_CHANGED = false;
+bool READ_ACCESS = true;
+int ACTION_REQUIRED_COUNT = 0;
+int IMG_SIZE_RESTRICTION = 1;
+
 ButtonStyle buttonStyle = ButtonStyle(
     shape: MaterialStatePropertyAll(
       RoundedRectangleBorder(

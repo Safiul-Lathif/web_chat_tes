@@ -95,7 +95,7 @@ Future<List<ListsClass>?> getClassList({required String dId}) async {
 }
 
 Future<SectionList?> getSectionList({required String dId}) async {
-  var url = Uri.parse("${Strings.baseURL}api/user/get_edit_allsection_list");
+  var url = Uri.parse("${Strings.baseURL}api/user/get_sections");
   SessionManager? pref = SessionManager();
   String? token =
       // "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vdWF0bGl0ZWFwaS50aW1ldG9zY2hvb2wuY29tL2FwaS91c2VyL2xvZ2luIiwiaWF0IjoxNjczMjY4MDg3LCJleHAiOjE3MDQ4MDQwODcsIm5iZiI6MTY3MzI2ODA4NywianRpIjoiTzBqOEU5UjhaTVFjc0t3SiIsInN1YiI6IjEiLCJwcnYiOiIxYmMyNDY0NzA5NjkzYTM3NDc0NWQyMThkMTVmZmNhMGMyODZmYzk1In0.UCjO9gcvlotExGWb17tOSWllya3nYe75VqxEwmjAVsE";

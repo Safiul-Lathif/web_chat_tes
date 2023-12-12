@@ -15,8 +15,8 @@ class SettingsPage extends StatelessWidget {
 
   List<Map<String, dynamic>> tabs = [
     {"name": "Division", "pages": const DivisionWidget()},
-    {"name": "Class", "pages": const ClassWidget()},
     {"name": "Sections", "pages": const SectionWidget()},
+    {"name": "Class", "pages": const ClassWidget()},
     {"name": "Subject", "pages": const SubjectWidget()},
     // {"name": "Review Section", "pages": Container()},
     {"name": "Staff", "pages": const StaffWidget()},
@@ -28,6 +28,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         body: VerticalTabs(
+      initialIndex: 6,
       tabsWidth: 200,
       direction: TextDirection.ltr,
       changePageDuration: const Duration(milliseconds: 500),

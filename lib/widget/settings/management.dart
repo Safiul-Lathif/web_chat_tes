@@ -392,8 +392,10 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       await addEditManagement(
-                              managementList, selectedPicture, isEdit, '')
-                          .then((value) {
+                        managementList,
+                        selectedPicture,
+                        isEdit,
+                      ).then((value) {
                         if (value != null) {
                           Utility.displaySnackBar(
                               context,

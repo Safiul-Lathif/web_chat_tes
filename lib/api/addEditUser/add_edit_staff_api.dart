@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:share_plus/share_plus.dart';
 import 'package:ui/config/strings.dart';
-import 'package:ui/model/search/staff_list_model.dart';
 import 'package:ui/utils/session_management.dart';
+import '../../model/search/staff_list_model.dart';
 
 Future<dynamic> addEditStaff(
     StaffSearchList staffList, List<XFile> profileImage, bool isEdit) async {
@@ -16,14 +16,15 @@ Future<dynamic> addEditStaff(
         .add(await http.MultipartFile.fromPath('photo', profileImage[i].path));
   }
   if (isEdit) request.fields['id'] = staffList.id.toString();
-  request.fields['staff_name'] = staffList.firstName.toString();
+  request.fields['name'] = staffList.firstName.toString();
+  request.fields['user_role'] = '2';
   request.fields['email_address'] = staffList.emailId.toString();
   request.fields['mobile_number'] = staffList.mobileNumber.toString();
   request.fields['email_address'] = staffList.emailId.toString();
   request.fields['dob'] = staffList.dob.toString();
   request.fields['doj'] = staffList.doj.toString();
   request.fields['employee_no'] = staffList.employeeNo.toString();
-  request.fields['user_category'] = staffList.employeeNo.toString();
+  request.fields['user_category'] = staffList.designation.toString();
 
   request.headers.putIfAbsent('Authorization', () => "Bearer $token");
   try {

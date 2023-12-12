@@ -33,7 +33,7 @@ class Section {
   factory Section.fromJson(Map<String, dynamic> json) => Section(
         id: json["id"],
         sectionName: json["section_name"],
-        isclicked: json["isclicked"],
+        isclicked: json["isclicked"] ?? false,
       );
 
   Map<String, dynamic> toJson() => {

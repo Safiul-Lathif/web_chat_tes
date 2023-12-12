@@ -68,7 +68,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         });
       }
     });
-    await getProfile(id: "", role: "").then((value) {
+    await getProfile(id: "", role: "", studentId: '').then((value) {
       if (value != null) {
         setState(() {
           profiles = value;

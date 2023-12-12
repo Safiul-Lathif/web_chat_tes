@@ -4,12 +4,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ui/Utils/utility.dart';
 import 'package:ui/api/DivisionlistApi.dart';
 import 'package:ui/api/MapSectionApi.dart';
-import 'package:ui/api/deleteApi.dart';
 import 'package:ui/api/excelAPiservice.dart';
+import 'package:ui/api/search/get_management_list_api.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/loading_animator.dart';
 import 'package:ui/model/DivisionlistModel.dart';
 import 'package:ui/model/MapClassModel.dart';
+import 'package:ui/model/MapSectionModel.dart';
+import 'package:ui/model/search/management_list_model.dart';
 
 class StudentWidget extends StatefulWidget {
   const StudentWidget({super.key});
@@ -19,11 +21,13 @@ class StudentWidget extends StatefulWidget {
 }
 
 class _StudentWidgetState extends State<StudentWidget> {
-  List<Division> divisions = [];
+  List<Division>? divisions = [];
   List<ListsClass>? classes;
   int divisionId = 0;
   bool isLoading = true;
   String className = '';
+  SectionList? sectionList;
+  List<ManagementList>? managementList = [];
 
   @override
   void initState() {
@@ -36,11 +40,20 @@ class _StudentWidgetState extends State<StudentWidget> {
       if (value != null) {
         setState(() {
           divisions = value;
-          divisionId = divisions[0].id;
+          divisionId = divisions![0].id;
         });
       }
     });
     getListOfStudent(divisionId);
+    getListOfSections(divisionId);
+    await getManagementList(0).then((value) {
+      if (value != null) {
+        setState(() {
+          managementList = value.data;
+          isLoading = false;
+        });
+      }
+    });
   }
 
   void getListOfStudent(int divId) async {
@@ -48,6 +61,17 @@ class _StudentWidgetState extends State<StudentWidget> {
       if (value != null) {
         setState(() {
           classes = value;
+          isLoading = false;
+        });
+      }
+    });
+  }
+
+  void getListOfSections(int divId) async {
+    await getSectionList(dId: divId.toString()).then((value) {
+      if (value != null) {
+        setState(() {
+          sectionList = value;
           isLoading = false;
         });
       }
@@ -113,8 +137,8 @@ class _StudentWidgetState extends State<StudentWidget> {
           );
         },
         icon: const Icon(Icons.add),
-        label: const Text("Add Classes"),
-        tooltip: 'Add Classes',
+        label: const Text("Add Students"),
+        tooltip: 'Add Students',
       ),
       body: Container(
         padding: const EdgeInsets.all(20),
@@ -130,139 +154,399 @@ class _StudentWidgetState extends State<StudentWidget> {
             Align(
                 alignment: Alignment.topLeft,
                 child: Text(
-                  "Class List",
+                  "Student List",
                   style: GoogleFonts.lato(
                     textStyle: const TextStyle(
                         fontWeight: FontWeight.w500, fontSize: 16),
                   ),
                 )),
-            DefaultTabController(
-                length: divisions.length,
-                initialIndex: 0,
-                child: Column(children: <Widget>[
-                  TabBar(
-                    onTap: (value) {
-                      setState(() {
-                        isLoading = true;
-                        divisionId = divisions[value].id;
-                      });
-                      getListOfStudent(divisionId);
-                    },
-                    isScrollable: true,
-                    labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-                    unselectedLabelStyle: const TextStyle(color: Colors.black),
-                    unselectedLabelColor: Colors.black,
-                    indicator: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(10), // Creates border
-                        color: Colors.blue.shade200),
-                    tabs: [
-                      for (int i = 0; i < divisions.length; i++)
-                        Tab(
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text(
-                              divisions[i].divisionName,
-                              style: GoogleFonts.lato(
-                                  textStyle: const TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 16)),
+            const SizedBox(
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.2,
+                  child: Row(
+                    children: [
+                      Text(
+                        "Division",
+                        style: GoogleFonts.lato(
+                          textStyle: const TextStyle(
+                              fontWeight: FontWeight.w500, fontSize: 16),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      if (divisions != null)
+                        Expanded(
+                          child: SizedBox(
+                            height: 35,
+                            child: DropdownButtonFormField<dynamic>(
+                              isExpanded: true,
+                              value: divisions![0].divisionName,
+                              decoration: InputDecoration(
+                                  border: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black)),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.black, width: 1)),
+                                  labelStyle:
+                                      TextStyle(color: Colors.grey.shade800),
+                                  contentPadding: const EdgeInsets.only(
+                                      left: 10, top: 4, bottom: 4)),
+                              icon: const Icon(Icons.keyboard_arrow_down),
+                              items: divisions!
+                                  .map<DropdownMenuItem<dynamic>>((item) {
+                                return DropdownMenuItem(
+                                  value: item.divisionName,
+                                  child: Text(item.divisionName),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) async {
+                                setState(() {});
+                              },
                             ),
                           ),
                         ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 10,
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.2,
+                  child: Row(
+                    children: [
+                      Text(
+                        "Sections",
+                        style: GoogleFonts.lato(
+                          textStyle: const TextStyle(
+                              fontWeight: FontWeight.w500, fontSize: 16),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      if (sectionList != null)
+                        Expanded(
+                          child: SizedBox(
+                            height: 35,
+                            child: DropdownButtonFormField<dynamic>(
+                              isExpanded: true,
+                              value: sectionList!.sections![0].sectionName,
+                              decoration: InputDecoration(
+                                  border: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black)),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.black, width: 1)),
+                                  labelStyle:
+                                      TextStyle(color: Colors.grey.shade800),
+                                  contentPadding: const EdgeInsets.only(
+                                      left: 10, top: 4, bottom: 4)),
+                              icon: const Icon(Icons.keyboard_arrow_down),
+                              items: sectionList!.sections!
+                                  .map<DropdownMenuItem<dynamic>>((item) {
+                                return DropdownMenuItem(
+                                  value: item.sectionName,
+                                  child: Text(item.sectionName),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) async {
+                                setState(() {});
+                              },
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                  SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.83,
-                      child: TabBarView(children: [
-                        for (int i = 0; i < divisions.length; i++)
-                          classes == null
-                              ? LoadingAnimator()
-                              : classes!.isEmpty
-                                  ? Center(
-                                      child: Text(
-                                        "No Classes here click add button to add the division",
-                                        style: GoogleFonts.lato(),
-                                      ),
-                                    )
-                                  : GridView.builder(
-                                      gridDelegate:
-                                          const SliverGridDelegateWithFixedCrossAxisCount(
-                                              childAspectRatio: 5,
-                                              crossAxisCount: 4),
-                                      itemCount: classes!.length,
-                                      itemBuilder: (context, index) {
-                                        var classList = classes![index];
-                                        return Card(
-                                          child: ListTile(
-                                            title: Text(
-                                              classList.className,
-                                              style: GoogleFonts.lato(),
-                                            ),
-                                            trailing: IconButton(
-                                              icon: const Icon(Icons.delete),
-                                              onPressed: () {
-                                                showDialog(
-                                                  context: context,
-                                                  builder: (context) {
-                                                    return AlertDialog(
-                                                      title: const Text(
-                                                          "Do you want to Delete this division"),
-                                                      actions: [
-                                                        TextButton(
-                                                            onPressed:
-                                                                () async {
-                                                              await deleteClass(
-                                                                      clsId: classes![
-                                                                              i]
-                                                                          .id
-                                                                          .toString(),
-                                                                      divisionId:
-                                                                          divisionId
-                                                                              .toString())
-                                                                  .then(
-                                                                      (value) {
-                                                                if (value !=
-                                                                    null) {
-                                                                  getListOfStudent(
-                                                                      divisionId);
-
-                                                                  Utility.displaySnackBar(
-                                                                      context,
-                                                                      "Deleted Successfully");
-                                                                } else {
-                                                                  Utility.displaySnackBar(
-                                                                      context,
-                                                                      "Not Deleted");
-                                                                }
-                                                                Navigator.pop(
-                                                                    context);
-                                                              });
-                                                            },
-                                                            child: const Text(
-                                                                "Yes")),
-                                                        TextButton(
-                                                            onPressed: () {
-                                                              Navigator.pop(
-                                                                  context);
-                                                            },
-                                                            child: const Text(
-                                                                "No"))
-                                                      ],
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.2,
+                  child: Row(
+                    children: [
+                      Text(
+                        "classes",
+                        style: GoogleFonts.lato(
+                          textStyle: const TextStyle(
+                              fontWeight: FontWeight.w500, fontSize: 16),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      if (sectionList != null)
+                        Expanded(
+                          child: SizedBox(
+                            height: 35,
+                            child: DropdownButtonFormField<dynamic>(
+                              isExpanded: true,
+                              value: classes![0].className,
+                              decoration: InputDecoration(
+                                  border: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black)),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.black, width: 1)),
+                                  labelStyle:
+                                      TextStyle(color: Colors.grey.shade800),
+                                  contentPadding: const EdgeInsets.only(
+                                      left: 10, top: 4, bottom: 4)),
+                              icon: const Icon(Icons.keyboard_arrow_down),
+                              items: classes!
+                                  .map<DropdownMenuItem<dynamic>>((item) {
+                                return DropdownMenuItem(
+                                  value: item.className,
+                                  child: Text(item.className),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) async {
+                                setState(() {});
+                              },
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.8,
+              child: managementList == null
+                  ? LoadingAnimator()
+                  : managementList!.isEmpty
+                      ? Center(
+                          child: Text(
+                            "No Management here click add button to add the Managements",
+                            style: GoogleFonts.lato(),
+                          ),
+                        )
+                      : GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                                  maxCrossAxisExtent: 330,
+                                  childAspectRatio: 4 / 2,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10),
+                          itemCount: managementList!.length,
+                          itemBuilder: (context, index) {
+                            var management = managementList![index];
+                            return InkWell(
+                              onTap: () {
+                                // showDialog(
+                                //     context: context,
+                                //     builder: (context) {
+                                //       return AlertDialog(
+                                //           shape: RoundedRectangleBorder(
+                                //             borderRadius:
+                                //                 BorderRadius.circular(10),
+                                //           ),
+                                //           contentPadding: EdgeInsets.zero,
+                                //           content: SingleChildScrollView(
+                                //               child: Column(children: [
+                                //             InkWell(
+                                //               onTap: () async {
+                                //                 await deleteManagement(
+                                //                         managementId: management
+                                //                             .id
+                                //                             .toString())
+                                //                     .then((value) {
+                                //                   getListOfManagement();
+                                //                   if (value != null) {
+                                //                     Navigator.pop(context);
+                                //                     Utility.displaySnackBar(
+                                //                         context,
+                                //                         "Delete Successfully");
+                                //                   } else {
+                                //                     Navigator.pop(context);
+                                //                     Utility.displaySnackBar(
+                                //                         context, "Not Deleted");
+                                //                   }
+                                //                 });
+                                //               },
+                                //               child: Container(
+                                //                   width: double.infinity,
+                                //                   padding: const EdgeInsets.only(
+                                //                       top: 10, bottom: 10),
+                                //                   child: Center(
+                                //                     child: Text(
+                                //                         "Delete ${management.firstName}"),
+                                //                   )),
+                                //             ),
+                                //             InkWell(
+                                //               onTap: () {
+                                //                 setState(() {
+                                //                   isEdit = true;
+                                //                   userId =
+                                //                       management.id.toString();
+                                //                   nameController.text =
+                                //                       management.firstName;
+                                //                   mailController.text = management
+                                //                       .mobileNumber
+                                //                       .toString();
+                                //                   numberController.text =
+                                //                       management.mobileNumber
+                                //                           .toString();
+                                //                 });
+                                //                 Navigator.pop(context);
+                                //                 addEditPopUp(management);
+                                //               },
+                                //               child: Container(
+                                //                   width: double.infinity,
+                                //                   padding: const EdgeInsets.only(
+                                //                       top: 10, bottom: 10),
+                                //                   child: Center(
+                                //                     child: Text(
+                                //                         "Edit ${management.firstName}"),
+                                //                   )),
+                                //             ),
+                                //           ])));
+                                //     });
+                              },
+                              child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Row(
+                                      children: [
+                                        management.profileImage == ''
+                                            ? Image.asset(
+                                                Images.userProfile,
+                                                width: 88.28,
+                                                height: 81,
+                                              )
+                                            : ClipRRect(
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(10)),
+                                                child: Image.network(
+                                                  management.profileImage,
+                                                  width: 88.28,
+                                                  height: 81,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (context, error,
+                                                      stackTrace) {
+                                                    return Image.asset(
+                                                      Images.userProfile,
+                                                      width: 88.28,
+                                                      height: 81,
                                                     );
                                                   },
-                                                );
-                                              },
-                                            ),
+                                                ),
+                                              ),
+                                        Container(
+                                          padding: const EdgeInsets.all(5),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    "Name : ",
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold)),
+                                                  ),
+                                                  Text(
+                                                    management.firstName,
+                                                    style: GoogleFonts.lato(),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    "Number : ",
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold)),
+                                                  ),
+                                                  Text(
+                                                    management.mobileNumber
+                                                        .toString(),
+                                                    style: GoogleFonts.lato(),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    "Email : ",
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold)),
+                                                  ),
+                                                  FittedBox(
+                                                    child: Text(
+                                                      management.employeeNo ==
+                                                              ''
+                                                          ? "N/A"
+                                                          : management
+                                                              .employeeNo
+                                                              .toString(),
+                                                      style: GoogleFonts.lato(),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    "Designation : ",
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold)),
+                                                  ),
+                                                  Text(
+                                                    management.designation,
+                                                    style: GoogleFonts.lato(),
+                                                  ),
+                                                ],
+                                              )
+                                            ],
                                           ),
-                                        );
-                                      },
+                                        )
+                                      ],
                                     ),
-                      ]))
-                ])),
+                                  )),
+                            );
+                          },
+                        ),
+            )
           ],
         ),
       ),

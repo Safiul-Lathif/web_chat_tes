@@ -1,29 +1,29 @@
 // ignore_for_file: avoid_print
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:ui/config/strings.dart';
-import 'package:ui/model/search/student_list_model.dart';
 import 'package:ui/utils/session_management.dart';
 
-Future<StudentSearchList?> getStudentList(int pageNumber) async {
-  var url = Uri.parse("${Strings.baseURL}api/user/all_student_list");
+Future<dynamic> checkEmployeeNumber(String number, int id, int role) async {
+  var url = Uri.parse("${Strings.baseURL}api/user/checkEmployeeno");
   SessionManager pref = SessionManager();
   String? token = await pref.getAuthToken();
   var map = <String, dynamic>{};
-  map["page"] = pageNumber.toString();
-  print(token);
+  map["employee_no"] = number;
+  map["user_role"] = role.toString();
+  if (id != 0) map["id"] = id.toString();
+  print(map);
   try {
     final response = await http.post(url,
-        body: pageNumber == 0 ? null : map,
-        headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
+        body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      log(response.body);
-      return StudentSearchList.fromJson(jsonResponse);
+      print(response.body);
+      return jsonResponse;
     } else {
-      print('Request failed with status: ${response.statusCode}.');
+      print(
+          'check employee number:- Request failed with status: ${response.body}.');
       return null;
     }
   } on Error catch (err) {

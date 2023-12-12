@@ -81,8 +81,10 @@ class _UserLoginState extends State<UserLogin> {
   List<String> listOfProfiles = [];
   void saveTheData(String token, String tag, String role) async {
     final SharedPreferences prefs = await _prefs;
-    final String encodedData =
-        ProfileSwap.encode([ProfileSwap(token: token, tag: tag, role: role)]);
+    final String encodedData = ProfileSwap.encode([
+      ProfileSwap(
+          token: token, tag: tag, role: role, number: '', schoolName: '')
+    ]);
     listOfProfiles = (prefs.getStringList('ProfileDetails') ?? []);
     listOfProfiles.add(encodedData);
     prefs.setStringList('ProfileDetails', listOfProfiles);
