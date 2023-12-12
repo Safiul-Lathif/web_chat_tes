@@ -55,7 +55,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   ProfileModel? profiles;
-  int selectedIndex = 8;
+  int selectedIndex = 7;
   String role = '';
   @override
   void initState() {
@@ -71,7 +71,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void profile() async {
-    await getProfile(id: "", role: "").then((value) {
+    await getProfile(id: "", role: "", studentId: '').then((value) {
       if (value != null) {
         setState(() {
           profiles = value;

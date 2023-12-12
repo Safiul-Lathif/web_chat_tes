@@ -1,5 +1,4 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:convert';
 
 class SearchAdminModel {
   int total;
@@ -80,6 +79,18 @@ class AdminList {
       );
 
   static AdminList adminModelData = AdminList(
+      id: 0,
+      firstName: '',
+      mobileNumber: 0,
+      userStatus: 0,
+      profileImage: '',
+      designation: '',
+      userId: '',
+      dob: '',
+      doj: '',
+      employeeNo: '',
+      emailId: '');
+  static AdminList setData = AdminList(
       id: 0,
       firstName: '',
       mobileNumber: 0,

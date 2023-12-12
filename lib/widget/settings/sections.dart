@@ -6,6 +6,7 @@ import 'package:ui/api/DivisionlistApi.dart';
 import 'package:ui/api/MapSectionApi.dart';
 import 'package:ui/api/deleteApi.dart';
 import 'package:ui/api/excelAPiservice.dart';
+import 'package:ui/api/settings/add_edit_section.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/loading_animator.dart';
 import 'package:ui/model/DivisionlistModel.dart';
@@ -54,63 +55,66 @@ class _SectionWidgetState extends State<SectionWidget> {
     });
   }
 
+  Future<void> addEditPopUp(bool isAdd, Section section) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(isAdd ? "Add Sections" : "Edit Sections"),
+          actions: [
+            TextButton(
+                onPressed: () async {
+                  await addEditSection(
+                          sectionId: section.id,
+                          sectionName: sectionName,
+                          divId: divisionId.toString())
+                      .then((value) {
+                    getListOfSections(divisionId);
+                    if (value != null) {
+                      Utility.displaySnackBar(context, value["message"]);
+                    } else {
+                      Utility.displaySnackBar(context, "error");
+                    }
+                    Navigator.pop(context);
+                  });
+                },
+                child: const Text("Submit")),
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Cancel"))
+          ],
+          content: FormBuilderTextField(
+            onChanged: (value) {
+              setState(() {
+                sectionName = value!;
+              });
+            },
+            name: 'Sections name',
+            initialValue: section.sectionName,
+            decoration: InputDecoration(
+                border: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black)),
+                hintText: 'type section name ',
+                focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black, width: 1)),
+                labelStyle: TextStyle(color: Colors.grey.shade800),
+                contentPadding:
+                    const EdgeInsets.only(left: 10, top: 4, bottom: 4)),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.green,
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text("Add Sections"),
-                actions: [
-                  TextButton(
-                      onPressed: () async {
-                        await addData(
-                                configType: "sections",
-                                updateType: "manual",
-                                data: [sectionName],
-                                divId: divisionId.toString())
-                            .then((value) {
-                          getListOfSections(divisionId);
-                          if (value != null) {
-                            Utility.displaySnackBar(context, value["message"]);
-                          } else {
-                            Utility.displaySnackBar(context, "error");
-                          }
-                          Navigator.pop(context);
-                        });
-                      },
-                      child: const Text("Submit")),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Cancel"))
-                ],
-                content: FormBuilderTextField(
-                  onChanged: (value) {
-                    setState(() {
-                      sectionName = value!;
-                    });
-                  },
-                  name: 'Sections name',
-                  decoration: InputDecoration(
-                      border: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black)),
-                      hintText: 'type section name ',
-                      focusedBorder: const OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.black, width: 1)),
-                      labelStyle: TextStyle(color: Colors.grey.shade800),
-                      contentPadding:
-                          const EdgeInsets.only(left: 10, top: 4, bottom: 4)),
-                ),
-              );
-            },
-          );
+          addEditPopUp(true, Section(id: 0, sectionName: '', isclicked: false));
         },
         icon: const Icon(Icons.add),
         label: const Text("Add Section"),
@@ -203,59 +207,101 @@ class _SectionWidgetState extends State<SectionWidget> {
                                               section.sectionName,
                                               style: GoogleFonts.lato(),
                                             ),
-                                            trailing: IconButton(
-                                              icon: const Icon(Icons.delete),
-                                              onPressed: () {
-                                                showDialog(
+                                            onTap: () {
+                                              showDialog(
                                                   context: context,
                                                   builder: (context) {
                                                     return AlertDialog(
-                                                      title: const Text(
-                                                          "Do you want to Delete this Section"),
-                                                      actions: [
-                                                        TextButton(
-                                                            onPressed:
-                                                                () async {
-                                                              await deleteSection(
-                                                                      secId: section
-                                                                          .id
-                                                                          .toString(),
-                                                                      divId: divisionId
-                                                                          .toString())
-                                                                  .then(
-                                                                      (value) {
-                                                                if (value !=
-                                                                    null) {
-                                                                  getListOfSections(
-                                                                      divisionId);
-
-                                                                  Utility.displaySnackBar(
-                                                                      context,
-                                                                      "Deleted Successfully");
-                                                                } else {
-                                                                  Utility.displaySnackBar(
-                                                                      context,
-                                                                      "Not Deleted");
-                                                                }
-                                                                Navigator.pop(
-                                                                    context);
-                                                              });
-                                                            },
-                                                            child: const Text(
-                                                                "Yes")),
-                                                        TextButton(
-                                                            onPressed: () {
-                                                              Navigator.pop(
-                                                                  context);
-                                                            },
-                                                            child: const Text(
-                                                                "No"))
-                                                      ],
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                            ),
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        contentPadding:
+                                                            EdgeInsets.zero,
+                                                        content:
+                                                            SingleChildScrollView(
+                                                                child: Column(
+                                                                    children: [
+                                                              InkWell(
+                                                                onTap:
+                                                                    () async {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (context) {
+                                                                      return AlertDialog(
+                                                                        title: const Text(
+                                                                            "Do you want to Delete this division"),
+                                                                        actions: [
+                                                                          TextButton(
+                                                                              onPressed: () async {
+                                                                                await deleteSection(secId: section.id.toString(), divId: divisionId.toString()).then((value) {
+                                                                                  if (value != null) {
+                                                                                    getListOfSections(divisionId);
+                                                                                    Utility.displaySnackBar(context, "Deleted Successfully");
+                                                                                  } else {
+                                                                                    Utility.displaySnackBar(context, "Not Deleted");
+                                                                                  }
+                                                                                  Navigator.pop(context);
+                                                                                });
+                                                                              },
+                                                                              child: const Text("Yes")),
+                                                                          TextButton(
+                                                                              onPressed: () {
+                                                                                Navigator.pop(context);
+                                                                              },
+                                                                              child: const Text("No"))
+                                                                        ],
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                        width: double
+                                                                            .infinity,
+                                                                        padding: const EdgeInsets.only(
+                                                                            top:
+                                                                                10,
+                                                                            bottom:
+                                                                                10),
+                                                                        child:
+                                                                            Center(
+                                                                          child:
+                                                                              Text("Delete ${section.sectionName}"),
+                                                                        )),
+                                                              ),
+                                                              InkWell(
+                                                                onTap: () {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  addEditPopUp(
+                                                                      false,
+                                                                      section);
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                        width: double
+                                                                            .infinity,
+                                                                        padding: const EdgeInsets.only(
+                                                                            top:
+                                                                                10,
+                                                                            bottom:
+                                                                                10),
+                                                                        child:
+                                                                            Center(
+                                                                          child:
+                                                                              Text("Edit ${section.sectionName}"),
+                                                                        )),
+                                                              ),
+                                                            ])));
+                                                  });
+                                            },
                                           ),
                                         );
                                       },

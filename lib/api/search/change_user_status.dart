@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:ui/config/strings.dart';
-import 'package:ui/utils/session_management.dart';
+import '../../utils/session_management.dart';
 
 Future<dynamic> changeUserStatus(
     String number, String status, String role, String appDeactivation) async {
@@ -14,11 +14,11 @@ Future<dynamic> changeUserStatus(
   map['user_role'] = role;
   map['status'] = status;
   map['app_deactivation'] = appDeactivation;
+  print("$token $number $role $status $appDeactivation");
   try {
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      print(response.body);
       return jsonDecode(response.body);
     } else {
       print(
@@ -47,7 +47,6 @@ Future<dynamic> changeUserStatusStudent(
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      print(response.body);
       return jsonDecode(response.body);
     } else {
       print(
@@ -76,7 +75,6 @@ Future<dynamic> activateAnyUser(
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      print(response.body);
       return jsonDecode(response.body);
     } else {
       print(

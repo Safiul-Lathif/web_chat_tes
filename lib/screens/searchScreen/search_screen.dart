@@ -20,6 +20,7 @@ import 'package:ui/widget/search_profile_admin.dart';
 import 'package:ui/widget/search_profile_management.dart';
 import 'package:ui/widget/search_profile_student.dart';
 import 'package:ui/widget/staff_info.dart';
+import 'package:ui/widget/users/add_edit_admin.dart';
 import '../../api/search/get_management_list_api.dart';
 import '../../api/search_staff_api.dart';
 import '../../config/const.dart';
@@ -628,6 +629,26 @@ class _SearchPageState extends State<SearchPage> {
         false;
   }
 
+  Future<bool> addEditUserPopUp(
+    Widget dynamicPageWidget,
+  ) async {
+    return await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                    title: Text("Add $currentTab"),
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                    actions: [
+                      Center(
+                        child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.6,
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            child: dynamicPageWidget),
+                      ),
+                    ])) ??
+        false;
+  }
+
   Future<bool> managementProfileInfo(
     ManagementList managementList,
   ) async {
@@ -885,7 +906,7 @@ class _SearchPageState extends State<SearchPage> {
                               },
                               child: Row(
                                 children: [
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 5,
                                   ),
                                   Text(
@@ -897,6 +918,22 @@ class _SearchPageState extends State<SearchPage> {
                           }).toList(),
                         ),
                       ),
+                      // const SizedBox(
+                      //   width: 10,
+                      // ),
+                      // SizedBox(
+                      //   height: 40,
+                      //   child: ElevatedButton.icon(
+                      //       icon: const Icon(Icons.add),
+                      //       style: buttonStyle,
+                      //       onPressed: () {
+                      //         addEditUserPopUp(AddEditAdminPage(
+                      //           userModel: AdminList.adminModelData,
+                      //           isEdit: false,
+                      //         ));
+                      //       },
+                      //       label: Text("Add $currentTab")),
+                      // )
                     ],
                   ),
                 ],
@@ -1307,7 +1344,8 @@ class _SearchPageState extends State<SearchPage> {
                                                                         i)
                                                                     .id
                                                                     .toString(),
-                                                                role: "2")
+                                                                role: "2",
+                                                                studentId: '')
                                                             .then((value) {
                                                           if (value != null) {
                                                             profileInfo(
@@ -1454,7 +1492,7 @@ class _SearchPageState extends State<SearchPage> {
                                         if (pageNumber != 0)
                                           NumberPagination(
                                             onPageChanged: (int number) {
-                                              //do somthing for selected page
+                                              //do something for selected page
                                               setState(() {
                                                 pageNumber = number;
                                               });
@@ -1588,7 +1626,8 @@ class _SearchPageState extends State<SearchPage> {
                                                                         i)
                                                                     .id
                                                                     .toString(),
-                                                                role: "3")
+                                                                role: "3",
+                                                                studentId: '')
                                                             .then((value) {
                                                           if (value != null) {
                                                             parentProfileInfo(
@@ -1810,7 +1849,7 @@ class _SearchPageState extends State<SearchPage> {
                                                 ),
                                                 DataColumn(
                                                   label: Text(
-                                                    'Status',
+                                                    'Action',
                                                     style: GoogleFonts.lato(
                                                         textStyle:
                                                             const TextStyle(
@@ -1930,42 +1969,58 @@ class _SearchPageState extends State<SearchPage> {
                                                                             white)),
                                                           ),
                                                         )),
-                                                        DataCell(SizedBox(
-                                                            width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                0.08,
-                                                            child: ElevatedButton(
-                                                                clipBehavior: Clip.antiAlias,
-                                                                style: ButtonStyle(
-                                                                    backgroundColor: MaterialStatePropertyAll(listOfManagement!.elementAt(i).userStatus == 1
-                                                                        ? Colors.green
+                                                        DataCell(Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            SizedBox(
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.08,
+                                                                child: ElevatedButton(
+                                                                    clipBehavior: Clip.antiAlias,
+                                                                    style: ButtonStyle(
+                                                                        backgroundColor: MaterialStatePropertyAll(listOfManagement!.elementAt(i).userStatus == 1
+                                                                            ? Colors.green
+                                                                            : listOfManagement!.elementAt(i).userStatus == 3
+                                                                                ? Colors.yellow
+                                                                                : Colors.red)),
+                                                                    onPressed: () {
+                                                                      activeInactiveUser(
+                                                                          listOfManagement!
+                                                                              .elementAt(
+                                                                                  i)
+                                                                              .userStatus,
+                                                                          listOfManagement!
+                                                                              .elementAt(
+                                                                                  i)
+                                                                              .firstName,
+                                                                          listOfManagement!
+                                                                              .elementAt(i)
+                                                                              .mobileNumber
+                                                                              .toString(),
+                                                                          '5');
+                                                                    },
+                                                                    child: Text(listOfManagement!.elementAt(i).userStatus == 1
+                                                                        ? "Active"
                                                                         : listOfManagement!.elementAt(i).userStatus == 3
-                                                                            ? Colors.yellow
-                                                                            : Colors.red)),
-                                                                onPressed: () {
-                                                                  activeInactiveUser(
-                                                                      listOfManagement!
-                                                                          .elementAt(
-                                                                              i)
-                                                                          .userStatus,
-                                                                      listOfManagement!
-                                                                          .elementAt(
-                                                                              i)
-                                                                          .firstName,
-                                                                      listOfManagement!
-                                                                          .elementAt(
-                                                                              i)
-                                                                          .mobileNumber
-                                                                          .toString(),
-                                                                      '5');
-                                                                },
-                                                                child: Text(listOfManagement!.elementAt(i).userStatus == 1
-                                                                    ? "Active"
-                                                                    : listOfManagement!.elementAt(i).userStatus == 3
-                                                                        ? "Par-active"
-                                                                        : "Inactive")))),
+                                                                            ? "Par-active"
+                                                                            : "Inactive"))),
+                                                            // const SizedBox(
+                                                            //   width: 10,
+                                                            // ),
+                                                            // IconButton(
+                                                            //     onPressed:
+                                                            //         () {},
+                                                            //     color:
+                                                            //         Colors.grey,
+                                                            //     icon: const Icon(
+                                                            //         Icons.edit))
+                                                          ],
+                                                        )),
                                                       ]),
                                               ]),
                                         ),

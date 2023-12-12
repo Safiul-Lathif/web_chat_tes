@@ -13,13 +13,13 @@ Future<SearchAdminModel?> getAdminList(int pageNumber) async {
 
   var map = <String, dynamic>{};
   map["page"] = pageNumber.toString();
-  print("pagination of page  $pageNumber");
   try {
     final response = await http.post(url,
         body: pageNumber == 0 ? null : map,
         headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
+      print(response.body);
       return SearchAdminModel.fromJson(jsonResponse);
     } else {
       print('management:- Request failed with status: ${response.statusCode}.');

@@ -5,7 +5,7 @@ import 'package:ui/Utils/utility.dart';
 import 'package:ui/api/DivisionlistApi.dart';
 import 'package:ui/api/MapSectionApi.dart';
 import 'package:ui/api/deleteApi.dart';
-import 'package:ui/api/excelAPiservice.dart';
+import 'package:ui/api/settings/add_edit_class.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/loading_animator.dart';
 import 'package:ui/model/DivisionlistModel.dart';
@@ -54,63 +54,66 @@ class _ClassWidgetState extends State<ClassWidget> {
     });
   }
 
+  Future<void> addEditPopUp(bool isAdd, ListsClass classList) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(isAdd ? "Add Classes" : "Edit Classes"),
+          actions: [
+            TextButton(
+                onPressed: () async {
+                  await addEditClass(
+                          classId: classList.id,
+                          className: className,
+                          divId: divisionId.toString())
+                      .then((value) {
+                    getListOfClass(divisionId);
+                    if (value != null) {
+                      Utility.displaySnackBar(context, value["message"]);
+                    } else {
+                      Utility.displaySnackBar(context, "error");
+                    }
+                    Navigator.pop(context);
+                  });
+                },
+                child: const Text("Submit")),
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Cancel"))
+          ],
+          content: FormBuilderTextField(
+            onChanged: (value) {
+              setState(() {
+                className = value!;
+              });
+            },
+            name: 'Classes name',
+            initialValue: classList.className,
+            decoration: InputDecoration(
+                border: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black)),
+                hintText: 'type Class name ',
+                focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black, width: 1)),
+                labelStyle: TextStyle(color: Colors.grey.shade800),
+                contentPadding:
+                    const EdgeInsets.only(left: 10, top: 4, bottom: 4)),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.green,
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text("Add Classes"),
-                actions: [
-                  TextButton(
-                      onPressed: () async {
-                        await addData(
-                                configType: "classes",
-                                updateType: "manual",
-                                data: [className],
-                                divId: divisionId.toString())
-                            .then((value) {
-                          getListOfClass(divisionId);
-                          if (value != null) {
-                            Utility.displaySnackBar(context, value["message"]);
-                          } else {
-                            Utility.displaySnackBar(context, "error");
-                          }
-                          Navigator.pop(context);
-                        });
-                      },
-                      child: const Text("Submit")),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Cancel"))
-                ],
-                content: FormBuilderTextField(
-                  onChanged: (value) {
-                    setState(() {
-                      className = value!;
-                    });
-                  },
-                  name: 'Classes name',
-                  decoration: InputDecoration(
-                      border: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black)),
-                      hintText: 'type Class name ',
-                      focusedBorder: const OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.black, width: 1)),
-                      labelStyle: TextStyle(color: Colors.grey.shade800),
-                      contentPadding:
-                          const EdgeInsets.only(left: 10, top: 4, bottom: 4)),
-                ),
-              );
-            },
-          );
+          addEditPopUp(true, ListsClass(id: 0, className: ''));
         },
         icon: const Icon(Icons.add),
         label: const Text("Add Classes"),
@@ -198,64 +201,71 @@ class _ClassWidgetState extends State<ClassWidget> {
                                         var classList = classes![index];
                                         return Card(
                                           child: ListTile(
-                                            title: Text(
-                                              classList.className,
-                                              style: GoogleFonts.lato(),
-                                            ),
-                                            trailing: IconButton(
-                                              icon: const Icon(Icons.delete),
-                                              onPressed: () {
-                                                showDialog(
+                                            onTap: () {
+                                              showDialog(
                                                   context: context,
                                                   builder: (context) {
                                                     return AlertDialog(
-                                                      title: const Text(
-                                                          "Do you want to Delete this division"),
-                                                      actions: [
-                                                        TextButton(
-                                                            onPressed:
-                                                                () async {
-                                                              await deleteClass(
-                                                                      clsId: classes![
-                                                                              i]
-                                                                          .id
-                                                                          .toString(),
-                                                                      divisionId:
-                                                                          divisionId
-                                                                              .toString())
-                                                                  .then(
-                                                                      (value) {
-                                                                if (value !=
-                                                                    null) {
-                                                                  getListOfClass(
-                                                                      divisionId);
-
-                                                                  Utility.displaySnackBar(
-                                                                      context,
-                                                                      "Deleted Successfully");
-                                                                } else {
-                                                                  Utility.displaySnackBar(
-                                                                      context,
-                                                                      "Not Deleted");
-                                                                }
-                                                                Navigator.pop(
-                                                                    context);
-                                                              });
-                                                            },
-                                                            child: const Text(
-                                                                "Yes")),
-                                                        TextButton(
-                                                            onPressed: () {
-                                                              Navigator.pop(
-                                                                  context);
-                                                            },
-                                                            child: const Text(
-                                                                "No"))
-                                                      ],
-                                                    );
-                                                  },
-                                                );
-                                              },
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        contentPadding:
+                                                            EdgeInsets.zero,
+                                                        content:
+                                                            SingleChildScrollView(
+                                                                child: Column(
+                                                                    children: [
+                                                              InkWell(
+                                                                onTap: () {
+                                                                  delete(i);
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                        width: double
+                                                                            .infinity,
+                                                                        padding: const EdgeInsets.only(
+                                                                            top:
+                                                                                10,
+                                                                            bottom:
+                                                                                10),
+                                                                        child:
+                                                                            Center(
+                                                                          child:
+                                                                              Text("Delete ${classList.className}"),
+                                                                        )),
+                                                              ),
+                                                              InkWell(
+                                                                onTap: () {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  addEditPopUp(
+                                                                      false,
+                                                                      classList);
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                        width: double
+                                                                            .infinity,
+                                                                        padding: const EdgeInsets.only(
+                                                                            top:
+                                                                                10,
+                                                                            bottom:
+                                                                                10),
+                                                                        child:
+                                                                            Center(
+                                                                          child:
+                                                                              Text("Edit ${classList.className}"),
+                                                                        )),
+                                                              ),
+                                                            ])));
+                                                  });
+                                            },
+                                            title: Text(
+                                              classList.className,
+                                              style: GoogleFonts.lato(),
                                             ),
                                           ),
                                         );
@@ -266,6 +276,41 @@ class _ClassWidgetState extends State<ClassWidget> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> delete(int i) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Do you want to Delete this division"),
+          actions: [
+            TextButton(
+                onPressed: () async {
+                  await deleteClass(
+                          clsId: classes![i].id.toString(),
+                          divisionId: divisionId.toString())
+                      .then((value) {
+                    if (value != null) {
+                      getListOfClass(divisionId);
+
+                      Utility.displaySnackBar(context, "Deleted Successfully");
+                    } else {
+                      Utility.displaySnackBar(context, "Not Deleted");
+                    }
+                    Navigator.pop(context);
+                  });
+                },
+                child: const Text("Yes")),
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("No"))
+          ],
+        );
+      },
     );
   }
 }

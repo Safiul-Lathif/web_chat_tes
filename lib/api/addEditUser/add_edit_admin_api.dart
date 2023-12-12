@@ -16,7 +16,8 @@ Future<dynamic> addEditAdmin(
         .add(await http.MultipartFile.fromPath('photo', profileImage[i].path));
   }
   if (isEdit) request.fields['id'] = adminList.id.toString();
-  request.fields['admin_name'] = adminList.firstName.toString();
+  request.fields['name'] = adminList.firstName.toString();
+  request.fields['user_role'] = '1';
   request.fields['email_address'] = adminList.emailId.toString();
   request.fields['mobile_number'] = adminList.mobileNumber.toString();
   request.fields['email_address'] = adminList.emailId.toString();
