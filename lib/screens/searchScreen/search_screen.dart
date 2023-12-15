@@ -614,9 +614,14 @@ class _SearchPageState extends State<SearchPage> {
     return await showDialog(
             context: context,
             builder: (context) => Material(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   type: MaterialType.transparency,
                   child: Center(
-                    child: SizedBox(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(20))),
                       width: MediaQuery.of(context).size.width * 0.5,
                       height: MediaQuery.of(context).size.height * 0.5,
                       child: AdminProfileInfo(
@@ -1070,7 +1075,7 @@ class _SearchPageState extends State<SearchPage> {
                                                                   .width *
                                                               0.04,
                                                           child: Text(
-                                                            (i + 1).toString(),
+                                                            "${int.parse("${pageNumber - 1}$i") + 1}",
                                                             style: GoogleFonts.lato(
                                                                 textStyle:
                                                                     const TextStyle(
@@ -1364,7 +1369,7 @@ class _SearchPageState extends State<SearchPage> {
                                                                   .width *
                                                               0.04,
                                                           child: Text(
-                                                            (i + 1).toString(),
+                                                            "${int.parse("${pageNumber - 1}$i") + 1}",
                                                             style: GoogleFonts.lato(
                                                                 textStyle:
                                                                     const TextStyle(
@@ -1641,7 +1646,7 @@ class _SearchPageState extends State<SearchPage> {
                                                       cells: [
                                                         DataCell(SizedBox(
                                                           child: Text(
-                                                            (i + 1).toString(),
+                                                            "${int.parse("${pageNumber - 1}$i") + 1}",
                                                             style: GoogleFonts.lato(
                                                                 textStyle:
                                                                     const TextStyle(
@@ -1878,7 +1883,7 @@ class _SearchPageState extends State<SearchPage> {
                                                                   .width *
                                                               0.04,
                                                           child: Text(
-                                                            (i + 1).toString(),
+                                                            "${int.parse("${pageNumber - 1}$i") + 1}",
                                                             style: GoogleFonts.lato(
                                                                 textStyle:
                                                                     const TextStyle(
@@ -1930,14 +1935,23 @@ class _SearchPageState extends State<SearchPage> {
                                                               0.08,
                                                           child: Text(
                                                             managementTypeList
-                                                                .firstWhere((element) =>
-                                                                    element
-                                                                        .id ==
-                                                                    listOfManagement!
-                                                                        .elementAt(
-                                                                            i)
-                                                                        .userCategory)
-                                                                .categoryName,
+                                                                    .where((element) =>
+                                                                        element
+                                                                            .id ==
+                                                                        listOfManagement!
+                                                                            .elementAt(
+                                                                                i)
+                                                                            .userCategory)
+                                                                    .isNotEmpty
+                                                                ? managementTypeList
+                                                                    .firstWhere((element) =>
+                                                                        element
+                                                                            .id ==
+                                                                        listOfManagement!
+                                                                            .elementAt(i)
+                                                                            .userCategory)
+                                                                    .categoryName
+                                                                : 'N/A',
                                                             style: GoogleFonts.lato(
                                                                 textStyle:
                                                                     const TextStyle(
@@ -2152,10 +2166,7 @@ class _SearchPageState extends State<SearchPage> {
                                                                   .width *
                                                               0.04,
                                                           child: Text(
-                                                            listOfAdmin!
-                                                                .elementAt(i)
-                                                                .id
-                                                                .toString(),
+                                                            "${int.parse("${pageNumber - 1}$i") + 1}",
                                                             style: GoogleFonts.lato(
                                                                 textStyle:
                                                                     const TextStyle(

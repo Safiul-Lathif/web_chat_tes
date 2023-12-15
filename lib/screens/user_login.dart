@@ -273,49 +273,49 @@ class _UserLoginState extends State<UserLogin> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.25,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15.0)),
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                nameController.text.isEmpty ||
-                                        nameController.text == ""
-                                    ? Utility.displaySnackBar(context,
-                                        "Please enter E-Mail/Mobile No")
-                                    : await forgotOtp(
-                                            mobileNumber: nameController.text,
-                                            role: roles)
-                                        .then((value) {
-                                        if (value['status'] != false) {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) => OtpPage(
-                                                        name: widget.name,
-                                                        number:
-                                                            nameController.text,
-                                                      )));
-                                          _snackBar(value['message']);
-                                        } else {
-                                          _snackBar(value['message']);
-                                        }
-                                      });
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  shape: const StadiumBorder(),
-                                  primary: Colors.blueAccent,
-                                  onPrimary: Colors.white),
-                              child: const Text(
-                                "LOGIN with OTP",
-                                style: TextStyle(fontSize: 15),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
+                          // Container(
+                          //   decoration: BoxDecoration(
+                          //       borderRadius: BorderRadius.circular(15.0)),
+                          //   child: ElevatedButton(
+                          //     onPressed: () async {
+                          //       nameController.text.isEmpty ||
+                          //               nameController.text == ""
+                          //           ? Utility.displaySnackBar(context,
+                          //               "Please enter E-Mail/Mobile No")
+                          //           : await forgotOtp(
+                          //                   mobileNumber: nameController.text,
+                          //                   role: roles)
+                          //               .then((value) {
+                          //               if (value['status'] != false) {
+                          //                 Navigator.push(
+                          //                     context,
+                          //                     MaterialPageRoute(
+                          //                         builder: (context) => OtpPage(
+                          //                               name: widget.name,
+                          //                               number:
+                          //                                   nameController.text,
+                          //                             )));
+                          //                 _snackBar(value['message']);
+                          //               } else {
+                          //                 _snackBar(value['message']);
+                          //               }
+                          //             });
+                          //     },
+                          //     style: ElevatedButton.styleFrom(
+                          //         shape: const StadiumBorder(),
+                          //         primary: Colors.blueAccent,
+                          //         onPrimary: Colors.white),
+                          //     child: const Text(
+                          //       "LOGIN with OTP",
+                          //       style: TextStyle(fontSize: 15),
+                          //     ),
+                          //   ),
+                          // ),
+                          // const SizedBox(
+                          //   width: 5,
+                          // ),
                           Container(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15.0)),

@@ -27,8 +27,8 @@ class _ParentProfileInfoState extends State<ParentProfileInfo> {
     return SingleChildScrollView(
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.blueGrey.shade300,
-        ),
+            color: Colors.blueGrey.shade300,
+            borderRadius: const BorderRadius.all(Radius.circular(20))),
         child: Column(children: [
           const SizedBox(
             height: 20,
@@ -197,59 +197,59 @@ class _ParentProfileInfoState extends State<ParentProfileInfo> {
                             width: MediaQuery.of(context).size.width * 0.15,
                             child: ListTile(
                               title: const Text(
-                                "Date of Birth",
+                                "Email Address",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xff575757)),
                               ),
-                              subtitle: Text(widget.profileModel.dob == ''
+                              subtitle: Text(widget.parentProfile.emailId == ''
                                   ? "N/A"
-                                  : widget.profileModel.dob),
+                                  : widget.parentProfile.emailId),
                             ),
                           ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.15,
-                            child: ListTile(
-                                title: const Text(
-                                  "Admission Number",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xff575757)),
-                                ),
-                                subtitle: Text(
-                                    widget.parentProfile.admissionNumber == ''
-                                        ? "N/A"
-                                        : widget
-                                            .parentProfile.admissionNumber)),
-                          ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.15,
-                            child: ListTile(
-                                title: const Text(
-                                  "Class Teacher",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xff575757)),
-                                ),
-                                subtitle: Text(
-                                    widget.parentProfile.classTeacher == ''
-                                        ? "N/A"
-                                        : widget.parentProfile.classTeacher)),
-                          ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.25,
-                            child: ListTile(
-                                title: const Text(
-                                  "Last Login",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xff575757)),
-                                ),
-                                subtitle: Text(widget.profileModel.lastLogin ==
-                                        ''
-                                    ? "N/A"
-                                    : "${(DateFormat.yMMMMEEEEd().format(DateTime.parse(widget.profileModel.lastLogin)))}, ${DateFormat.jms().format(DateTime.parse(widget.profileModel.lastLogin))}  ")),
-                          )
+                          // SizedBox(
+                          //   width: MediaQuery.of(context).size.width * 0.15,
+                          //   child: ListTile(
+                          //       title: const Text(
+                          //         "Admission Number",
+                          //         style: TextStyle(
+                          //             fontWeight: FontWeight.bold,
+                          //             color: Color(0xff575757)),
+                          //       ),
+                          //       subtitle: Text(
+                          //           widget.parentProfile.admissionNumber == ''
+                          //               ? "N/A"
+                          //               : widget
+                          //                   .parentProfile.admissionNumber)),
+                          // ),
+                          // SizedBox(
+                          //   width: MediaQuery.of(context).size.width * 0.15,
+                          //   child: ListTile(
+                          //       title: const Text(
+                          //         "Class Teacher",
+                          //         style: TextStyle(
+                          //             fontWeight: FontWeight.bold,
+                          //             color: Color(0xff575757)),
+                          //       ),
+                          //       subtitle: Text(
+                          //           widget.parentProfile.classTeacher == ''
+                          //               ? "N/A"
+                          //               : widget.parentProfile.classTeacher)),
+                          // ),
+                          // SizedBox(
+                          //   width: MediaQuery.of(context).size.width * 0.25,
+                          //   child: ListTile(
+                          //       title: const Text(
+                          //         "Last Login",
+                          //         style: TextStyle(
+                          //             fontWeight: FontWeight.bold,
+                          //             color: Color(0xff575757)),
+                          //       ),
+                          //       subtitle: Text(widget.profileModel.lastLogin ==
+                          //               ''
+                          //           ? "N/A"
+                          //           : "${(DateFormat.yMMMMEEEEd().format(DateTime.parse(widget.profileModel.lastLogin)))}, ${DateFormat.jms().format(DateTime.parse(widget.profileModel.lastLogin))}  ")),
+                          // )
                         ],
                       ),
                     ),
