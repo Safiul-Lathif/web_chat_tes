@@ -1,4 +1,5 @@
 // ignore_for_file: file_names, must_be_immutable
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:expandable_text/expandable_text.dart';
@@ -1647,6 +1648,7 @@ class _MessageWidgetState extends State<MessageWidget> {
       setState(() {
         image.addAll(result.files);
         images.add(result.files.first.bytes!);
+        var data = base64Encode(images[0]);
       });
     }
   }

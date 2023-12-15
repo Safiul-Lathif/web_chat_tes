@@ -55,7 +55,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   ProfileModel? profiles;
-  int selectedIndex = 7;
+  int selectedIndex = 0;
   String role = '';
   @override
   void initState() {

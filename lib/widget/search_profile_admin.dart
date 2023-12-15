@@ -9,7 +9,6 @@ import 'package:ui/model/categorylistModel.dart';
 import 'package:ui/model/designation_list_model.dart';
 import 'package:ui/model/search/admin_list_model.dart';
 import 'package:ui/utils/utils_file.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AdminProfileInfo extends StatefulWidget {
   final AdminList adminList;
@@ -80,246 +79,254 @@ class _AdminProfileInfoState extends State<AdminProfileInfo> {
     double baseWidth = 1314;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
-    return WillPopScope(
-      onWillPop: goBack,
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: Container(
+    return SingleChildScrollView(
+      child: Container(
+        decoration: BoxDecoration(
             color: Colors.blueGrey.shade300,
-            child: Column(children: [
+            borderRadius: const BorderRadius.all(Radius.circular(20))),
+        child: Column(children: [
+          const SizedBox(
+            height: 20,
+          ),
+          Center(
+              child: Text("Admin Profile Information",
+                  style: SafeGoogleFont(
+                    'Inter',
+                    fontSize: 21 * ffem,
+                    fontWeight: FontWeight.w500,
+                    height: 0.9152272542 * ffem / fem,
+                    letterSpacing: 1.4 * fem,
+                    color: const Color(0xff575757),
+                  ))),
+          Padding(
+            padding: const EdgeInsets.only(top: 10, bottom: 10),
+            child: Container(
+              width: double.maxFinite,
+              decoration: const BoxDecoration(
+                  gradient: LinearGradient(colors: [
+                Colors.transparent,
+                Colors.transparent,
+                Colors.blueGrey,
+                Colors.blueGrey,
+                Colors.transparent,
+                Colors.transparent
+              ])),
+              height: 0.3,
+            ),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.15,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: widget.adminList.profileImage == ''
+                          ? Image.asset(
+                              'assets/images/profile.png',
+                              width: 88.28 * fem,
+                              height: 81 * fem,
+                            )
+                          : ClipRRect(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(15)),
+                              child: Image.network(
+                                widget.adminList.profileImage,
+                                width: 81.28 * fem,
+                                height: 88 * fem,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    'assets/images/profile.png',
+                                    width: 88.28 * fem,
+                                    height: 81 * fem,
+                                  );
+                                },
+                              ),
+                            ),
+                    ),
+                    const SizedBox(
+                      height: 35,
+                    ),
+
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      const Text(
+                        "Name : ",
+                        style: TextStyle(
+                            color: Color(0xff575757),
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        widget.adminList.firstName,
+                        style: const TextStyle(
+                            color: Color(0xff575757),
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ]),
+
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.start,
+                    //   children: [
+                    //     const Text(
+                    //       "Name : ",
+                    //       style: TextStyle(
+                    //           color: Color(0xff575757),
+                    //           fontSize: 15,
+                    //           fontWeight: FontWeight.bold),
+                    //     ),
+                    //     Text(
+                    //       widget.adminList.name, //mail
+                    //       style: const TextStyle(
+                    //           color: Color(0xff575757),
+                    //           fontSize: 15,
+                    //           fontWeight: FontWeight.bold),
+                    //     ),
+                    //   ],
+                    // ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    // Row(
+                    //   children: [
+                    //     const Text(
+                    //       "Class : ",
+                    //       style: TextStyle(
+                    //           color: Color(0xff575757),
+                    //           fontSize: 15,
+                    //           fontWeight: FontWeight.bold),
+                    //     ),
+                    //     Text(
+                    //       widget.adminList.designation, //mail
+                    //       style: const TextStyle(
+                    //           color: Color(0xff575757),
+                    //           fontSize: 15,
+                    //           fontWeight: FontWeight.bold),
+                    //     ),
+                    //   ],
+                    // ),
+                    const SizedBox(
+                      height: 2,
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(
                 height: 20,
               ),
-              Center(
-                  child: Text("Admin Profile Information",
-                      style: SafeGoogleFont(
-                        'Inter',
-                        fontSize: 21 * ffem,
-                        fontWeight: FontWeight.w500,
-                        height: 0.9152272542 * ffem / fem,
-                        letterSpacing: 1.4 * fem,
-                        color: const Color(0xff575757),
-                      ))),
-              Padding(
-                padding: const EdgeInsets.only(top: 10, bottom: 10),
+              Expanded(
                 child: Container(
-                  width: double.maxFinite,
-                  decoration: const BoxDecoration(
-                      gradient: LinearGradient(colors: [
-                    Colors.transparent,
-                    Colors.transparent,
-                    Colors.blueGrey,
-                    Colors.blueGrey,
-                    Colors.transparent,
-                    Colors.transparent
-                  ])),
-                  height: 0.3,
-                ),
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.15,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: widget.adminList.profileImage == ''
-                              ? Image.asset(
-                                  'assets/images/profile.png',
-                                  width: 88.28 * fem,
-                                  height: 81 * fem,
-                                )
-                              : ClipRRect(
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(15)),
-                                  child: Image.network(
-                                    widget.adminList.profileImage,
-                                    width: 81.28 * fem,
-                                    height: 88 * fem,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Image.asset(
-                                        'assets/images/profile.png',
-                                        width: 88.28 * fem,
-                                        height: 81 * fem,
-                                      );
-                                    },
-                                  ),
-                                ),
-                        ),
-                        const SizedBox(
-                          height: 35,
-                        ),
-
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.65,
-                          child: RichText(
-                              text: TextSpan(children: [
-                            const TextSpan(
-                              text: "Name : ",
-                              style: TextStyle(
-                                  color: Color(0xff575757),
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            TextSpan(
-                              text: widget.adminList.firstName,
-                              style: const TextStyle(
-                                  color: Color(0xff575757),
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          ])),
-                        ),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.start,
-                        //   children: [
-                        //     const Text(
-                        //       "Name : ",
-                        //       style: TextStyle(
-                        //           color: Color(0xff575757),
-                        //           fontSize: 15,
-                        //           fontWeight: FontWeight.bold),
-                        //     ),
-                        //     Text(
-                        //       widget.adminList.name, //mail
-                        //       style: const TextStyle(
-                        //           color: Color(0xff575757),
-                        //           fontSize: 15,
-                        //           fontWeight: FontWeight.bold),
-                        //     ),
-                        //   ],
-                        // ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        // Row(
-                        //   children: [
-                        //     const Text(
-                        //       "Class : ",
-                        //       style: TextStyle(
-                        //           color: Color(0xff575757),
-                        //           fontSize: 15,
-                        //           fontWeight: FontWeight.bold),
-                        //     ),
-                        //     Text(
-                        //       widget.adminList.designation, //mail
-                        //       style: const TextStyle(
-                        //           color: Color(0xff575757),
-                        //           fontSize: 15,
-                        //           fontWeight: FontWeight.bold),
-                        //     ),
-                        //   ],
-                        // ),
-                        const SizedBox(
-                          height: 2,
-                        ),
-                      ],
-                    ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.transparent,
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.transparent,
-                      ),
-                      padding: const EdgeInsets.only(top: 20),
-                      height: MediaQuery.of(context).size.height * 0.42,
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.blue.shade50,
-                            image: DecorationImage(
-                              colorFilter: ColorFilter.mode(
-                                  Colors.blue.withOpacity(0.2),
-                                  BlendMode.dstATop),
-                              image: const AssetImage(Images.bgImage),
-                              fit: BoxFit.fill,
+                  padding: const EdgeInsets.only(top: 20),
+                  height: MediaQuery.of(context).size.height * 0.42,
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        image: DecorationImage(
+                          colorFilter: ColorFilter.mode(
+                              Colors.blue.withOpacity(0.2), BlendMode.dstATop),
+                          image: const AssetImage(Images.bgImage),
+                          fit: BoxFit.fill,
+                        ),
+                        borderRadius: const BorderRadius.only(
+                            topRight: Radius.circular(25),
+                            topLeft: Radius.circular(25),
+                            bottomRight: Radius.circular(20))),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10, top: 10),
+                      child: Wrap(
+                        spacing: 8.0, // gap between adjacent chips
+                        runSpacing: 4.0, // gap between lines
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.15,
+                            child: ListTile(
+                              title: const Text(
+                                "Mobile Number",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff575757)),
+                              ),
+                              subtitle: Text(
+                                  widget.adminList.mobileNumber.toString()),
                             ),
-                            borderRadius: const BorderRadius.only(
-                                topRight: Radius.circular(25),
-                                topLeft: Radius.circular(25),
-                                bottomRight: Radius.circular(20))),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 10, top: 10),
-                          child: Wrap(
-                            spacing: 8.0, // gap between adjacent chips
-                            runSpacing: 4.0, // gap between lines
-                            children: [
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.15,
-                                child: ListTile(
-                                  title: const Text(
-                                    "Mobile Number",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xff575757)),
-                                  ),
-                                  subtitle: Text(
-                                      widget.adminList.mobileNumber.toString()),
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.15,
+                            child: ListTile(
+                              title: const Text(
+                                "Email Id",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff575757)),
+                              ),
+                              subtitle: Text(widget.adminList.emailId == ''
+                                  ? "N/A"
+                                  : widget.adminList.emailId),
+                            ),
+                          ),
+                          // ticket no :- 92
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.15,
+                            child: ListTile(
+                              title: const Text(
+                                "Date of Birth",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff575757)),
+                              ),
+                              subtitle: Text(widget.adminList.dob == ''
+                                  ? "N/A"
+                                  : widget.adminList.dob),
+                            ),
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.15,
+                            child: ListTile(
+                                title: const Text(
+                                  "Employee Number",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xff575757)),
                                 ),
-                              ),
-                              // ticket no :- 92
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.15,
-                                child: ListTile(
-                                  title: const Text(
-                                    "Date of Birth",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xff575757)),
-                                  ),
-                                  subtitle: Text(widget.adminList.dob == ''
-                                      ? "N/A"
-                                      : widget.adminList.dob),
+                                subtitle: Text(widget.adminList.employeeNo == ''
+                                    ? "N/A"
+                                    : widget.adminList.employeeNo)),
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.15,
+                            child: ListTile(
+                                title: const Text(
+                                  "Date Of Joining",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xff575757)),
                                 ),
-                              ),
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.15,
-                                child: ListTile(
-                                    title: const Text(
-                                      "Employee Number",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xff575757)),
-                                    ),
-                                    subtitle: Text(
-                                        widget.adminList.employeeNo == ''
-                                            ? "N/A"
-                                            : widget.adminList.employeeNo)),
-                              ),
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.15,
-                                child: ListTile(
-                                    title: const Text(
-                                      "Date Of Joining",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xff575757)),
-                                    ),
-                                    subtitle: Text(widget.adminList.doj == ''
-                                        ? "N/A"
-                                        : widget.adminList.doj)),
-                              ),
+                                subtitle: Text(widget.adminList.doj == ''
+                                    ? "N/A"
+                                    : widget.adminList.doj)),
+                          ),
 
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.15,
-                                child: ListTile(
-                                    title: const Text(
-                                      "Designation",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xff575757)),
-                                    ),
-                                    trailing: widget.role.toUpperCase() ==
-                                            "MANAGEMENT"
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.15,
+                            child: ListTile(
+                                title: const Text(
+                                  "Designation",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xff575757)),
+                                ),
+                                trailing:
+                                    widget.role.toUpperCase() == "MANAGEMENT"
                                         ? IconButton(
                                             onPressed: () {
                                               _showAlertDialog();
@@ -329,44 +336,42 @@ class _AdminProfileInfoState extends State<AdminProfileInfo> {
                                               color: Colors.black,
                                             ))
                                         : null,
-                                    subtitle: Text(
-                                        widget.adminList.designation == ''
-                                            ? "N/A"
-                                            : widget.adminList.designation)),
-                              ),
-                              // ListTile(
-                              //     title: const Text(
-                              //       "Class Teacher",
-                              //       style: TextStyle(
-                              //           fontWeight: FontWeight.bold,
-                              //           color: Color(0xff575757)),
-                              //     ),
-                              //     subtitle: Text(
-                              //         widget.adminList.classTeacher == ''
-                              //             ? "N/A"
-                              //             : widget.adminList.classTeacher)),
-                              // ListTile(
-                              //     title: const Text(
-                              //       "Last Login",
-                              //       style: TextStyle(
-                              //           fontWeight: FontWeight.bold,
-                              //           color: Color(0xff575757)),
-                              //     ),
-                              //     subtitle: Text(widget.adminList. ==
-                              //             ''
-                              //         ? "N/A"
-                              //         : "${(DateFormat.yMMMMEEEEd().format(DateTime.parse(widget.adminList.lastLogin)))}, ${DateFormat.jms().format(DateTime.parse(widget.adminList.lastLogin))}  "))
-                            ],
+                                subtitle: Text(
+                                    widget.adminList.designation == ''
+                                        ? "N/A"
+                                        : widget.adminList.designation)),
                           ),
-                        ),
+                          // ListTile(
+                          //     title: const Text(
+                          //       "Class Teacher",
+                          //       style: TextStyle(
+                          //           fontWeight: FontWeight.bold,
+                          //           color: Color(0xff575757)),
+                          //     ),
+                          //     subtitle: Text(
+                          //         widget.adminList.classTeacher == ''
+                          //             ? "N/A"
+                          //             : widget.adminList.classTeacher)),
+                          // ListTile(
+                          //     title: const Text(
+                          //       "Last Login",
+                          //       style: TextStyle(
+                          //           fontWeight: FontWeight.bold,
+                          //           color: Color(0xff575757)),
+                          //     ),
+                          //     subtitle: Text(widget.adminList. ==
+                          //             ''
+                          //         ? "N/A"
+                          //         : "${(DateFormat.yMMMMEEEEd().format(DateTime.parse(widget.adminList.lastLogin)))}, ${DateFormat.jms().format(DateTime.parse(widget.adminList.lastLogin))}  "))
+                        ],
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
-            ]),
+            ],
           ),
-        ),
+        ]),
       ),
     );
   }
