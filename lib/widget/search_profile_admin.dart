@@ -6,8 +6,8 @@ import 'package:ui/api/userRole/change_user_role.dart';
 import 'package:ui/config/const.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/model/categorylistModel.dart';
-import 'package:ui/model/designation_list_model.dart';
 import 'package:ui/model/search/admin_list_model.dart';
+import 'package:ui/model/settings/index.dart';
 import 'package:ui/utils/utils_file.dart';
 
 class AdminProfileInfo extends StatefulWidget {

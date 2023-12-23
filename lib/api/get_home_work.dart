@@ -27,7 +27,7 @@ Future<ClassGroup?> getHomeWork(DateTime homeWorkDate) async {
       return null;
     }
   } on Error catch (err) {
-    print(err);
+    print("home work class: $err");
     return null;
   }
 }

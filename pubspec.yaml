@@ -80,6 +80,7 @@ dependencies:
   number_pagination: ^0.0.3+2
   table_calendar: any
   filepicker_windows: any
+  device_info: ^2.0.3
 
 dev_dependencies:
   flutter_test:

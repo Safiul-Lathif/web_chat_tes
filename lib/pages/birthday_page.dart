@@ -157,7 +157,7 @@ class _BirthdayPageState extends State<BirthdayPage> {
                           decoration: BoxDecoration(
                               border: Border.all(color: Colors.black38)),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               ElevatedButton(
                                   style: ButtonStyle(
@@ -188,6 +188,7 @@ class _BirthdayPageState extends State<BirthdayPage> {
       await sendBirthday(classIds: classIds, bDayMessage: bDayMessage)
           .then((value) {
         if (value != null) {
+          initialize();
           Utility.displaySnackBar(
               context, "Birthday Wishes Added Successfully");
         }

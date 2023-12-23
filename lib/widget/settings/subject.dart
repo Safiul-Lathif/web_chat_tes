@@ -2,15 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ui/Utils/utility.dart';
-import 'package:ui/api/DivisionlistApi.dart';
-import 'package:ui/api/deleteApi.dart';
-import 'package:ui/api/excelAPiservice.dart';
-import 'package:ui/api/get_subjects_list_api.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/loading_animator.dart';
-import 'package:ui/model/DivisionlistModel.dart';
-import 'package:ui/model/MapClassModel.dart';
-import 'package:ui/model/get_subjects_list.dart';
+import 'package:ui/api/settings/index.dart';
+import 'package:ui/model/settings/index.dart';
 
 class SubjectWidget extends StatefulWidget {
   const SubjectWidget({super.key});
@@ -24,7 +19,7 @@ class _SubjectWidgetState extends State<SubjectWidget> {
   List<Subjects>? subjects;
   int divisionId = 0;
   bool isLoading = true;
-  String className = '';
+  String subjectName = '';
 
   @override
   void initState() {
@@ -55,63 +50,67 @@ class _SubjectWidgetState extends State<SubjectWidget> {
     });
   }
 
+  Future<void> addEditPopUp(bool isAdd, Subjects subject) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(isAdd ? "Add Subject" : "Edit Subject"),
+          actions: [
+            TextButton(
+                onPressed: () async {
+                  await addEditSubject(
+                          divId: divisionId.toString(),
+                          subjectId: subject.id,
+                          subjectName: subjectName)
+                      .then((value) {
+                    getListOfSubject(divisionId);
+                    if (value != null) {
+                      Utility.displaySnackBar(context, value["message"]);
+                    } else {
+                      Utility.displaySnackBar(context, "error");
+                    }
+                    Navigator.pop(context);
+                  });
+                },
+                child: const Text("Submit")),
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Cancel"))
+          ],
+          content: FormBuilderTextField(
+            onChanged: (value) {
+              setState(() {
+                subjectName = value!;
+              });
+            },
+            name: 'subject name',
+            initialValue: subject.subjectName,
+            decoration: InputDecoration(
+                border: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black)),
+                hintText: 'type subject name ',
+                focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black, width: 1)),
+                labelStyle: TextStyle(color: Colors.grey.shade800),
+                contentPadding:
+                    const EdgeInsets.only(left: 10, top: 4, bottom: 4)),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.green,
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text("Add Subjects"),
-                actions: [
-                  TextButton(
-                      onPressed: () async {
-                        await addData(
-                                configType: "subjects",
-                                updateType: "manual",
-                                data: [className],
-                                divId: divisionId.toString())
-                            .then((value) {
-                          getListOfSubject(divisionId);
-                          if (value != null) {
-                            Utility.displaySnackBar(context, value["message"]);
-                          } else {
-                            Utility.displaySnackBar(context, "error");
-                          }
-                          Navigator.pop(context);
-                        });
-                      },
-                      child: const Text("Submit")),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Cancel"))
-                ],
-                content: FormBuilderTextField(
-                  onChanged: (value) {
-                    setState(() {
-                      className = value!;
-                    });
-                  },
-                  name: 'Subjects name',
-                  decoration: InputDecoration(
-                      border: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black)),
-                      hintText: 'type Subject name ',
-                      focusedBorder: const OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.black, width: 1)),
-                      labelStyle: TextStyle(color: Colors.grey.shade800),
-                      contentPadding:
-                          const EdgeInsets.only(left: 10, top: 4, bottom: 4)),
-                ),
-              );
-            },
-          );
+          addEditPopUp(
+              true, Subjects(id: 0, subjectName: '', isclicked: false));
         },
         icon: const Icon(Icons.add),
         label: const Text("Add Subjects"),
@@ -199,64 +198,97 @@ class _SubjectWidgetState extends State<SubjectWidget> {
                                         var subjectList = subjects![index];
                                         return Card(
                                           child: ListTile(
-                                            title: Text(
-                                              subjectList.subjectName,
-                                              style: GoogleFonts.lato(),
-                                            ),
-                                            trailing: IconButton(
-                                              icon: const Icon(Icons.delete),
-                                              onPressed: () {
-                                                showDialog(
+                                            onTap: () {
+                                              showDialog(
                                                   context: context,
                                                   builder: (context) {
                                                     return AlertDialog(
-                                                      title: const Text(
-                                                          "Do you want to Delete this division"),
-                                                      actions: [
-                                                        TextButton(
-                                                            onPressed:
-                                                                () async {
-                                                              await deleteClass(
-                                                                      clsId: subjects![
-                                                                              i]
-                                                                          .id
-                                                                          .toString(),
-                                                                      divisionId:
-                                                                          divisionId
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        contentPadding:
+                                                            EdgeInsets.zero,
+                                                        content:
+                                                            SingleChildScrollView(
+                                                                child: Column(
+                                                                    children: [
+                                                              InkWell(
+                                                                onTap:
+                                                                    () async {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  await deleteClass(
+                                                                          clsId: subjects![i]
+                                                                              .id
+                                                                              .toString(),
+                                                                          divisionId: divisionId
                                                                               .toString())
-                                                                  .then(
-                                                                      (value) {
-                                                                if (value !=
-                                                                    null) {
-                                                                  getListOfSubject(
-                                                                      divisionId);
+                                                                      .then(
+                                                                          (value) {
+                                                                    if (value !=
+                                                                        null) {
+                                                                      getListOfSubject(
+                                                                          divisionId);
 
-                                                                  Utility.displaySnackBar(
-                                                                      context,
-                                                                      "Deleted Successfully");
-                                                                } else {
-                                                                  Utility.displaySnackBar(
-                                                                      context,
-                                                                      "Not Deleted");
-                                                                }
-                                                                Navigator.pop(
-                                                                    context);
-                                                              });
-                                                            },
-                                                            child: const Text(
-                                                                "Yes")),
-                                                        TextButton(
-                                                            onPressed: () {
-                                                              Navigator.pop(
-                                                                  context);
-                                                            },
-                                                            child: const Text(
-                                                                "No"))
-                                                      ],
-                                                    );
-                                                  },
-                                                );
-                                              },
+                                                                      Utility.displaySnackBar(
+                                                                          context,
+                                                                          "Deleted Successfully");
+                                                                    } else {
+                                                                      Utility.displaySnackBar(
+                                                                          context,
+                                                                          "Not Deleted");
+                                                                    }
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  });
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                        width: double
+                                                                            .infinity,
+                                                                        padding: const EdgeInsets.only(
+                                                                            top:
+                                                                                10,
+                                                                            bottom:
+                                                                                10),
+                                                                        child:
+                                                                            Center(
+                                                                          child:
+                                                                              Text("Delete ${subjectList.subjectName}"),
+                                                                        )),
+                                                              ),
+                                                              InkWell(
+                                                                onTap: () {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  addEditPopUp(
+                                                                      false,
+                                                                      subjectList);
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                        width: double
+                                                                            .infinity,
+                                                                        padding: const EdgeInsets.only(
+                                                                            top:
+                                                                                10,
+                                                                            bottom:
+                                                                                10),
+                                                                        child:
+                                                                            Center(
+                                                                          child:
+                                                                              Text("Edit ${subjectList.subjectName}"),
+                                                                        )),
+                                                              ),
+                                                            ])));
+                                                  });
+                                            },
+                                            title: Text(
+                                              subjectList.subjectName,
+                                              style: GoogleFonts.lato(),
                                             ),
                                           ),
                                         );

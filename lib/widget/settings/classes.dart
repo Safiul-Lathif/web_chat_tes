@@ -2,14 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ui/Utils/utility.dart';
-import 'package:ui/api/DivisionlistApi.dart';
-import 'package:ui/api/MapSectionApi.dart';
-import 'package:ui/api/deleteApi.dart';
-import 'package:ui/api/settings/add_edit_class.dart';
+import 'package:ui/api/settings/index.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/loading_animator.dart';
-import 'package:ui/model/DivisionlistModel.dart';
-import 'package:ui/model/MapClassModel.dart';
+import 'package:ui/model/settings/index.dart';
 
 class ClassWidget extends StatefulWidget {
   const ClassWidget({super.key});

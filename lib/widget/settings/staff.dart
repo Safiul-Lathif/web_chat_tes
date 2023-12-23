@@ -2,20 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ui/Utils/utility.dart';
-import 'package:ui/api/DivisionlistApi.dart';
 import 'package:ui/api/categoryListAPI.dart';
+import 'package:ui/api/settings/index.dart';
 import 'package:ui/api/deleteApi.dart';
 import 'package:ui/api/designation_list_api.dart';
 import 'package:ui/api/excelAPiservice.dart';
-import 'package:ui/api/view_section_list_api.dart';
 import 'package:ui/api/view_staff_list_api.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/loading_animator.dart';
-import 'package:ui/model/DivisionlistModel.dart';
 import 'package:ui/model/categorylistModel.dart';
-import 'package:ui/model/designation_list_model.dart';
-import 'package:ui/model/staff_list_model.dart';
-import 'package:ui/model/view_section_model.dart';
+import 'package:ui/model/settings/index.dart';
 
 class StaffWidget extends StatefulWidget {
   const StaffWidget({super.key});
@@ -27,7 +23,6 @@ class StaffWidget extends StatefulWidget {
 class _StaffWidgetState extends State<StaffWidget> {
   List<Division> divisions = [];
   List<DesignationList> designationList = [];
-
   List<StaffListModel>? staffList;
   List<Category> teacherCategory = [];
   List<Subject> subjectList = [];

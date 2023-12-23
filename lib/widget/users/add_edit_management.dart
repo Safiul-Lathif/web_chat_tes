@@ -10,9 +10,10 @@ import 'package:ui/api/addEditUser/add_edit_management_api.dart';
 import 'package:ui/api/designation_list_api.dart';
 import 'package:ui/api/search/check_employee_number.dart';
 import 'package:ui/controllers/image_controller.dart';
-import 'package:ui/model/designation_list_model.dart';
 import 'package:ui/model/search/management_list_model.dart';
 import 'package:ui/utils/utility.dart';
+
+import '../../model/settings/index.dart';
 
 class AddEditManagementPage extends StatefulWidget {
   AddEditManagementPage(

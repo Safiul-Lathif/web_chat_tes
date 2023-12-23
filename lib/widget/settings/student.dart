@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ui/Utils/utility.dart';
-import 'package:ui/api/DivisionlistApi.dart';
-import 'package:ui/api/MapSectionApi.dart';
 import 'package:ui/api/excelAPiservice.dart';
 import 'package:ui/api/search/get_management_list_api.dart';
+import 'package:ui/api/settings/index.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/loading_animator.dart';
-import 'package:ui/model/DivisionlistModel.dart';
-import 'package:ui/model/MapClassModel.dart';
-import 'package:ui/model/MapSectionModel.dart';
+
 import 'package:ui/model/search/management_list_model.dart';
+import 'package:ui/model/settings/index.dart';
 
 class StudentWidget extends StatefulWidget {
   const StudentWidget({super.key});

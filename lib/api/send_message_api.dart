@@ -286,6 +286,7 @@ Future<dynamic> sendHomework({
   required String subId,
   required String msg,
   required String notifyId,
+  required String homedate,
 }) async {
   var url = Uri.parse("${Strings.baseURL}api/user/store_homework");
   SessionManager pref = SessionManager();
@@ -306,6 +307,7 @@ Future<dynamic> sendHomework({
   request.fields["subject_id"] = subId;
   request.fields["message"] = msg;
   request.fields['notification_id'] = notifyId;
+  request.fields['homework_date'] = homedate;
   request.headers.putIfAbsent('Authorization', () => "Bearer $token");
 //};
   try {

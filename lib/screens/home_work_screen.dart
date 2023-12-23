@@ -50,45 +50,6 @@ class _HomeWorkScreenState extends State<HomeWorkScreen> {
               repeat: ImageRepeat.repeat),
         ),
         child: Column(children: [
-          // Container(
-          //   decoration: BoxDecoration(
-          //       color: Colors.green,
-          //       boxShadow: [
-          //         BoxShadow(
-          //             color: Colors.grey.withOpacity(.5),
-          //             offset: const Offset(3, 2),
-          //             blurRadius: 7)
-          //       ],
-          //       image: DecorationImage(
-          //           colorFilter: ColorFilter.mode(
-          //               Colors.blue.withOpacity(0.1), BlendMode.dstATop),
-          //           image: const NetworkImage(
-          //               "https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg"),
-          //           repeat: ImageRepeat.repeat)),
-          //   padding: const EdgeInsets.only(
-          //     top: 5,
-          //     bottom: 5,
-          //   ),
-          //   child: CalendarTimeline(
-          //     initialDate: _selectedDate,
-          //     firstDate: DateTime(2020),
-          //     lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
-          //     onDateSelected: (date) async {
-          //       setState(() {
-          //         _selectedDate = date;
-          //       });
-          //       initialize(_selectedDate);
-          //     },
-          //     leftMargin: 150,
-          //     monthColor: Colors.black,
-          //     dayColor: Colors.white,
-          //     dayNameColor: const Color(0xFF333A47),
-          //     activeDayColor: Colors.white,
-          //     activeBackgroundDayColor: Colors.blueGrey.shade100,
-          //     dotsColor: const Color(0xFF333A47),
-          //     locale: 'en',
-          //   ),
-          // ),
           classGroup == null
               ? SizedBox(
                   height: MediaQuery.of(context).size.height * 0.8,

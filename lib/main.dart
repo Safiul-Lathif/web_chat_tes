@@ -38,6 +38,7 @@ class _ThisAppState extends State<ThisApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        title: 'Tes Chat App',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,

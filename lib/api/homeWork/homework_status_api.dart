@@ -1,35 +1,40 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:ui/config/strings.dart';
-import 'package:ui/model/settings/index.dart';
+import 'package:ui/model/homeWork/homework_status_model.dart';
 import 'package:ui/utils/session_management.dart';
 
-Future<List<SectionDetail>?> getClassSectionsList({required String dId}) async {
-  var url =
-      Uri.parse("${Strings.baseURL}api/user/get_combine_class_section_list");
+Future<List<HomeworkStatusModel>?> getHomeworkStatusList(
+    String id, String status) async {
+  var url = Uri.parse("${Strings.baseURL}api/user/list_homework_status");
   SessionManager pref = SessionManager();
   String? token = await pref.getAuthToken();
-  // String? playerId = await pref.getPlayerId();
 
   var map = <String, dynamic>{};
-
-  map["division_id"] = dId;
+  map["homework_id"] = id;
+  map["status"] = status;
 
   try {
     final response = await http.post(url, body: map, headers: {
       HttpHeaders.authorizationHeader: 'Bearer $token',
-      // 'sender': playerId
     });
     if (response.statusCode == 200) {
       List jsonResponse = jsonDecode(response.body);
-      return jsonResponse.map((json) => SectionDetail.fromJson(json)).toList();
+      return jsonResponse
+          .map((json) => HomeworkStatusModel.fromJson(json))
+          .toList();
     } else {
-      print('Request failed with status: ${response.statusCode}.');
+      if (kDebugMode) {
+        ('Hw-Status :-Request failed with status: ${response.statusCode}.');
+      }
       return null;
     }
   } on Error catch (err) {
-    print(err);
+    if (kDebugMode) {
+      print("Action required:- $err");
+    }
     return null;
   }
 }
