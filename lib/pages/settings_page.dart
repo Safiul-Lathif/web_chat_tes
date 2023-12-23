@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ui/widget/settings/classes.dart';
 import 'package:ui/widget/settings/division.dart';
 import 'package:ui/widget/settings/management.dart';
+import 'package:ui/widget/settings/review_section.dart';
 import 'package:ui/widget/settings/sections.dart';
 import 'package:ui/widget/settings/staff.dart';
 import 'package:ui/widget/settings/student.dart';
@@ -18,7 +19,7 @@ class SettingsPage extends StatelessWidget {
     {"name": "Sections", "pages": const SectionWidget()},
     {"name": "Class", "pages": const ClassWidget()},
     {"name": "Subject", "pages": const SubjectWidget()},
-    // {"name": "Review Section", "pages": Container()},
+    {"name": "Map Subject", "pages": const ReviewSectionWidget()},
     {"name": "Staff", "pages": const StaffWidget()},
     {"name": "Management", "pages": const ManagementWidget()},
     {"name": "Student", "pages": const StudentWidget()},
@@ -28,7 +29,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         body: VerticalTabs(
-      initialIndex: 6,
+      initialIndex: 0,
       tabsWidth: 200,
       direction: TextDirection.ltr,
       changePageDuration: const Duration(milliseconds: 500),

@@ -1,5 +1,3 @@
-
-
 class HomeworkParent {
   HomeworkParent({
     required this.notificationId,
@@ -57,5 +55,25 @@ class HomeworkParent {
         "homework_content": homeworkContent,
         "approval_status": approvalStatus,
         "is_pointed": isPointed,
+      };
+}
+
+class ImagesHw {
+  String images;
+  int id;
+
+  ImagesHw({
+    required this.images,
+    required this.id,
+  });
+
+  factory ImagesHw.fromJson(Map<String, dynamic> json) => ImagesHw(
+        images: json["image"],
+        id: json["id"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "image": images,
+        "id": id,
       };
 }

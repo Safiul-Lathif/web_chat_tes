@@ -4,16 +4,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:ui/Utils/utility.dart';
-import 'package:ui/api/DivisionlistApi.dart';
 import 'package:ui/api/addEditUser/add_edit_management_api.dart';
 import 'package:ui/api/deleteApi.dart';
 import 'package:ui/api/designation_list_api.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/loading_animator.dart';
-import 'package:ui/model/DivisionlistModel.dart';
-import 'package:ui/model/designation_list_model.dart';
+import 'package:ui/model/settings/index.dart';
 import '../../api/search/get_management_list_api.dart';
 import '../../model/search/management_list_model.dart';
+import 'package:ui/api/settings/index.dart';
 
 class ManagementWidget extends StatefulWidget {
   const ManagementWidget({super.key});

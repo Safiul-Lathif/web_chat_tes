@@ -445,6 +445,7 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
                                                 (element) =>
                                                     element.studentId ==
                                                     student.id.toString());
+
                                             widget.attendanceList.add(
                                                 AttendanceSubmitList(
                                                     studentName:
@@ -452,6 +453,9 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
                                                     studentId:
                                                         student.id.toString(),
                                                     attendanceStatus: "2"));
+                                            absentList.removeWhere((element) =>
+                                                element.studentId ==
+                                                student.id.toString());
                                             absentList.add(AttendanceSubmitList(
                                                 studentName: student.firstName,
                                                 studentId:
@@ -527,7 +531,6 @@ class _StudentAttendanceListState extends State<StudentAttendanceList> {
                                                         .then((value) {
                                                       if (value != null) {
                                                         widget.callback();
-
                                                         Navigator.pop(context);
                                                         _snackBar(
                                                             "Attendance Updated Successfully");

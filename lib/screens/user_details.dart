@@ -261,9 +261,6 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                                                     Icons.password_rounded))
                                           ],
                                         ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
                                         Row(
                                           children: [
                                             const Text('Change  password',

@@ -43,27 +43,27 @@ class EditHomeworkModel {
 
   factory EditHomeworkModel.fromJson(Map<String, dynamic> json) =>
       EditHomeworkModel(
-        notificationId: json["notification_id"],
-        subjectId: json["subject_id"],
-        subjectName: json["subject_name"],
-        subjectShortname: json["subject_shortname"],
-        staffName: json["staff_name"],
-        staffId: json["staff_id"],
-        classteacherName: json["classteacher_name"],
-        classteacherId: json["classteacher_id"],
-        classConfig: json["class_config"],
-        classSection: json["class_section"],
+        notificationId: json["notification_id"] ?? 0,
+        subjectId: json["subject_id"] ?? 0,
+        subjectName: json["subject_name"] ?? '',
+        subjectShortname: json["subject_shortname"] ?? '',
+        staffName: json["staff_name"] ?? '',
+        staffId: json["staff_id"] ?? 0,
+        classteacherName: json["classteacher_name"] ?? '',
+        classteacherId: json["classteacher_id"] ?? 0,
+        classConfig: json["class_config"] ?? 0,
+        classSection: json["class_section"] ?? '',
         homeworkDate:
-        // DateTime.parse(json["homework_date"] != ""
-             json["homework_date"],
-            //: DateTime.now()),
-        percent: json["percent"],
-        expiresIn: json["expires_in"],
-        completedCount: json["completed_count"],
-        flag: json["flag"],
-        homeworkContent: json["homework_content"],
-        approvalStatus: json["approval_status"],
-        isPointed: json["is_pointed"],
+            // DateTime.parse(json["homework_date"] != ""
+            json["homework_date"] ?? '',
+        //: DateTime.now()),
+        percent: json["percent"] ?? 0,
+        expiresIn: json["expires_in"] ?? '',
+        completedCount: json["completed_count"] ?? 0,
+        flag: json["flag"] ?? '',
+        homeworkContent: json["homework_content"] ?? '',
+        approvalStatus: json["approval_status"] ?? 0,
+        isPointed: json["is_pointed"] ?? 0,
         images: List<Imageses>.from(
             json["images"].map((x) => Imageses.fromJson(x))),
       );

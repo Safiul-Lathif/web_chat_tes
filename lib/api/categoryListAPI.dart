@@ -74,26 +74,3 @@ Future<List<Category>?> getTeacherCategoryList() async {
     return null;
   }
 }
-
-Future<List<Subject>?> getSubjectList() async {
-  var url = Uri.parse("${Strings.baseURL}api/user/get_staff_category_class");
-  SessionManager pref = SessionManager();
-  String? token = await pref.getAuthToken();
-  // String? playerId = await pref.getPlayerId();
-  try {
-    final response = await http.get(url, headers: {
-      HttpHeaders.authorizationHeader: 'Bearer $token',
-      // 'sender': playerId
-    });
-    if (response.statusCode == 200) {
-      List jsonResponse = jsonDecode(response.body)["subjects"];
-      return jsonResponse.map((json) => Subject.fromJson(json)).toList();
-    } else {
-      print('Request failed with status: ${response.statusCode}.');
-      return null;
-    }
-  } on Error catch (err) {
-    print(err);
-    return null;
-  }
-}
