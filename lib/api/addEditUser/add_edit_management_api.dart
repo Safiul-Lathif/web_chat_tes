@@ -1,19 +1,19 @@
 import 'dart:convert';
+import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:share_plus/share_plus.dart';
 import 'package:ui/config/strings.dart';
 import 'package:ui/model/search/management_list_model.dart';
 import 'package:ui/utils/session_management.dart';
 
 Future<dynamic> addEditManagement(ManagementList managementList,
-    List<XFile> profileImage, bool isEdit) async {
+    List<PlatformFile> profileImage, bool isEdit) async {
   var url = Uri.parse("${Strings.baseURL}api/user/onboarding_edit_management");
   SessionManager pref = SessionManager();
   var token = (await pref.getAuthToken())!;
   var request = http.MultipartRequest("POST", url);
   for (int i = 0; profileImage.length > i; i++) {
-    request.files
-        .add(await http.MultipartFile.fromPath('photo', profileImage[i].path));
+    request.fields["photo"] = base64Encode(profileImage[i].bytes!);
+    request.fields["ext"] = profileImage[i].extension!;
   }
   if (isEdit) request.fields['id'] = managementList.id.toString();
   request.fields['module'] = 'singleuser';

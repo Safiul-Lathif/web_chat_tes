@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,7 +27,7 @@ class _ManagementWidgetState extends State<ManagementWidget> {
   List<DesignationList> designationList = [];
 
   List<ManagementList> managementList = [];
-  List<XFile> selectedPicture = [];
+  List<PlatformFile> selectedPicture = [];
 
   int divisionId = 0;
   bool isLoading = true;

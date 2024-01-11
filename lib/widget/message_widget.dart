@@ -14,14 +14,17 @@ import 'package:ui/api/class_group_api.dart';
 import 'package:ui/api/search/get_admin_list_api.dart';
 import 'package:ui/api/sendTextApi.dart';
 import 'package:ui/config/images.dart';
+import 'package:ui/controllers/image_controller.dart';
 import 'package:ui/custom/file_listview.dart';
 import 'package:ui/custom/filelistviewnew.dart';
 import 'package:ui/model/all_group_list.dart';
 import 'package:ui/model/classModel.dart';
 import 'package:ui/model/group/student_group_list_model.dart';
+import 'package:ui/model/image/get_image_model.dart';
 import 'package:ui/model/search/admin_list_model.dart';
 import 'package:ui/model/search/management_list_model.dart';
 import 'package:ui/utils/utils_file.dart';
+import 'package:ui/widget/photo_view_page.dart';
 import '../api/group/student_group_list.dart';
 import '../api/message_visible_count_api.dart';
 import '../api/search/get_management_list_api.dart';
@@ -69,7 +72,7 @@ class _MessageWidgetState extends State<MessageWidget> {
   ImagePicker picker = ImagePicker();
 
   List<PlatformFile> image = [];
-  List<Uint8List> images = [];
+  List<PlatformFile> images = [];
   List<XFile> img = [];
 
   List<PlatformFile> document = [];
@@ -243,6 +246,7 @@ class _MessageWidgetState extends State<MessageWidget> {
   String visibilityMessage = 'Visible to ';
   bool isMessageSend = true;
   String dropDownTitle = '';
+  String errorImage = '';
 
   List checkListItems = [
     {
@@ -856,7 +860,17 @@ class _MessageWidgetState extends State<MessageWidget> {
                                         color: const Color(0xff9f9f9f)),
                                   ),
                                   child: GestureDetector(
-                                    onTap: selectImages,
+                                    onTap: () async {
+                                      var getImage = await ImageController
+                                          .pickAndProcessImage();
+                                      if (getImage.images.isNotEmpty) {
+                                        imageView(getImage);
+                                      }
+                                      if (getImage.errorText != '') {
+                                        setState(() =>
+                                            errorImage = getImage.errorText);
+                                      }
+                                    },
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -1450,6 +1464,26 @@ class _MessageWidgetState extends State<MessageWidget> {
     );
   }
 
+  void imageView(GetImageModel getImage) async {
+    await showDialog<void>(
+        context: context,
+        builder: (context) => PhotoViewPage(
+              onBack: () {
+                setState(() {
+                  Navigator.pop(context);
+                });
+              },
+              images: getImage.images,
+              onPressed: () {
+                setState(() {
+                  errorImage = getImage.errorText;
+                  image.addAll(getImage.images);
+                });
+                Navigator.pop(context);
+              },
+            ));
+  }
+
   void onMessageSend() async {
     HapticFeedback.vibrate();
     List<String> selectedIds = [];
@@ -1647,8 +1681,7 @@ class _MessageWidgetState extends State<MessageWidget> {
     if (result != null) {
       setState(() {
         image.addAll(result.files);
-        images.add(result.files.first.bytes!);
-        var data = base64Encode(images[0]);
+        images.addAll(result.files);
       });
     }
   }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:ui/config/strings.dart';
@@ -16,7 +17,7 @@ Future<dynamic> addNewStudent({
   required String fatherEmailId,
   required String motherEmailId,
   required String guardianEmailId,
-  required List<XFile> studentPicture,
+  required List<PlatformFile> studentPicture,
   required String admissionNumber,
   required String rollNumber,
   required String groupId,
@@ -31,8 +32,8 @@ Future<dynamic> addNewStudent({
   var dateOfBirth = Utility.convertDateFormat(dob.toString(), "yyyy-MM-dd");
   var request = http.MultipartRequest("POST", url);
   for (int i = 0; studentPicture.length > i; i++) {
-    request.files.add(await http.MultipartFile.fromPath(
-        'student_photo', studentPicture[i].path));
+    request.fields["student_photo"] = base64Encode(studentPicture[i].bytes!);
+    request.fields["ext"] = studentPicture[i].extension!;
   }
   request.fields["father_name"] = fatherName;
   request.fields["mother_name"] = motherName;
@@ -72,7 +73,7 @@ Future<dynamic> addNewStudent({
 Future<dynamic> editStudentProfile({
   required String studentName,
   required String studentId,
-  required List<XFile> studentPicture,
+  required List<PlatformFile> studentPicture,
   required String admissionNumber,
   required String rollNumber,
   required String groupId,
@@ -86,8 +87,8 @@ Future<dynamic> editStudentProfile({
   var dateOfBirth = Utility.convertDateFormat(dob, "yyyy-MM-dd");
   var request = http.MultipartRequest("POST", url);
   for (int i = 0; studentPicture.length > i; i++) {
-    request.files.add(await http.MultipartFile.fromPath(
-        'student_photo', studentPicture[i].path));
+    request.fields["student_photo"] = base64Encode(studentPicture[i].bytes!);
+    request.fields["ext"] = studentPicture[i].extension!;
   }
   request.fields["student_name"] = studentName;
   request.fields["student_id"] = studentId;

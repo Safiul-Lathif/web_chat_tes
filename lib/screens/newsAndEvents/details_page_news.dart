@@ -11,7 +11,6 @@ import 'package:ui/Utils/Utility.dart';
 import 'package:ui/api/news&events/like_dislike_api.dart';
 import 'package:ui/custom/detail_page_image.dart';
 import 'package:ui/custom/loading_animator.dart';
-import 'package:ui/model/news&events/news_feed_model.dart';
 import 'package:ui/model/news&events/single_news_events_model.dart';
 import 'package:ui/utils/session_management.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -21,9 +20,13 @@ import '../../api/news&events/single_news_event.dart';
 
 class DetailsPageNews extends StatefulWidget {
   DetailsPageNews(
-      {super.key, required this.newsId, required this.accessiblePerson});
+      {super.key,
+      required this.newsId,
+      required this.accessiblePerson,
+      required this.callBack});
   String newsId;
   bool accessiblePerson;
+  Function callBack;
 
   @override
   State<DetailsPageNews> createState() => _DetailsPageNewsState();
@@ -84,6 +87,8 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
     return true;
   }
 
+  int itemIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,11 +103,10 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20)),
                   image: DecorationImage(
-                    colorFilter: ColorFilter.mode(
-                        Colors.blue.withOpacity(0.3), BlendMode.dstATop),
-                    image: const AssetImage("assets/images/bg_image_tes.jpg"),
-                    fit: BoxFit.fill,
-                  )),
+                      colorFilter: ColorFilter.mode(
+                          Colors.blue.withOpacity(0.3), BlendMode.dstATop),
+                      image: const AssetImage("assets/images/bg_image_tes.jpg"),
+                      repeat: ImageRepeat.repeatX)),
               child: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -115,13 +119,15 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                               image: NetworkImage(
                                 newsFeed.images[0].image,
                               ),
-                              fit: BoxFit.cover)),
+                              fit: BoxFit.contain)),
                       child: Padding(
-                        padding: const EdgeInsets.only(top: 50, left: 10),
+                        padding: const EdgeInsets.only(top: 10, left: 10),
                         child: CircleAvatar(
                           backgroundColor: Colors.white70,
                           child: IconButton(
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () {
+                                widget.callBack();
+                              },
                               icon: const Icon(
                                 Icons.arrow_back_ios_new,
                                 color: Colors.black,
@@ -288,6 +294,9 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                               ),
                             ],
                           ),
+                          const SizedBox(
+                            width: 20,
+                          )
                         ],
                       ),
                     ),
@@ -303,44 +312,83 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                       ),
                     newsFeed.newsEventsCategory == 4 ||
                             newsFeed.newsEventsCategory == 5
-                        ? SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.25,
-                            width: MediaQuery.of(context).size.width,
-                            child: CarouselSlider.builder(
-                                itemCount: newsFeed.images.length,
-                                options: CarouselOptions(
-                                  autoPlay: true,
-                                  viewportFraction: 0.8,
-                                  aspectRatio: 2.0,
+                        ? Stack(
+                            children: [
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.25,
+                                width: MediaQuery.of(context).size.width,
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => DetailScreen(
+                                                  index: itemIndex,
+                                                  images: images,
+                                                  dateTime: newsFeed.dateTime,
+                                                  title: newsFeed.user,
+                                                )));
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(20)),
+                                      image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image:
+                                              NetworkImage(images[itemIndex])),
+                                    ),
+                                  ),
                                 ),
-                                itemBuilder: (BuildContext context,
-                                        int itemIndex, int pageViewIndex) =>
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailScreen(
-                                                      index: itemIndex,
-                                                      images: images,
-                                                      dateTime:
-                                                          newsFeed.dateTime,
-                                                      title: newsFeed.user,
-                                                    )));
-                                      },
-                                      child: Container(
-                                        margin: const EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(20)),
-                                          image: DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: NetworkImage(
-                                                  images[itemIndex])),
-                                        ),
-                                      ),
-                                    )),
+                              ),
+                              Positioned(
+                                right: 0,
+                                bottom:
+                                    MediaQuery.of(context).size.height * 0.1,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.white70,
+                                  child: IconButton(
+                                      onPressed: itemIndex >=
+                                              newsFeed.images.length - 1
+                                          ? null
+                                          : () {
+                                              setState(() {
+                                                itemIndex++;
+
+                                                print(newsFeed.images.length);
+                                                print(itemIndex);
+                                              });
+                                            },
+                                      icon: const Icon(
+                                        Icons.arrow_forward_ios_sharp,
+                                        color: Colors.black,
+                                      )),
+                                ),
+                              ),
+                              Positioned(
+                                left: 0,
+                                top: MediaQuery.of(context).size.height * 0.09,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.white70,
+                                  child: IconButton(
+                                      onPressed: itemIndex == 0
+                                          ? null
+                                          : () {
+                                              setState(() {
+                                                itemIndex--;
+                                                print(newsFeed.images.length);
+                                                print(itemIndex);
+                                              });
+                                            },
+                                      icon: const Icon(
+                                        Icons.arrow_back_ios_new,
+                                        color: Colors.black,
+                                      )),
+                                ),
+                              )
+                            ],
                           )
                         : Container(),
                     if (newsFeed.addonDescription != null)

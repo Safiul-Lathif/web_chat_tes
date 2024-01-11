@@ -36,7 +36,7 @@ class _AddEditStaffPageState extends State<AddEditStaffPage> {
   DateTime selectedDate = DateTime.now();
   final TextEditingController dobController = TextEditingController();
   final TextEditingController dojController = TextEditingController();
-  List<XFile> selectedPicture = [];
+  List<PlatformFile> selectedPicture = [];
 
   void selectImages() async {
     HapticFeedback.vibrate();
@@ -45,7 +45,7 @@ class _AddEditStaffPageState extends State<AddEditStaffPage> {
       setState(() {
         selectedPicture.clear();
         selectedPicture.addAll(getImage.images);
-        widget.userModel.profileImage = getImage.images.first.path;
+        widget.userModel.profileImage = getImage.images.first.path!;
       });
     }
     if (getImage.errorText != '') _snackBar(getImage.errorText);
@@ -134,297 +134,279 @@ class _AddEditStaffPageState extends State<AddEditStaffPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.blueGrey.shade400,
-          systemOverlayStyle: SystemUiOverlayStyle.dark,
-          title: Text(widget.isEdit ? "Edit Staff" : "Add New Staff"),
-          centerTitle: true,
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context, false),
-              icon: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.black,
-              )),
-        ),
         body: SingleChildScrollView(
+      child: Form(
+          key: _formKey,
           child: Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  image: DecorationImage(
-                      colorFilter: ColorFilter.mode(
-                          Colors.blue.withOpacity(0.4), BlendMode.dstATop),
-                      image: const AssetImage('assets/images/bg_image_tes.jpg'),
-                      repeat: ImageRepeat.repeatY)),
-              child: Form(
-                  key: _formKey,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.only(top: 30, left: 15, right: 15),
-                    child: Column(children: [
-                      Stack(
-                        children: [
-                          Center(
-                            child: selectedPicture.isEmpty
-                                ? Container(
-                                    height: 130,
-                                    width: 130,
-                                    decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                        shape: BoxShape.circle,
-                                        image: DecorationImage(
-                                            onError: (exception, stackTrace) {
-                                              setState(() {
-                                                widget.userModel.profileImage =
-                                                    "https://cdn.iconscout.com/icon/premium/png-256-thumb/add-user-2639844-2214705.png?f=webp";
-                                                fit = BoxFit.cover;
-                                              });
-                                            },
-                                            image: NetworkImage(
-                                                widget.userModel.profileImage),
-                                            fit: fit),
-                                        border: Border.all(
-                                            color: Colors.blueGrey.shade600,
-                                            width: 2)),
-                                  )
-                                : Container(
-                                    height: 130,
-                                    width: 130,
-                                    decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                        shape: BoxShape.circle,
-                                        image: DecorationImage(
-                                            image: FileImage(
-                                                File(selectedPicture[0].path)),
-                                            fit: BoxFit.cover),
-                                        border: Border.all(
-                                            color: Colors.blueGrey.shade600,
-                                            width: 2)),
-                                  ),
-                          ),
-                          Positioned(
-                              bottom: MediaQuery.of(context).size.height * 0.02,
-                              right: MediaQuery.of(context).size.width * 0.2,
-                              child: RawMaterialButton(
-                                onPressed: selectImages,
-                                elevation: 2.0,
-                                fillColor: Colors.blueGrey.shade600,
-                                shape: const CircleBorder(),
-                                child: const Icon(
-                                  Icons.edit,
-                                  color: Colors.white,
-                                  size: 25.0,
+            padding: const EdgeInsets.only(top: 30, left: 15, right: 15),
+            child: Wrap(
+                alignment: WrapAlignment.spaceEvenly,
+                runSpacing: 15,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    child: Stack(
+                      children: [
+                        Center(
+                          child: selectedPicture.isEmpty
+                              ? Container(
+                                  height: 130,
+                                  width: 130,
+                                  decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                          onError: (exception, stackTrace) {
+                                            setState(() {
+                                              widget.userModel.profileImage =
+                                                  "https://cdn.iconscout.com/icon/premium/png-256-thumb/add-user-2639844-2214705.png?f=webp";
+                                              fit = BoxFit.cover;
+                                            });
+                                          },
+                                          image: NetworkImage(
+                                              widget.userModel.profileImage),
+                                          fit: fit),
+                                      border: Border.all(
+                                          color: Colors.blueGrey.shade600,
+                                          width: 2)),
+                                )
+                              : Container(
+                                  height: 130,
+                                  width: 130,
+                                  decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                          image: MemoryImage(
+                                              selectedPicture[0].bytes!),
+                                          fit: BoxFit.cover),
+                                      border: Border.all(
+                                          color: Colors.blueGrey.shade600,
+                                          width: 2)),
                                 ),
-                              )),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      FormTextWidget(
-                          isValidate: true,
-                          keyboardType: TextInputType.name,
-                          isEnabled: true,
-                          initialValue: widget.userModel.firstName,
-                          hintText: 'Staff Name*',
-                          onChanged: (value) {
-                            setState(() {
-                              widget.userModel.firstName = value!;
-                            });
-                          }),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      Container(
-                        decoration: const BoxDecoration(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        width: MediaQuery.of(context).size.width,
-                        child: FormBuilderDropdown(
-                          initialValue: widget.userModel.designation == 0
-                              ? null
-                              : widget.userModel.designation,
-                          validator: (dynamic value) {
-                            if (value == null) {
-                              return 'Please select Category*';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.only(
-                                top: 5, bottom: 5, left: 15),
-                            filled: true,
-                            hintText: 'Select User Category',
-                            disabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black45),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            enabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black45),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            fillColor: Colors.grey.shade100,
-                            hintStyle:
-                                TextStyle(color: Colors.blueGrey.shade500),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                          ),
-                          name: 'userCategory',
-                          items: teachingType
-                              .map<DropdownMenuItem<dynamic>>((item) {
-                            return DropdownMenuItem(
-                              value: item.id,
-                              child: Text(item.categoryName),
-                              onTap: () {
-                                setState(() {
-                                  widget.userModel.designation = item.id;
-                                });
-                              },
-                            );
-                          }).toList(),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      FormTextWidget(
-                          isValidate: true,
-                          isEnabled: true,
-                          keyboardType: TextInputType.number,
-                          initialValue: widget.userModel.mobileNumber == 0
-                              ? ''
-                              : widget.userModel.mobileNumber.toString(),
-                          hintText: 'Mobile Number*',
-                          onChanged: (value) {
-                            setState(() {
-                              widget.userModel.mobileNumber = int.parse(value!);
-                            });
-                          }),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      FormTextWidget(
-                          isValidate: false,
-                          isEnabled: true,
-                          keyboardType: TextInputType.emailAddress,
-                          initialValue: widget.userModel.emailId,
-                          hintText: 'Email Address',
-                          onChanged: (value) {
-                            setState(() {
-                              widget.userModel.emailId = value!;
-                            });
-                          }),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      FormBuilderTextField(
-                          keyboardType: TextInputType.text,
-                          name: "name",
-                          initialValue: widget.userModel.employeeNo,
-                          validator: (value) {
-                            if (!notDuplicate) {
-                              return 'The number is already taken';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.only(
-                                top: 5, bottom: 5, left: 15),
-                            filled: true,
-                            hintText: 'Employee Number',
-                            disabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black45),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            enabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black45),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            fillColor: Colors.grey.shade100,
-                            hintStyle:
-                                TextStyle(color: Colors.blueGrey.shade500),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                          ),
-                          onChanged: (value) async {
-                            setState(() {
-                              widget.userModel.employeeNo = value!;
-                            });
-                            var result = await checkEmployeeNumber(
-                                value!, widget.userModel.id, 2);
-                            if (result != null) {
+                        Positioned(
+                            right: MediaQuery.of(context).size.width * 0.06,
+                            bottom: 0,
+                            child: RawMaterialButton(
+                              onPressed: selectImages,
+                              elevation: 2.0,
+                              fillColor: Colors.blueGrey.shade600,
+                              shape: const CircleBorder(),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                                size: 25.0,
+                              ),
+                            )),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    child: FormTextWidget(
+                        isValidate: true,
+                        keyboardType: TextInputType.name,
+                        isEnabled: true,
+                        initialValue: widget.userModel.firstName,
+                        hintText: 'Staff Name*',
+                        onChanged: (value) {
+                          setState(() {
+                            widget.userModel.firstName = value!;
+                          });
+                        }),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      width: MediaQuery.of(context).size.width,
+                      child: FormBuilderDropdown(
+                        initialValue: widget.userModel.designation == 0
+                            ? null
+                            : widget.userModel.designation,
+                        validator: (dynamic value) {
+                          if (value == null) {
+                            return 'Please select Category*';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.only(
+                              top: 5, bottom: 5, left: 15),
+                          filled: true,
+                          hintText: 'Select User Category',
+                          disabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black45),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black45),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          fillColor: Colors.grey.shade100,
+                          hintStyle: TextStyle(color: Colors.blueGrey.shade500),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
+                        name: 'userCategory',
+                        items:
+                            teachingType.map<DropdownMenuItem<dynamic>>((item) {
+                          return DropdownMenuItem(
+                            value: item.id,
+                            child: Text(item.categoryName),
+                            onTap: () {
                               setState(() {
-                                notDuplicate = result['status'] ?? true;
+                                widget.userModel.designation = item.id;
                               });
-                            }
-                          }),
-                      const SizedBox(
-                        height: 15,
+                            },
+                          );
+                        }).toList(),
                       ),
-                      InkWell(
-                        onTap: () {
-                          _selectDate(context, 'dob');
+                    ),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    child: FormTextWidget(
+                        isValidate: true,
+                        isEnabled: true,
+                        keyboardType: TextInputType.number,
+                        initialValue: widget.userModel.mobileNumber == 0
+                            ? ''
+                            : widget.userModel.mobileNumber.toString(),
+                        hintText: 'Mobile Number*',
+                        onChanged: (value) {
+                          setState(() {
+                            widget.userModel.mobileNumber = int.parse(value!);
+                          });
+                        }),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    child: FormTextWidget(
+                        isValidate: false,
+                        isEnabled: true,
+                        keyboardType: TextInputType.emailAddress,
+                        initialValue: widget.userModel.emailId,
+                        hintText: 'Email Address',
+                        onChanged: (value) {
+                          setState(() {
+                            widget.userModel.emailId = value!;
+                          });
+                        }),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    child: FormBuilderTextField(
+                        keyboardType: TextInputType.text,
+                        name: "name",
+                        initialValue: widget.userModel.employeeNo,
+                        validator: (value) {
+                          if (!notDuplicate) {
+                            return 'The number is already taken';
+                          }
+                          return null;
                         },
-                        child: FormTextWidget(
-                            isValidate: true,
-                            isEnabled: false,
-                            keyboardType: TextInputType.name,
-                            controller: dobController,
-                            hintText: 'Date Of Birth*',
-                            onChanged: (value) {}),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          _selectDate(context, 'doj');
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.only(
+                              top: 5, bottom: 5, left: 15),
+                          filled: true,
+                          hintText: 'Employee Number',
+                          disabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black45),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black45),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          fillColor: Colors.grey.shade100,
+                          hintStyle: TextStyle(color: Colors.blueGrey.shade500),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
+                        onChanged: (value) async {
+                          setState(() {
+                            widget.userModel.employeeNo = value!;
+                          });
+                          var result = await checkEmployeeNumber(
+                              value!, widget.userModel.id, 2);
+                          if (result != null) {
+                            setState(() {
+                              notDuplicate = result['status'] ?? true;
+                            });
+                          }
+                        }),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    child: InkWell(
+                      onTap: () {
+                        _selectDate(context, 'dob');
+                      },
+                      child: FormTextWidget(
+                          isValidate: true,
+                          isEnabled: false,
+                          keyboardType: TextInputType.name,
+                          controller: dobController,
+                          hintText: 'Date Of Birth*',
+                          onChanged: (value) {}),
+                    ),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    child: InkWell(
+                      onTap: () {
+                        _selectDate(context, 'doj');
+                      },
+                      child: FormTextWidget(
+                          isValidate: false,
+                          isEnabled: false,
+                          keyboardType: TextInputType.name,
+                          controller: dojController,
+                          hintText: 'Date Of Join',
+                          onChanged: (value) {}),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: double.infinity,
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.15,
+                    child: ElevatedButton(
+                        style: ButtonStyle(
+                            overlayColor: MaterialStateProperty.all<Color>(
+                                Colors.black12),
+                            foregroundColor:
+                                const MaterialStatePropertyAll(Colors.white),
+                            backgroundColor: MaterialStatePropertyAll(
+                                Colors.blueGrey.shade400)),
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            await addEditStaff(widget.userModel,
+                                    selectedPicture, widget.isEdit)
+                                .then((value) {
+                              if (value != null) {
+                                Utility.displaySnackBar(
+                                    context,
+                                    widget.isEdit
+                                        ? "Staff Updated Scuessfully"
+                                        : 'Staff added scuessfully');
+                                Navigator.pop(context, true);
+                              } else {
+                                Utility.displaySnackBar(context,
+                                    'Something went wrong please try again');
+                                Navigator.pop(context, true);
+                              }
+                            });
+                          }
                         },
-                        child: FormTextWidget(
-                            isValidate: false,
-                            isEnabled: false,
-                            keyboardType: TextInputType.name,
-                            controller: dojController,
-                            hintText: 'Date Of Join',
-                            onChanged: (value) {}),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      ElevatedButton(
-                          style: ButtonStyle(
-                              overlayColor: MaterialStateProperty.all<Color>(
-                                  Colors.black12),
-                              foregroundColor:
-                                  const MaterialStatePropertyAll(Colors.white),
-                              backgroundColor: MaterialStatePropertyAll(
-                                  Colors.blueGrey.shade400)),
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              await addEditStaff(widget.userModel,
-                                      selectedPicture, widget.isEdit)
-                                  .then((value) {
-                                if (value != null) {
-                                  Utility.displaySnackBar(
-                                      context,
-                                      widget.isEdit
-                                          ? "Staff Updated Scuessfully"
-                                          : 'Staff added scuessfully');
-                                  Navigator.pop(context, true);
-                                } else {
-                                  Utility.displaySnackBar(context,
-                                      'Something went wrong please try again');
-                                  Navigator.pop(context, true);
-                                }
-                              });
-                            }
-                          },
-                          child:
-                              Text(widget.isEdit ? "Edit User" : "Save User"))
-                    ]),
-                  ))),
-        ));
+                        child: Text(widget.isEdit ? "Edit User" : "Save User")),
+                  )
+                ]),
+          )),
+    ));
   }
 }
 

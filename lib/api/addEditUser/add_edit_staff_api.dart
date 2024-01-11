@@ -1,19 +1,19 @@
 import 'dart:convert';
+import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:share_plus/share_plus.dart';
 import 'package:ui/config/strings.dart';
 import 'package:ui/utils/session_management.dart';
 import '../../model/search/staff_list_model.dart';
 
-Future<dynamic> addEditStaff(
-    StaffSearchList staffList, List<XFile> profileImage, bool isEdit) async {
+Future<dynamic> addEditStaff(StaffSearchList staffList,
+    List<PlatformFile> profileImage, bool isEdit) async {
   var url = Uri.parse("${Strings.baseURL}api/user/create_update_staff");
   SessionManager pref = SessionManager();
   var token = (await pref.getAuthToken())!;
   var request = http.MultipartRequest("POST", url);
   for (int i = 0; profileImage.length > i; i++) {
-    request.files
-        .add(await http.MultipartFile.fromPath('photo', profileImage[i].path));
+    request.fields["photo"] = base64Encode(profileImage[i].bytes!);
+    request.fields["ext"] = profileImage[i].extension!;
   }
   if (isEdit) request.fields['id'] = staffList.id.toString();
   request.fields['name'] = staffList.firstName.toString();

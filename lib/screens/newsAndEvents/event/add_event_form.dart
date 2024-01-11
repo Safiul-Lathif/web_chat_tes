@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -9,7 +10,10 @@ import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:ui/Utils/utility.dart';
 import 'package:ui/api/class_group_api.dart';
 import 'package:ui/api/news&events/send_events_api.dart';
+import 'package:ui/config/const.dart';
 import 'package:ui/model/classModel.dart';
+
+import '../../../widget/photo_view_page.dart';
 
 class AddEventForm extends StatefulWidget {
   const AddEventForm({super.key});
@@ -21,20 +25,78 @@ class AddEventForm extends StatefulWidget {
 class _AddEventFormState extends State<AddEventForm> {
   ImagePicker picker = ImagePicker();
   bool isChecked = false;
-  void _selectImage() async {
-    HapticFeedback.vibrate();
-    final List<XFile> selectedImages = await picker.pickMultiImage();
-    if (selectedImages.isNotEmpty) {
-      setState(() {
-        image.addAll(selectedImages);
-      });
+  Future<void> pickAndProcessImage() async {
+    final pickedFile = await pickImage();
+    imageView(pickedFile);
+  }
+
+  Future<void> imageView(List<PlatformFile> images) async {
+    await showDialog<void>(
+        context: context,
+        builder: (context) => PhotoViewPage(
+              onBack: () {
+                setState(() {
+                  images.clear();
+                  Navigator.pop(context);
+                });
+              },
+              images: images,
+              onPressed: () async {
+                var count = 0;
+                for (var img in images) {
+                  if (await isImageBelow5MB(img)) {
+                    if (image.length >= 11) {
+                      _snackBar('cant select more then 10 images');
+                    } else {
+                      setState(() {
+                        image.add(img);
+                      });
+                    }
+                  } else {
+                    setState(() {
+                      count++;
+                      _snackBar("$count images removed as per restriction");
+                    });
+                  }
+                }
+                Navigator.pop(context);
+              },
+            ));
+  }
+
+  Future<List<PlatformFile>> pickImage() async {
+    final pickedFile = await FilePicker.platform.pickFiles(
+      withData: true,
+      allowMultiple: true,
+      type: FileType.image,
+    );
+
+    return pickedFile!.files;
+  }
+
+  Future<bool> isImageBelow5MB(PlatformFile? pickedFile) async {
+    if (pickedFile == null) return false;
+
+    final fileSize = pickedFile.size;
+    return fileSize < IMG_SIZE_RESTRICTION * 1024 * 1024; // 5 MB in bytes
+  }
+
+  _snackBar(String message) {
+    if (message != '') {
+      final snackBar = SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(20),
+        duration: const Duration(milliseconds: 1000),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
   var title = '';
   var link = '';
   var description = '';
-  List<XFile> image = [];
+  List<PlatformFile> image = [];
 
   String? dateTime;
   String? time;
@@ -205,7 +267,7 @@ class _AddEventFormState extends State<AddEventForm> {
                         height: 20,
                       ),
                       InkWell(
-                        onTap: _selectImage,
+                        onTap: pickAndProcessImage,
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
@@ -251,8 +313,8 @@ class _AddEventFormState extends State<AddEventForm> {
                                   child: ClipRRect(
                                     borderRadius: const BorderRadius.all(
                                         Radius.circular(15)),
-                                    child: Image.file(
-                                      File(image[i].path),
+                                    child: Image.memory(
+                                      image[i].bytes!,
                                       height: 100,
                                       width: 100,
                                       fit: BoxFit.cover,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/model/profile_model.dart';
-import 'package:ui/model/search_staff_model.dart';
+import 'package:ui/model/search/staff_list_model.dart';
 import 'package:ui/utils/utils_file.dart';
 
 class StaffProfileInfo extends StatefulWidget {

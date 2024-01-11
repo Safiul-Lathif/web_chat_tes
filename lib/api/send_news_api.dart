@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -47,7 +48,7 @@ Future<dynamic> sendNewsText({
 }
 
 Future<dynamic> sendNewsWithImage({
-  required List<XFile> img,
+  required List<PlatformFile> img,
   required String title,
   required String msgCategory,
   required String description,
@@ -60,8 +61,8 @@ Future<dynamic> sendNewsWithImage({
   var request = http.MultipartRequest("POST", url);
   // map["chat_message"] = msg;
   for (int i = 0; img.length > i; i++) {
-    request.files
-        .add(await http.MultipartFile.fromPath('images[$i]', img[i].path));
+    request.fields["images[$i]"] = base64Encode(img[i].bytes!);
+    request.fields["ext[$i]"] = img[i].extension!;
   }
 
   request.fields["title"] = title;

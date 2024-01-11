@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:ui/config/strings.dart';
-import 'package:ui/model/search_staff_model.dart';
+import 'package:ui/model/search/staff_list_model.dart';
 import 'package:ui/utils/session_management.dart';
 
 Future<SearchStaffModel?> getStaffList(int pageNumber) async {

@@ -1,12 +1,15 @@
 // ignore_for_file: must_be_immutable
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:ui/api/dashboard/dashboard_api.dart';
 import 'package:ui/api/main_group_api.dart';
+import 'package:ui/api/profile/edit_profile.dart';
 import 'package:ui/api/profile_api.dart';
 import 'package:ui/config/const.dart';
 import 'package:ui/config/images.dart';
@@ -14,8 +17,9 @@ import 'package:ui/controllers/image_controller.dart';
 import 'package:ui/model/dashboard/dashboard_model.dart';
 import 'package:ui/model/main_group_model.dart';
 import 'package:ui/model/profile_model.dart';
-import 'package:ui/screens/forget_change_password.dart';
 import 'package:ui/screens/forget_password.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 class UserDetailsScreen extends StatefulWidget {
   UserDetailsScreen(
@@ -87,7 +91,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   bool isForgetPasswordScreen = true;
   bool isChangePasswordScreen = true;
 
-  List<XFile> selectedPicture = [];
+  List<PlatformFile> selectedPicture = [];
   Uint8List? image;
 
   void selectImages() async {
@@ -98,11 +102,6 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         selectedPicture.addAll(getImage.images);
       });
     }
-
-    var img = await selectedPicture.first.readAsBytes();
-    setState(() {
-      image = img;
-    });
     if (getImage.errorText != '') _snackBar(getImage.errorText);
   }
 
@@ -119,9 +118,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   }
 
   void onSave(image, BuildContext ctx) {
-    setState(() {
-      profiles!.profile = image;
-    });
+    editYourProfile(profileImage: selectedPicture, userName: '');
     Navigator.pop(ctx);
     _snackBar('Profile Updated Successfully');
   }
@@ -329,37 +326,42 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                                                                   Alignment
                                                                       .center,
                                                               actions: [
-                                                                Center(
-                                                                    child:
-                                                                        Container(
-                                                                  height: 130,
-                                                                  width: 130,
-                                                                  decoration: BoxDecoration(
-                                                                      color: Colors.transparent,
-                                                                      shape: BoxShape.circle,
-                                                                      image: DecorationImage(
-                                                                          onError: (exception, stackTrace) {
-                                                                            setState(() {
-                                                                              profiles!.profile = "https://cdn.iconscout.com/icon/premium/png-256-thumb/add-user-2639844-2214705.png?f=webp";
-                                                                            });
-                                                                          },
-                                                                          image: NetworkImage(profiles!.profile == '' ? "https://cdn.iconscout.com/icon/premium/png-256-thumb/add-user-2639844-2214705.png?f=webp" : profiles!.profile),
-                                                                          fit: BoxFit.cover),
-                                                                      border: Border.all(color: Colors.blueGrey.shade600, width: 2)),
-                                                                )
-                                                                    // : Container(
-                                                                    //     height:
-                                                                    //         130,
-                                                                    //     width:
-                                                                    //         130,
-                                                                    //     decoration: BoxDecoration(
-                                                                    //         color:
-                                                                    //             Colors.transparent,
-                                                                    //         shape: BoxShape.circle,
-                                                                    //         image: DecorationImage(image: NetworkImage(profiles!.profile), fit: BoxFit.cover),
-                                                                    //         border: Border.all(color: Colors.blueGrey.shade600, width: 2)),
-                                                                    //   ),
-                                                                    ),
+                                                                selectedPicture
+                                                                        .isEmpty
+                                                                    ? Center(
+                                                                        child:
+                                                                            Container(
+                                                                        height:
+                                                                            130,
+                                                                        width:
+                                                                            130,
+                                                                        decoration: BoxDecoration(
+                                                                            color: Colors.transparent,
+                                                                            shape: BoxShape.circle,
+                                                                            image: DecorationImage(
+                                                                                onError: (exception, stackTrace) {
+                                                                                  setState(() {
+                                                                                    profiles!.profile = "https://cdn.iconscout.com/icon/premium/png-256-thumb/add-user-2639844-2214705.png?f=webp";
+                                                                                  });
+                                                                                },
+                                                                                image: NetworkImage(profiles!.profile == '' ? "https://cdn.iconscout.com/icon/premium/png-256-thumb/add-user-2639844-2214705.png?f=webp" : profiles!.profile),
+                                                                                fit: BoxFit.cover),
+                                                                            border: Border.all(color: Colors.blueGrey.shade600, width: 2)),
+                                                                      ))
+                                                                    : Center(
+                                                                        child:
+                                                                            Container(
+                                                                          height:
+                                                                              130,
+                                                                          width:
+                                                                              130,
+                                                                          decoration: BoxDecoration(
+                                                                              color: Colors.transparent,
+                                                                              shape: BoxShape.circle,
+                                                                              image: DecorationImage(image: MemoryImage(selectedPicture[0].bytes!), fit: BoxFit.cover),
+                                                                              border: Border.all(color: Colors.blueGrey.shade600, width: 2)),
+                                                                        ),
+                                                                      ),
                                                                 Center(
                                                                   child:
                                                                       Padding(
@@ -380,17 +382,8 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                                                                             setState(() {
                                                                               selectedPicture.clear();
                                                                               selectedPicture.addAll(getImage.images);
-                                                                              profiles!.profile = getImage.images.first.path;
                                                                             });
                                                                           }
-                                                                          var img = await selectedPicture
-                                                                              .first
-                                                                              .readAsBytes();
-                                                                          setState(
-                                                                              () {
-                                                                            image =
-                                                                                img;
-                                                                          });
                                                                           if (getImage.errorText !=
                                                                               '') {
                                                                             _snackBar(getImage.errorText);
