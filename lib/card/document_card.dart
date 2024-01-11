@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
+import 'dart:html';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -849,35 +850,38 @@ class _DocumentCardState extends State<DocumentCard> {
       {required String url,
       required String fileName,
       required int index}) async {
-    final file = await downloadFile(url, fileName);
-    setState(() {
-      toggled = [];
-      //ticket no:- unknown issue
-      isDownloading = false;
-    });
-    if (file == null) {
-      return Utility.displaySnackBar(context, 'Unable to open Document');
-    }
-    OpenFile.open(file.path);
+    AnchorElement anchorElement = AnchorElement(href: url);
+    anchorElement.download = fileName;
+    anchorElement.click();
+    // final file = await downloadFile(url, fileName);
+    // setState(() {
+    //   toggled = [];
+    //   //ticket no:- unknown issue
+    //   isDownloading = false;
+    // });
+    // if (file == null) {
+    //   return Utility.displaySnackBar(context, 'Unable to open Document');
+    // }
+    // OpenFile.open(file.path);
   }
 
-  Future<File?> downloadFile(String url, String name) async {
-    final appStorage = await getExternalStorageDirectory();
-    final file = File('${appStorage!.path}/$name');
-    try {
-      final response = await Dio().get(url,
-          options: Options(
-            responseType: ResponseType.bytes,
-          ));
-      final raf = file.openSync(mode: FileMode.write);
-      raf.writeFromSync(response.data);
-      await raf.close();
-      return file;
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error: $e');
-      }
-      return null;
-    }
-  }
+  // Future<File?> downloadFile(String url, String name) async {
+  //   final appStorage = await getExternalStorageDirectory();
+  //   final file = File('${appStorage!.path}/$name');
+  //   try {
+  //     final response = await Dio().get(url,
+  //         options: Options(
+  //           responseType: ResponseType.bytes,
+  //         ));
+  //     final raf = file.openSync(mode: FileMode.write);
+  //     raf.writeFromSync(response.data);
+  //     await raf.close();
+  //     return file;
+  //   } catch (e) {
+  //     if (kDebugMode) {
+  //       print('Error: $e');
+  //     }
+  //     return null;
+  //   }
+  // }
 }

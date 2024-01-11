@@ -1,3 +1,4 @@
+import 'dart:html';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -8,7 +9,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:ui/config/images.dart';
-import 'package:ui/config/strings.dart';
 import 'package:ui/custom/approve_deny.dart';
 import 'package:ui/custom/deleted_widget.dart';
 import 'package:ui/custom/info_delete.dart';
@@ -540,32 +540,35 @@ class _MaterialCardState extends State<MaterialCard> {
   }
 
   Future openFile({required String url, required String fileName}) async {
-    final file = await downloadFile(url, fileName);
-    if (file == null) return;
-    setState(() {
-      isDownloading = false;
-    });
-    if (file.path.isEmpty) return;
-    OpenFile.open(file.path);
+    AnchorElement anchorElement = AnchorElement(href: url);
+    anchorElement.download = fileName;
+    anchorElement.click();
+    // final file = await downloadFile(url, fileName);
+    // if (file == null) return;
+    // setState(() {
+    //   isDownloading = false;
+    // });
+    // if (file.path.isEmpty) return;
+    // OpenFile.open(file.path);
   }
 
-  Future<File?> downloadFile(String url, String name) async {
-    final appStorage = await getExternalStorageDirectory();
-    final file = File('${appStorage!.path}/$name');
-    try {
-      final response = await Dio().get(url,
-          options: Options(
-            responseType: ResponseType.bytes,
-          ));
-      final raf = file.openSync(mode: FileMode.write);
-      raf.writeFromSync(response.data);
-      await raf.close();
-      return file;
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error: $e');
-      }
-      return null;
-    }
-  }
+  // Future<File?> downloadFile(String url, String name) async {
+  //   final appStorage = await getExternalStorageDirectory();
+  //   final file = File('${appStorage!.path}/$name');
+  //   try {
+  //     final response = await Dio().get(url,
+  //         options: Options(
+  //           responseType: ResponseType.bytes,
+  //         ));
+  //     final raf = file.openSync(mode: FileMode.write);
+  //     raf.writeFromSync(response.data);
+  //     await raf.close();
+  //     return file;
+  //   } catch (e) {
+  //     if (kDebugMode) {
+  //       print('Error: $e');
+  //     }
+  //     return null;
+  //   }
+  // }
 }

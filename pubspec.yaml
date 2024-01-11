@@ -81,6 +81,7 @@ dependencies:
   table_calendar: any
   filepicker_windows: any
   device_info: ^2.0.3
+  syncfusion_flutter_pdf: any
 
 dev_dependencies:
   flutter_test:

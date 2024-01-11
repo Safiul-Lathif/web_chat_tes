@@ -44,7 +44,7 @@ Future<dynamic> sendText({
 }
 
 Future<dynamic> sendImg({
-  required List<XFile> img,
+  required List<PlatformFile> img,
   required String distType,
   required String msgCategory,
   required String groupId,
@@ -59,8 +59,8 @@ Future<dynamic> sendImg({
   var request = http.MultipartRequest("POST", url);
   // map["chat_message"] = msg;
   for (int i = 0; img.length > i; i++) {
-    request.files
-        .add(await http.MultipartFile.fromPath('attachment[$i]', img[i].path));
+    request.fields["attachment[$i]"] = base64Encode(img[i].bytes!);
+    request.fields["ext[$i]"] = img[i].extension!;
   }
 
   request.fields["distribution_type"] = distType;
@@ -102,10 +102,8 @@ Future<dynamic> sendAudio({
   // map["chat_message"] = msg;
   if (fileList.isNotEmpty && fileList.length > 0) {
     for (int i = 0; fileList.length > i; i++) {
-      print(fileList.length);
-      print(fileList[i].path);
-      request.files.add(await http.MultipartFile.fromPath(
-          'attachment[$i]', fileList[i].path.toString()));
+      request.fields["attachment[$i]"] = base64Encode(fileList[i].bytes!);
+      request.fields["ext[$i]"] = fileList[i].extension!;
     }
     request.fields["distribution_type"] = distType;
     request.fields["message_category"] = msgCategory;
@@ -298,8 +296,8 @@ Future<dynamic> sendHomework({
   // ignore: prefer_is_empty
   if (fileList.isNotEmpty && fileList.length > 0) {
     for (int i = 0; fileList.length > i; i++) {
-      request.files.add(await http.MultipartFile.fromPath(
-          'attachment[$i]', fileList[i].path.toString()));
+      request.fields["attachment[$i]"] = base64Encode(fileList[i].bytes!);
+      request.fields["ext[$i]"] = fileList[i].extension!;
     }
   }
   request.fields["class_config"] = classConfig;

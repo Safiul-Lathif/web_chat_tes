@@ -81,7 +81,7 @@ class _FileListViewNewState extends State<FileListViewNew> {
                                     )
                                   ],
                                 )
-                              : Image.memory(widget.file[index])
+                              : Image.memory(widget.file[index].bytes)
                           // Image.file(
                           //     File(XFile.fromData(widget.file[index]).path),
                           //     // File(widget.file[index].path),

@@ -17,6 +17,8 @@ Future<ProfileModel?> getProfile(
   map["user_role"] = role;
   if (studentId != '') map['student_id'] = studentId;
 
+  print(map);
+
   try {
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});

@@ -39,7 +39,7 @@ class _AddEditParentPageState extends State<AddEditParentPage> {
   ];
   DateTime selectedDate = DateTime.now();
   final TextEditingController dobController = TextEditingController();
-  List<XFile> selectedPicture = [];
+  List<PlatformFile> selectedPicture = [];
   bool isMapped = true;
 
   void selectImages() async {
@@ -49,7 +49,7 @@ class _AddEditParentPageState extends State<AddEditParentPage> {
       setState(() {
         selectedPicture.clear();
         selectedPicture.addAll(getImage.images);
-        widget.userModel.parentProfileImage = getImage.images.first.path;
+        widget.userModel.parentProfileImage = getImage.images.first.path!;
       });
     }
     if (getImage.errorText != '') _snackBar(getImage.errorText);
@@ -114,274 +114,260 @@ class _AddEditParentPageState extends State<AddEditParentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.blueGrey.shade400,
-          systemOverlayStyle: SystemUiOverlayStyle.dark,
-          title: Text(widget.isEdit ? "Edit Parent" : "Add New Parent"),
-          centerTitle: true,
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context, false),
-              icon: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.black,
-              )),
-        ),
+        backgroundColor: Colors.white,
         body: SingleChildScrollView(
             child: Container(
                 padding: const EdgeInsets.only(top: 30, left: 15, right: 15),
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    image: DecorationImage(
-                        colorFilter: ColorFilter.mode(
-                            Colors.blue.withOpacity(0.4), BlendMode.dstATop),
-                        image:
-                            const AssetImage('assets/images/bg_image_tes.jpg'),
-                        repeat: ImageRepeat.repeatY)),
                 child: Form(
                     key: _formKey,
-                    child: Column(children: [
-                      Stack(
+                    child: Wrap(
+                        alignment: WrapAlignment.spaceEvenly,
+                        runSpacing: 15,
                         children: [
-                          Center(
-                            child: selectedPicture.isEmpty
-                                ? Container(
-                                    height: 130,
-                                    width: 130,
-                                    decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                        shape: BoxShape.circle,
-                                        image: DecorationImage(
-                                            onError: (exception, stackTrace) {
-                                              setState(() {
-                                                widget.userModel
-                                                        .parentProfileImage =
-                                                    "https://cdn.iconscout.com/icon/premium/png-256-thumb/add-user-2639844-2214705.png?f=webp";
-                                                fit = BoxFit.cover;
-                                              });
-                                            },
-                                            image: NetworkImage(widget
-                                                .userModel.parentProfileImage),
-                                            fit: fit),
-                                        border: Border.all(
-                                            color: Colors.blueGrey.shade600,
-                                            width: 2)),
-                                  )
-                                : Container(
-                                    height: 130,
-                                    width: 130,
-                                    decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                        shape: BoxShape.circle,
-                                        image: DecorationImage(
-                                            image: FileImage(
-                                                File(selectedPicture[0].path)),
-                                            fit: BoxFit.cover),
-                                        border: Border.all(
-                                            color: Colors.blueGrey.shade600,
-                                            width: 2)),
-                                  ),
-                          ),
-                          Positioned(
-                              bottom: MediaQuery.of(context).size.height * 0.02,
-                              right: MediaQuery.of(context).size.width * 0.2,
-                              child: RawMaterialButton(
-                                onPressed: selectImages,
-                                elevation: 2.0,
-                                fillColor: Colors.blueGrey.shade600,
-                                shape: const CircleBorder(),
-                                child: const Icon(
-                                  Icons.edit,
-                                  color: Colors.white,
-                                  size: 25.0,
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.25,
+                            child: Stack(
+                              children: [
+                                Center(
+                                  child: selectedPicture.isEmpty
+                                      ? Container(
+                                          height: 130,
+                                          width: 130,
+                                          decoration: BoxDecoration(
+                                              color: Colors.transparent,
+                                              shape: BoxShape.circle,
+                                              image: DecorationImage(
+                                                  onError:
+                                                      (exception, stackTrace) {
+                                                    setState(() {
+                                                      widget.userModel
+                                                              .parentProfileImage =
+                                                          "https://cdn.iconscout.com/icon/premium/png-256-thumb/add-user-2639844-2214705.png?f=webp";
+                                                      fit = BoxFit.cover;
+                                                    });
+                                                  },
+                                                  image: NetworkImage(widget
+                                                      .userModel
+                                                      .parentProfileImage),
+                                                  fit: fit),
+                                              border: Border.all(
+                                                  color:
+                                                      Colors.blueGrey.shade600,
+                                                  width: 2)),
+                                        )
+                                      : Container(
+                                          height: 130,
+                                          width: 130,
+                                          decoration: BoxDecoration(
+                                              color: Colors.transparent,
+                                              shape: BoxShape.circle,
+                                              image: DecorationImage(
+                                                  image: MemoryImage(
+                                                      selectedPicture[0]
+                                                          .bytes!),
+                                                  fit: BoxFit.cover),
+                                              border: Border.all(
+                                                  color:
+                                                      Colors.blueGrey.shade600,
+                                                  width: 2)),
+                                        ),
                                 ),
-                              )),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      FormTextWidget(
-                          isValidate: true,
-                          keyboardType: TextInputType.name,
-                          isEnabled: true,
-                          initialValue: widget.userModel.firstName,
-                          hintText: 'Parent Name',
-                          onChanged: (value) {
-                            setState(() {
-                              widget.userModel.firstName = value!;
-                            });
-                          }),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      Container(
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        width: MediaQuery.of(context).size.width,
-                        child: FormBuilderDropdown(
-                          initialValue: widget.userModel.userCategory == 0
-                              ? null
-                              : widget.userModel.userCategory,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.only(
-                                top: 5, bottom: 5, left: 15),
-                            filled: true,
-                            hintText: 'Select User Category',
-                            disabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black45),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            enabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black45),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            fillColor: Colors.grey.shade100,
-                            hintStyle:
-                                TextStyle(color: Colors.blueGrey.shade500),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10)),
+                                Positioned(
+                                    right: MediaQuery.of(context).size.width *
+                                        0.06,
+                                    bottom: 0,
+                                    child: RawMaterialButton(
+                                      onPressed: selectImages,
+                                      elevation: 2.0,
+                                      fillColor: Colors.blueGrey.shade600,
+                                      shape: const CircleBorder(),
+                                      child: const Icon(
+                                        Icons.edit,
+                                        color: Colors.white,
+                                        size: 25.0,
+                                      ),
+                                    )),
+                              ],
+                            ),
                           ),
-                          name: 'userCategory',
-                          items:
-                              parentType.map<DropdownMenuItem<dynamic>>((item) {
-                            return DropdownMenuItem(
-                              value: item.id,
-                              child: Text(item.category),
-                              onTap: () {
-                                setState(() {
-                                  widget.userModel.userCategory = item.id;
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      FormBuilderTextField(
-                          keyboardType: TextInputType.phone,
-                          name: "name",
-                          initialValue: widget.userModel.mobileNumber == 0
-                              ? ''
-                              : widget.userModel.mobileNumber.toString(),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Mobile Number is required in this field';
-                            }
-                            if (value.length != 10) {
-                              return 'Enter valid mobile number';
-                            }
-                            if (isDuplicate) {
-                              return 'The Number is already exist its duplicate number ';
-                            }
-                            return null;
-                          },
-                          maxLength: 10,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.only(
-                                top: 5, bottom: 5, left: 15),
-                            filled: true,
-                            hintText: 'Mobile Number',
-                            disabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black45),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            enabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black45),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            fillColor: Colors.grey.shade100,
-                            hintStyle:
-                                TextStyle(color: Colors.blueGrey.shade500),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10)),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.25,
+                            child: FormTextWidget(
+                                isValidate: true,
+                                keyboardType: TextInputType.name,
+                                isEnabled: true,
+                                initialValue: widget.userModel.firstName,
+                                hintText: 'Parent Name',
+                                onChanged: (value) {
+                                  setState(() {
+                                    widget.userModel.firstName = value!;
+                                  });
+                                }),
                           ),
-                          onChanged: (value) async {
-                            setState(() {
-                              widget.userModel.mobileNumber = int.parse(value!);
-                            });
-                            if (value!.length == 10) {
-                              var unMappedNumber = await checkMobileNumber(
-                                  widget.userModel.mobileNumber,
-                                  widget.userModel.id,
-                                  widget.userModel.userCategory);
-                              var data = true;
-                              data = unMappedNumber['status'] == false &&
-                                      unMappedNumber['tag'] != 'duplicate'
-                                  ? false
-                                  : true;
-                              setState(() => isDuplicate =
-                                  unMappedNumber['tag'] == 'duplicate'
-                                      ? true
-                                      : false);
-                              if (!data) {
-                                alertWindow(widget.userModel.mobileNumber);
-                              } else {
-                                setState(() {
-                                  isMapped = true;
-                                });
-                              }
-                            }
-                          }),
-
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      FormTextWidget(
-                          isValidate: false,
-                          isEnabled: true,
-                          keyboardType: TextInputType.emailAddress,
-                          initialValue: widget.userModel.emailId,
-                          hintText: 'Email Address',
-                          onChanged: (value) {
-                            setState(() {
-                              widget.userModel.emailId = value!;
-                            });
-                          }),
-                      // const SizedBox(
-                      //   height: 15,
-                      // ),
-                      // InkWell(
-                      //   onTap: () {
-                      //     _selectDate(context, 'dob');
-                      //   },
-                      //   child: FormTextWidget(
-                      //       isValidate: true,
-                      //       isEnabled: false,
-                      //       keyboardType: TextInputType.name,
-                      //       controller: dobController,
-                      //       hintText: 'Date Of Birth',
-                      //       onChanged: (value) {}),
-                      // ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      ElevatedButton(
-                          style: ButtonStyle(
-                              overlayColor: MaterialStateProperty.all<Color>(
-                                  Colors.black12),
-                              foregroundColor:
-                                  const MaterialStatePropertyAll(Colors.white),
-                              backgroundColor: MaterialStatePropertyAll(
-                                  Colors.blueGrey.shade400)),
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              if (!isMapped) {
-                                Utility.displaySnackBar(context,
-                                    'Please map your account before submitting');
-                              } else {
-                                submitParentInfo();
-                              }
-                            }
-                          },
-                          child:
-                              Text(widget.isEdit ? "Edit User" : "Save User"))
-                    ])))));
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.25,
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10))),
+                              child: FormBuilderDropdown(
+                                initialValue: widget.userModel.userCategory == 0
+                                    ? null
+                                    : widget.userModel.userCategory,
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.only(
+                                      top: 5, bottom: 5, left: 15),
+                                  filled: true,
+                                  hintText: 'Select User Category',
+                                  disabledBorder: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black45),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10))),
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black45),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10))),
+                                  fillColor: Colors.grey.shade100,
+                                  hintStyle: TextStyle(
+                                      color: Colors.blueGrey.shade500),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                ),
+                                name: 'userCategory',
+                                items: parentType
+                                    .map<DropdownMenuItem<dynamic>>((item) {
+                                  return DropdownMenuItem(
+                                    value: item.id,
+                                    child: Text(item.category),
+                                    onTap: () {
+                                      setState(() {
+                                        widget.userModel.userCategory = item.id;
+                                      });
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.25,
+                            child: FormBuilderTextField(
+                                keyboardType: TextInputType.phone,
+                                name: "name",
+                                initialValue: widget.userModel.mobileNumber == 0
+                                    ? ''
+                                    : widget.userModel.mobileNumber.toString(),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Mobile Number is required in this field';
+                                  }
+                                  if (value.length != 10) {
+                                    return 'Enter valid mobile number';
+                                  }
+                                  if (isDuplicate) {
+                                    return 'The Number is already exist its duplicate number ';
+                                  }
+                                  return null;
+                                },
+                                maxLength: 10,
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.only(
+                                      top: 5, bottom: 5, left: 15),
+                                  filled: true,
+                                  hintText: 'Mobile Number',
+                                  disabledBorder: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black45),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10))),
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black45),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10))),
+                                  fillColor: Colors.grey.shade100,
+                                  hintStyle: TextStyle(
+                                      color: Colors.blueGrey.shade500),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                ),
+                                onChanged: (value) async {
+                                  setState(() {
+                                    widget.userModel.mobileNumber =
+                                        int.parse(value!);
+                                  });
+                                  if (value!.length == 10) {
+                                    var unMappedNumber =
+                                        await checkMobileNumber(
+                                            widget.userModel.mobileNumber,
+                                            widget.userModel.id,
+                                            widget.userModel.userCategory);
+                                    var data = true;
+                                    data = unMappedNumber['status'] == false &&
+                                            unMappedNumber['tag'] != 'duplicate'
+                                        ? false
+                                        : true;
+                                    setState(() => isDuplicate =
+                                        unMappedNumber['tag'] == 'duplicate'
+                                            ? true
+                                            : false);
+                                    if (!data) {
+                                      alertWindow(
+                                          widget.userModel.mobileNumber);
+                                    } else {
+                                      setState(() {
+                                        isMapped = true;
+                                      });
+                                    }
+                                  }
+                                }),
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.25,
+                            child: FormTextWidget(
+                                isValidate: false,
+                                isEnabled: true,
+                                keyboardType: TextInputType.emailAddress,
+                                initialValue: widget.userModel.emailId,
+                                hintText: 'Email Address',
+                                onChanged: (value) {
+                                  setState(() {
+                                    widget.userModel.emailId = value!;
+                                  });
+                                }),
+                          ),
+                          const SizedBox(
+                            width: double.infinity,
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.15,
+                            child: ElevatedButton(
+                                style: ButtonStyle(
+                                    overlayColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.black12),
+                                    foregroundColor:
+                                        const MaterialStatePropertyAll(
+                                            Colors.white),
+                                    backgroundColor: MaterialStatePropertyAll(
+                                        Colors.blueGrey.shade400)),
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    if (!isMapped) {
+                                      Utility.displaySnackBar(context,
+                                          'Please map your account before submitting');
+                                    } else {
+                                      submitParentInfo();
+                                    }
+                                  }
+                                },
+                                child: Text(
+                                    widget.isEdit ? "Edit User" : "Save User")),
+                          )
+                        ])))));
   }
 
   Future<void> submitParentInfo() async {
@@ -469,39 +455,43 @@ class FormTextWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FormBuilderTextField(
-      keyboardType: keyboardType,
-      name: "name",
-      initialValue: initialValue,
-      validator: !isValidate
-          ? null
-          : (value) {
-              if (value == null || value.isEmpty) {
-                return '$hintText is required in this field';
-              }
-              if (keyboardType == TextInputType.number && value.length != 10) {
-                return 'Enter valid mobile number';
-              }
-              return null;
-            },
-      enabled: isEnabled,
-      maxLength: keyboardType == TextInputType.number ? 10 : null,
-      controller: initialValue == null ? controller : null,
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.only(top: 5, bottom: 5, left: 15),
-        filled: true,
-        hintText: hintText,
-        disabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black45),
-            borderRadius: BorderRadius.all(Radius.circular(10))),
-        enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black45),
-            borderRadius: BorderRadius.all(Radius.circular(10))),
-        fillColor: Colors.grey.shade100,
-        hintStyle: TextStyle(color: Colors.blueGrey.shade500),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.25,
+      child: FormBuilderTextField(
+        keyboardType: keyboardType,
+        name: "name",
+        initialValue: initialValue,
+        validator: !isValidate
+            ? null
+            : (value) {
+                if (value == null || value.isEmpty) {
+                  return '$hintText is required in this field';
+                }
+                if (keyboardType == TextInputType.number &&
+                    value.length != 10) {
+                  return 'Enter valid mobile number';
+                }
+                return null;
+              },
+        enabled: isEnabled,
+        maxLength: keyboardType == TextInputType.number ? 10 : null,
+        controller: initialValue == null ? controller : null,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.only(top: 5, bottom: 5, left: 15),
+          filled: true,
+          hintText: hintText,
+          disabledBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.black45),
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          enabledBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.black45),
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          fillColor: Colors.grey.shade100,
+          hintStyle: TextStyle(color: Colors.blueGrey.shade500),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        onChanged: onChanged,
       ),
-      onChanged: onChanged,
     );
   }
 }

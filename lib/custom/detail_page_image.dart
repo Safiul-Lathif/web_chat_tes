@@ -1,4 +1,5 @@
 // ignore_for_file: must_be_immutable, deprecated_member_use
+import 'dart:html';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -41,25 +42,28 @@ class _DetailScreenState extends State<DetailScreen> {
     String? message;
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
-      // Download image
-      final http.Response response = await http.get(Uri.parse(url));
+      // // Download image
+      // final http.Response response = await http.get(Uri.parse(url));
 
-      // Get temporary directory
-      final dir = await getTemporaryDirectory();
+      // // Get temporary directory
+      // final dir = await getTemporaryDirectory();
 
-      // Create an image name
-      var filename = '${dir.path}/${url.split('/').last}';
+      // // Create an image name
+      // var filename = '${dir.path}/${url.split('/').last}';
 
-      // Save to filesystem
-      final file = File(filename);
-      await file.writeAsBytes(response.bodyBytes);
+      // // Save to filesystem
+      // final file = File(filename);
+      // await file.writeAsBytes(response.bodyBytes);
 
-      // Ask the user to save it
-      final params = SaveFileDialogParams(sourceFilePath: file.path);
-      final finalPath = await FlutterFileDialog.saveFile(params: params);
-      if (finalPath != null) {
-        message = 'Image saved to disk';
-      }
+      // // Ask the user to save it
+      // final params = SaveFileDialogParams(sourceFilePath: file.path);
+      // final finalPath = await FlutterFileDialog.saveFile(params: params);
+      // if (finalPath != null) {
+      //   message = 'Image saved to disk';
+      // }
+      AnchorElement anchorElement = AnchorElement(href: url);
+      anchorElement.download = "fileName";
+      anchorElement.click();
     } catch (e) {
       message = 'An error occurred while saving the image';
     }
@@ -112,17 +116,17 @@ class _DetailScreenState extends State<DetailScreen> {
                 itemBuilder: (context) => [
                       PopupMenuItem(
                           onTap: () async {
-                            HapticFeedback.vibrate();
-                            var path = '';
-                            final url = Uri.parse(widget.images[currentPage]);
-                            final response = await http.get(url);
-                            final bytes = response.bodyBytes;
-                            final temp = await getTemporaryDirectory();
-                            path = '${temp.path}/Image.jpg';
-                            File(path).writeAsBytes(bytes);
-                            await Share.shareFiles(
-                              [path],
-                            );
+                            // HapticFeedback.vibrate();
+                            // var path = '';
+                            // final url = Uri.parse(widget.images[currentPage]);
+                            // final response = await http.get(url);
+                            // final bytes = response.bodyBytes;
+                            // final temp = await getTemporaryDirectory();
+                            // path = '${temp.path}/Image.jpg';
+                            // File(path).writeAsBytes(bytes);
+                            // await Share.shareFiles(
+                            //   [path],
+                            // );
                           },
                           child: const Text("Share")),
                       PopupMenuItem(

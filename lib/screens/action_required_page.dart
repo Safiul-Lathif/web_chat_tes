@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 import 'dart:async';
+import 'dart:html';
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart';
@@ -1054,31 +1055,34 @@ class _ActionRequiredState extends State<ActionRequired> {
       });
 
   Future openFile({required String url, required String fileName}) async {
-    final file = await downloadFile(url, fileName);
-    if (file == null) return;
-    setState(() {
-      isDownloading = false;
-    });
-    OpenFile.open(file.path);
+    AnchorElement anchorElement = AnchorElement(href: url);
+    anchorElement.download = fileName;
+    anchorElement.click();
+    // final file = await downloadFile(url, fileName);
+    // if (file == null) return;
+    // setState(() {
+    //   isDownloading = false;
+    // });
+    // OpenFile.open(file.path);
   }
 
-  Future<File?> downloadFile(String url, String name) async {
-    final appStorage = await getApplicationDocumentsDirectory();
-    final file = File('${appStorage.path}/$name');
-    try {
-      final response = await Dio().get(url,
-          options: Options(
-            responseType: ResponseType.bytes,
-          ));
-      final raf = file.openSync(mode: FileMode.write);
-      raf.writeFromSync(response.data);
-      await raf.close();
-      return file;
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error: $e');
-      }
-      return null;
-    }
-  }
+  // Future<File?> downloadFile(String url, String name) async {
+  //   final appStorage = await getApplicationDocumentsDirectory();
+  //   final file = File('${appStorage.path}/$name');
+  //   try {
+  //     final response = await Dio().get(url,
+  //         options: Options(
+  //           responseType: ResponseType.bytes,
+  //         ));
+  //     final raf = file.openSync(mode: FileMode.write);
+  //     raf.writeFromSync(response.data);
+  //     await raf.close();
+  //     return file;
+  //   } catch (e) {
+  //     if (kDebugMode) {
+  //       print('Error: $e');
+  //     }
+  //     return null;
+  //   }
+  // }
 }

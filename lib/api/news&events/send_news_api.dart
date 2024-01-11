@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -49,7 +50,7 @@ Future<dynamic> sendNewsText(
 }
 
 Future<dynamic> sendNewsWithImage(
-    {required List<XFile> img,
+    {required List<PlatformFile> img,
     required String title,
     required String description,
     required String link,
@@ -60,8 +61,8 @@ Future<dynamic> sendNewsWithImage(
   token = (await pref.getAuthToken())!;
   var request = http.MultipartRequest("POST", url);
   for (int i = 0; img.length > i; i++) {
-    request.files
-        .add(await http.MultipartFile.fromPath('images[$i]', img[i].path));
+    request.fields["images[$i]"] = base64Encode(img[i].bytes!);
+    request.fields["ext[$i]"] = img[i].extension!;
   }
   for (int i = 0; i < classIds.length; i++) {
     request.fields['visible_to[$i]'] = classIds[i];
@@ -93,7 +94,7 @@ Future<dynamic> sendNewsWithImage(
 }
 
 Future<dynamic> sendNewsWithMultiImage(
-    {required List<XFile> img,
+    {required List<PlatformFile> img,
     required String title,
     required String description,
     required String link,
@@ -104,8 +105,8 @@ Future<dynamic> sendNewsWithMultiImage(
   token = (await pref.getAuthToken())!;
   var request = http.MultipartRequest("POST", url);
   for (int i = 0; img.length > i; i++) {
-    request.files
-        .add(await http.MultipartFile.fromPath('images[$i]', img[i].path));
+    request.fields["images[$i]"] = base64Encode(img[i].bytes!);
+    request.fields["ext[$i]"] = img[i].extension!;
   }
   for (int i = 0; i < classIds.length; i++) {
     request.fields['visible_to[$i]'] = classIds[i];

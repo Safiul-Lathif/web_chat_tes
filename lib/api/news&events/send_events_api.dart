@@ -1,6 +1,6 @@
 import 'dart:convert';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:ui/Utils/utility.dart';
 import 'package:ui/config/strings.dart';
 
@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:ui/utils/session_management.dart';
 
 Future<dynamic> sendEvents(
-    {required List<XFile> img,
+    {required List<PlatformFile> img,
     required String title,
     required String description,
     required DateTime eventDate,
@@ -23,8 +23,8 @@ Future<dynamic> sendEvents(
       Utility.convertDateFormat(eventDate.toString(), "yyyy-MM-dd");
   var request = http.MultipartRequest("POST", url);
   for (int i = 0; img.length > i; i++) {
-    request.files
-        .add(await http.MultipartFile.fromPath('images[$i]', img[i].path));
+    request.fields["images[$i]"] = base64Encode(img[i].bytes!);
+    request.fields["ext[$i]"] = img[i].extension!;
   }
   for (int i = 0; i < classIds.length; i++) {
     request.fields['visible_to[$i]'] = classIds[i];

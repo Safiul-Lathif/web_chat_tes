@@ -1,4 +1,5 @@
 // ignore_for_file: unnecessary_null_comparison, must_be_immutable
+import 'dart:html';
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:dio/dio.dart';
@@ -211,12 +212,15 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
     required String url,
     required String fileName,
   }) async {
-    final file = await downloadFile(url, fileName);
-    if (file == null) {
-      _snackBar('Unable to open Document');
-    } else {
-      OpenFile.open(file.path);
-    }
+    AnchorElement anchorElement = AnchorElement(href: url);
+    anchorElement.download = fileName;
+    anchorElement.click();
+    // final file = await downloadFile(url, fileName);
+    // if (file == null) {
+    //   _snackBar('Unable to open Document');
+    // } else {
+    //   OpenFile.open(file.path);
+    // }
   }
 
   _snackBar(String message) {
@@ -231,23 +235,23 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
     }
   }
 
-  Future<File?> downloadFile(String url, String name) async {
-    final appStorage = await getExternalStorageDirectory();
-    final file = File('${appStorage!.path}/$name');
-    try {
-      final response = await Dio().get(url,
-          options: Options(
-            responseType: ResponseType.bytes,
-          ));
-      final raf = file.openSync(mode: FileMode.write);
-      raf.writeFromSync(response.data);
-      await raf.close();
-      return file;
-    } catch (e) {
-      print('Error: $e');
-      return null;
-    }
-  }
+  // Future<File?> downloadFile(String url, String name) async {
+  //   final appStorage = await getExternalStorageDirectory();
+  //   final file = File('${appStorage!.path}/$name');
+  //   try {
+  //     final response = await Dio().get(url,
+  //         options: Options(
+  //           responseType: ResponseType.bytes,
+  //         ));
+  //     final raf = file.openSync(mode: FileMode.write);
+  //     raf.writeFromSync(response.data);
+  //     await raf.close();
+  //     return file;
+  //   } catch (e) {
+  //     print('Error: $e');
+  //     return null;
+  //   }
+  // }
 
   Future<dynamic> _showAlertDialog({required String id}) async {
     return showDialog<void>(
