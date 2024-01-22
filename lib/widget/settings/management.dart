@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:ui/Utils/utility.dart';
 import 'package:ui/api/addEditUser/add_edit_management_api.dart';
 import 'package:ui/api/deleteApi.dart';
 import 'package:ui/api/designation_list_api.dart';
+import 'package:ui/api/settings/management.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/loading_animator.dart';
 import 'package:ui/model/settings/index.dart';
-import '../../api/search/get_management_list_api.dart';
+import 'package:ui/model/settings/management_model.dart';
 import '../../model/search/management_list_model.dart';
 import 'package:ui/api/settings/index.dart';
 
@@ -26,7 +26,7 @@ class _ManagementWidgetState extends State<ManagementWidget> {
   List<Division> divisions = [];
   List<DesignationList> designationList = [];
 
-  List<ManagementList> managementList = [];
+  List<ManagementListModel> managementList = [];
   List<PlatformFile> selectedPicture = [];
 
   int divisionId = 0;
@@ -56,10 +56,10 @@ class _ManagementWidgetState extends State<ManagementWidget> {
   }
 
   void getListOfManagement() async {
-    await getManagementList(0).then((value) {
+    await ManagementController().getManagementList().then((value) {
       if (value != null) {
         setState(() {
-          managementList = value.data;
+          managementList = value;
           isLoading = false;
         });
       }
@@ -130,7 +130,7 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                         gridDelegate:
                             const SliverGridDelegateWithMaxCrossAxisExtent(
                                 maxCrossAxisExtent: 330,
-                                childAspectRatio: 4 / 2,
+                                childAspectRatio: 4 / 1.5,
                                 crossAxisSpacing: 10,
                                 mainAxisSpacing: 10),
                         itemCount: managementList.length,
@@ -179,7 +179,12 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                                 )),
                                           ),
                                           InkWell(
-                                            onTap: () {
+                                            onTap: () async {
+                                              ManagementList? managementList =
+                                                  await ManagementController()
+                                                      .fetchSingleManagementList(
+                                                          id: management.id
+                                                              .toString());
                                               setState(() {
                                                 isEdit = true;
                                                 userId =
@@ -192,9 +197,9 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                                 numberController.text =
                                                     management.mobileNumber
                                                         .toString();
+                                                Navigator.pop(context);
                                               });
-                                              Navigator.pop(context);
-                                              addEditPopUp(management);
+                                              addEditPopUp(managementList!);
                                             },
                                             child: Container(
                                                 width: double.infinity,
@@ -290,48 +295,9 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                             const SizedBox(
                                               height: 10,
                                             ),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  "Email : ",
-                                                  style: GoogleFonts.lato(
-                                                      textStyle:
-                                                          const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold)),
-                                                ),
-                                                FittedBox(
-                                                  child: Text(
-                                                    management.emailId == ''
-                                                        ? "N/A"
-                                                        : management.emailId
-                                                            .toString(),
-                                                    style: GoogleFonts.lato(),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
                                             const SizedBox(
                                               height: 10,
                                             ),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  "Designation : ",
-                                                  style: GoogleFonts.lato(
-                                                      textStyle:
-                                                          const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold)),
-                                                ),
-                                                Text(
-                                                  management.designation,
-                                                  style: GoogleFonts.lato(),
-                                                ),
-                                              ],
-                                            )
                                           ],
                                         ),
                                       )
@@ -350,7 +316,6 @@ class _ManagementWidgetState extends State<ManagementWidget> {
   final TextEditingController dobController = TextEditingController();
   final TextEditingController dojController = TextEditingController();
   DateTime selectedDate = DateTime.now();
-  List<DesignationList> managementTypeList = [];
 
   Future<void> _selectDate(
       BuildContext context, String field, ManagementList managementList) async {
@@ -368,11 +333,11 @@ class _ManagementWidgetState extends State<ManagementWidget> {
         selectedDate = picked;
         switch (field) {
           case 'dob':
-            managementList.dob = DateFormat.yMd().format(selectedDate);
+            managementList.dob = DateFormat('yyyy-MM-dd').format(selectedDate);
             dobController.text = managementList.dob;
             break;
           case 'doj':
-            managementList.doj = DateFormat.yMd().format(selectedDate);
+            managementList.doj = DateFormat('yyyy-MM-dd').format(selectedDate);
             dojController.text = managementList.doj;
         }
       });
@@ -391,24 +356,47 @@ class _ManagementWidgetState extends State<ManagementWidget> {
               TextButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      await addEditManagement(
-                        managementList,
-                        selectedPicture,
-                        isEdit,
-                      ).then((value) {
-                        if (value != null) {
-                          Utility.displaySnackBar(
-                              context,
-                              isEdit
-                                  ? "Management Updated Scuessfully"
-                                  : 'Management added scuessfully');
-                          Navigator.pop(context, true);
-                        } else {
-                          Utility.displaySnackBar(
-                              context, 'Something went wrong please try again');
-                          Navigator.pop(context, true);
-                        }
-                      });
+                      if (isEdit) {
+                        await ManagementController()
+                            .editManagement(
+                          profileImage: selectedPicture,
+                          managementList: managementList,
+                        )
+                            .then((value) {
+                          if (value != null) {
+                            Utility.displaySnackBar(
+                                context,
+                                isEdit
+                                    ? "Management Updated Scuessfully"
+                                    : 'Management added scuessfully');
+                            Navigator.pop(context);
+                          } else {
+                            Utility.displaySnackBar(context,
+                                'Something went wrong please try again');
+                            Navigator.pop(context);
+                          }
+                        });
+                      } else {
+                        await ManagementController()
+                            .createNewManagement(
+                          profileImage: selectedPicture,
+                          managementList: managementList,
+                        )
+                            .then((value) {
+                          if (value != null) {
+                            Utility.displaySnackBar(
+                                context,
+                                isEdit
+                                    ? "Management Updated Scuessfully"
+                                    : 'Management added scuessfully');
+                            Navigator.pop(context);
+                          } else {
+                            Utility.displaySnackBar(context,
+                                'Something went wrong please try again');
+                            Navigator.pop(context);
+                          }
+                        });
+                      }
                     }
                   },
                   child: const Text("Submit")),
@@ -445,9 +433,9 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                           color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(10))),
                       child: FormBuilderDropdown(
-                        initialValue: managementList.designation == ''
+                        initialValue: managementList.userCategory == 0
                             ? null
-                            : managementList.designation,
+                            : managementList.userCategory,
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.only(
                               top: 5, bottom: 5, left: 15),
@@ -467,10 +455,10 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                               borderRadius: BorderRadius.circular(10)),
                         ),
                         name: 'userCategory',
-                        items: managementTypeList
+                        items: designationList
                             .map<DropdownMenuItem<dynamic>>((item) {
                           return DropdownMenuItem(
-                            value: item.categoryName,
+                            value: item.id,
                             child: Text(item.categoryName),
                             onTap: () {
                               setState(() {

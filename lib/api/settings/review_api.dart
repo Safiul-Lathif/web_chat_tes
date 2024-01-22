@@ -50,6 +50,7 @@ Future<List<SectionDetail>?> getClassSectionsList({required String dId}) async {
     });
     if (response.statusCode == 200) {
       List jsonResponse = jsonDecode(response.body);
+      print(response.body);
 
       return jsonResponse.map((json) => SectionDetail.fromJson(json)).toList();
     } else {

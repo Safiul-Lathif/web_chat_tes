@@ -9,16 +9,9 @@ Future<List<StaffListModel>?> getStaffsList() async {
   var url = Uri.parse("${Strings.baseURL}api/user/onboarding_staff_list");
   SessionManager pref = SessionManager();
   String? token = await pref.getAuthToken();
-  // String? playerId = await pref.getPlayerId();
-
-  // var map = <String, dynamic>{};
-
-  // map["division_id"] = dId;
-
   try {
     final response = await http.get(url, headers: {
       HttpHeaders.authorizationHeader: 'Bearer $token',
-      // 'sender': playerId
     });
     if (response.statusCode == 200) {
       List jsonResponse = jsonDecode(response.body);
