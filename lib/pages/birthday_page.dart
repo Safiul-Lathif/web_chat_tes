@@ -68,7 +68,7 @@ class _BirthdayPageState extends State<BirthdayPage> {
               : studentList.isEmpty
                   ? Center(
                       child: Lottie.asset(
-                        Animations.noData,
+                        "assets/lottie/no_data.json",
                         width: MediaQuery.of(context).size.width * 0.5,
                         height: MediaQuery.of(context).size.height * 0.5,
                         repeat: true,
@@ -188,6 +188,9 @@ class _BirthdayPageState extends State<BirthdayPage> {
       await sendBirthday(classIds: classIds, bDayMessage: bDayMessage)
           .then((value) {
         if (value != null) {
+          setState(() {
+            birthdayList = null;
+          });
           initialize();
           Utility.displaySnackBar(
               context, "Birthday Wishes Added Successfully");

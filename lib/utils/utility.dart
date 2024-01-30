@@ -10,8 +10,18 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:ui/config/strings.dart';
+import 'package:ui/model/config/config_list_model.dart';
 import 'package:ui/model/message_view_model.dart';
+import 'package:ui/widget/settings/classes.dart';
+import 'package:ui/widget/settings/division.dart';
+import 'package:ui/widget/settings/management.dart';
+import 'package:ui/widget/settings/sections.dart';
+import 'package:ui/widget/settings/staff.dart';
+import 'package:ui/widget/settings/student.dart';
+import 'package:ui/widget/settings/subject.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../widget/settings/review_section.dart';
 
 class Utility {
   static Future<void> callLauncher(String url) async {
@@ -104,6 +114,47 @@ class Utility {
         );
       },
     );
+  }
+
+  static List<Map<String, dynamic>> settingsPageConfig(ConfigList tabs) {
+    return [
+      {"name": "Division", "pages": const DivisionWidget(), "config": true},
+      {
+        "name": "Sections",
+        "pages": const SectionWidget(),
+        "config": tabs.configuration.sections
+      },
+      {
+        "name": "Class",
+        "pages": const ClassWidget(),
+        "config": tabs.configuration.classes
+      },
+      {
+        "name": "Subject",
+        "pages": const SubjectWidget(),
+        "config": tabs.configuration.mapSubjects
+      },
+      {
+        "name": "Map Subject",
+        "pages": const ReviewSectionWidget(),
+        "config": tabs.configuration.mapClassesSections
+      },
+      {
+        "name": "Staff",
+        "pages": const StaffWidget(),
+        "config": tabs.configuration.staffs
+      },
+      {
+        "name": "Management",
+        "pages": const ManagementWidget(),
+        "config": tabs.configuration.management
+      },
+      {
+        "name": "Student",
+        "pages": const StudentWidget(),
+        "config": tabs.configuration.students
+      },
+    ];
   }
 
   static String convertTimeFormat(String time) {

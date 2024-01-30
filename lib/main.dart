@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ui/api/profile_api.dart';
+import 'package:ui/model/config/config_list_model.dart';
 import 'package:ui/model/profile_model.dart';
 import 'package:ui/pages/attendance_page.dart';
 import 'package:ui/pages/birthday_page.dart';
@@ -15,6 +16,7 @@ import 'package:ui/screens/newsAndEvents/news_event_screen.dart';
 import 'package:ui/screens/searchScreen/search_screen.dart';
 import 'package:ui/screens/splash_screen.dart';
 import 'package:ui/screens/user_details.dart';
+import 'package:ui/utils/utility.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'screens/home_work_screen.dart';
@@ -58,6 +60,7 @@ class _MyAppState extends State<MyApp> {
   ProfileModel? profiles;
   int selectedIndex = 0;
   String role = '';
+  ConfigList? configList;
   @override
   void initState() {
     super.initState();
@@ -115,7 +118,11 @@ class _MyAppState extends State<MyApp> {
                     foregroundColor: MaterialStatePropertyAll(Colors.white),
                     backgroundColor: MaterialStatePropertyAll(Colors.blue)),
                 onPressed: () {
-                  SystemNavigator.pop();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SplashScreen(),
+                      ));
                 },
                 child: const Text('Yes'),
               ),

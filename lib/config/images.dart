@@ -12,7 +12,7 @@ class Images {
 
 class Animations {
   Animations._();
-  static const String noData = 'assets/lottie/no_data.json';
+  static const String noData = "assets/lottie/no_data.json";
 }
 
 class Chat {

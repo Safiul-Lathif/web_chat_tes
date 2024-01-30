@@ -3,11 +3,13 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ui/api/config/config_list.dart';
 import 'package:ui/api/config_api.dart';
 import 'package:ui/api/loginApi.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/main.dart';
 import 'package:ui/model/profile_swap_model.dart';
+import 'package:ui/pages/settings_page.dart';
 import 'package:ui/screens/forget_password.dart';
 import 'package:ui/screens/login_with_otp.dart';
 import 'package:ui/utils/session_management.dart';
@@ -381,10 +383,30 @@ class _UserLoginState extends State<UserLogin> {
                                                 password:
                                                     passwordController.text,
                                                 role: roles)
-                                            .then((response) {
+                                            .then((response) async {
                                           if (response != null) {
-                                            _snackBar('"Login Successful!!!"');
-                                            navigateToHome();
+                                            await getAllConfigList(
+                                                    token: response.token)
+                                                .then((value) {
+                                              if (value != null) {
+                                                var config =
+                                                    value.configuration;
+                                                if (config.classes &&
+                                                    config.management &&
+                                                    config.mapClassesSections &&
+                                                    config.mapSubjects &&
+                                                    config.sections &&
+                                                    config.staffs &&
+                                                    config.students &&
+                                                    config.subjects) {
+                                                  _snackBar(
+                                                      '"Login Successful!!!"');
+                                                  navigateToHome();
+                                                } else {
+                                                  navigateToConfigPage();
+                                                }
+                                              }
+                                            });
                                           } else {
                                             Utility.displaySnackBar(
                                                 context, "Invalid Credentials");
@@ -433,6 +455,14 @@ class _UserLoginState extends State<UserLogin> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const MyApp()),
+      (Route<dynamic> route) => false,
+    );
+  }
+
+  void navigateToConfigPage() async {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => SettingsPage()),
       (Route<dynamic> route) => false,
     );
   }

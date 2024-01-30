@@ -69,7 +69,7 @@ class _BirthdayCardState extends State<BirthdayCard> {
                   ),
                   child: Column(children: [
                     Lottie.asset(
-                      'assets/lottie/bDay.json',
+                      "assets/lottie/bDay.json",
                       height: 200.0,
                       repeat: true,
                       reverse: true,
@@ -93,7 +93,7 @@ class _BirthdayCardState extends State<BirthdayCard> {
         ),
         Positioned(
           child: Lottie.asset(
-            'assets/lottie/celebration.json',
+            "assets/lottie/celebration.json",
             height: 200.0,
             repeat: true,
             reverse: true,
@@ -103,7 +103,7 @@ class _BirthdayCardState extends State<BirthdayCard> {
         Positioned(
           right: 0,
           child: Lottie.asset(
-            'assets/lottie/celebration.json',
+            "assets/lottie/celebration.json",
             height: 200.0,
             repeat: true,
             reverse: true,
