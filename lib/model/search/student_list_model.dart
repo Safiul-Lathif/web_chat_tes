@@ -1,3 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
 class StudentSearchList {
   int total;
   int perPage;
@@ -62,6 +65,9 @@ class StudentList {
   String studentListClass;
   String classTeacher;
   String studentProfileImage;
+  int fatherId;
+  int motherId;
+  int guardianId;
 
   StudentList({
     required this.id,
@@ -89,6 +95,9 @@ class StudentList {
     required this.studentListClass,
     required this.classTeacher,
     required this.studentProfileImage,
+    required this.fatherId,
+    required this.motherId,
+    required this.guardianId,
   });
 
   factory StudentList.fromJson(Map<String, dynamic> json) => StudentList(
@@ -117,7 +126,80 @@ class StudentList {
         studentListClass: json["class"] ?? '',
         classTeacher: json["class_teacher"] ?? '',
         studentProfileImage: json["student_profile_image"] ?? '',
+        fatherId: json["father_id"] ?? 0,
+        motherId: json["mother_id"] ?? 0,
+        guardianId: json["guardian_id"] ?? 0,
       );
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'userId': userId,
+      'firstName': firstName,
+      'lastName': lastName,
+      'admissionNumber': admissionNumber,
+      'dob': dob,
+      'rollNumber': rollNumber,
+      'gender': gender,
+      'profileImage': profileImage,
+      'classConfig': classConfig,
+      'userStatus': userStatus,
+      'createdBy': createdBy,
+      'updatedBy': updatedBy,
+      'createdTime': createdTime.millisecondsSinceEpoch,
+      'updatedTime': updatedTime.millisecondsSinceEpoch,
+      'guardianName': guardianName,
+      'motherName': motherName,
+      'fatherName': fatherName,
+      'guardianMobile': guardianMobile,
+      'motherMobile': motherMobile,
+      'fatherMobile': fatherMobile,
+      'studentName': studentName,
+      'studentListClass': studentListClass,
+      'classTeacher': classTeacher,
+      'studentProfileImage': studentProfileImage,
+      'fatherId': fatherId,
+      'motherId': motherId,
+      'guardianId': guardianId,
+    };
+  }
+
+  factory StudentList.fromMap(Map<String, dynamic> map) {
+    return StudentList(
+      id: map['id'] as int,
+      userId: map['userId'] as String,
+      firstName: map['firstName'] as String,
+      lastName: map['lastName'] as dynamic,
+      admissionNumber: map['admissionNumber'] as String,
+      dob: map['dob'] as String,
+      rollNumber: map['rollNumber'] as int,
+      gender: map['gender'] as int,
+      profileImage: map['profileImage'] as String,
+      classConfig: map['classConfig'] as int,
+      userStatus: map['userStatus'] as int,
+      createdBy: map['createdBy'] as int,
+      updatedBy: map['updatedBy'] as dynamic,
+      createdTime:
+          DateTime.fromMillisecondsSinceEpoch(map['createdTime'] as int),
+      updatedTime:
+          DateTime.fromMillisecondsSinceEpoch(map['updatedTime'] as int),
+      guardianName: map['guardianName'] as String,
+      motherName: map['motherName'] as String,
+      fatherName: map['fatherName'] as String,
+      guardianMobile: map['guardianMobile'] as int,
+      motherMobile: map['motherMobile'] as int,
+      fatherMobile: map['fatherMobile'] as int,
+      studentName: map['studentName'] as String,
+      studentListClass: map['studentListClass'] as String,
+      classTeacher: map['classTeacher'] as String,
+      studentProfileImage: map['studentProfileImage'] as String,
+      fatherId: map['fatherId'] as int,
+      motherId: map['motherId'] as int,
+      guardianId: map['guardianId'] as int,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
 }
 
 class StudentInfo {

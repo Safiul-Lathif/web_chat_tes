@@ -19,7 +19,7 @@ Future<dynamic> register(
   map["email"] = mail;
   map["user_mobile_number"] = mobileNo;
   map["password"] = password;
-  map["designation"] = designation;
+  map["designation"] = "Admin";
   map["academic_year"] = academic;
   map["school_code"] = schoolCode;
 

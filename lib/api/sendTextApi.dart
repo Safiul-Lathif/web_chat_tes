@@ -68,6 +68,7 @@ Future<dynamic> sendImg(
   for (int i = 0; img.length > i; i++) {
     request.fields["attachment[$i]"] = base64Encode(img[i].bytes!);
     request.fields["ext[$i]"] = img[i].extension!;
+    request.fields["file_name[$i]"] = img[i].name;
   }
   for (int i = 0; i < classIds.length; i++) {
     request.fields['visible_to[$i]'] = classIds[i];
@@ -114,6 +115,7 @@ Future<dynamic> sendDocument(
   for (int i = 0; img.length > i; i++) {
     request.fields["attachment[$i]"] = base64Encode(img[i].bytes!);
     request.fields["ext[$i]"] = img[i].extension!;
+    request.fields["file_name[$i]"] = img[i].name;
   }
   for (int i = 0; i < classIds.length; i++) {
     request.fields['visible_to[$i]'] = classIds[i];
@@ -164,6 +166,7 @@ Future<dynamic> sendAudio(
     for (int i = 0; fileList.length > i; i++) {
       request.fields["attachment[$i]"] = base64Encode(fileList[i].bytes!);
       request.fields["ext[$i]"] = fileList[i].extension!;
+      request.fields["file_name[$i]"] = fileList[i].name;
     }
     for (int i = 0; i < classIds.length; i++) {
       request.fields['visible_to[$i]'] = classIds[i];
@@ -377,6 +380,7 @@ Future<dynamic> sendHomework({
     for (int i = 0; fileList.length > i; i++) {
       request.fields["attachment[$i]"] = base64Encode(fileList[i].bytes!);
       request.fields["ext[$i]"] = fileList[i].extension!;
+      request.fields["file_name[$i]"] = fileList[i].name;
     }
   }
   request.fields["class_config"] = classConfig;

@@ -1,8 +1,9 @@
+// ignore_for_file: avoid_print
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 import 'package:ui/config/strings.dart';
 import 'package:ui/utils/session_management.dart';
 
@@ -61,6 +62,7 @@ Future<dynamic> sendImg({
   for (int i = 0; img.length > i; i++) {
     request.fields["attachment[$i]"] = base64Encode(img[i].bytes!);
     request.fields["ext[$i]"] = img[i].extension!;
+    request.fields["file_name[$i]"] = img[i].name;
   }
 
   request.fields["distribution_type"] = distType;
@@ -104,6 +106,7 @@ Future<dynamic> sendAudio({
     for (int i = 0; fileList.length > i; i++) {
       request.fields["attachment[$i]"] = base64Encode(fileList[i].bytes!);
       request.fields["ext[$i]"] = fileList[i].extension!;
+      request.fields["file_name[$i]"] = fileList[i].name;
     }
     request.fields["distribution_type"] = distType;
     request.fields["message_category"] = msgCategory;
@@ -291,33 +294,30 @@ Future<dynamic> sendHomework({
   String token;
   token = (await pref.getAuthToken())!;
   // Map data = {
-  var request = http.MultipartRequest("POST", url);
-  // map["chat_message"] = msg;
-  // ignore: prefer_is_empty
-  if (fileList.isNotEmpty && fileList.length > 0) {
-    for (int i = 0; fileList.length > i; i++) {
-      request.fields["attachment[$i]"] = base64Encode(fileList[i].bytes!);
-      request.fields["ext[$i]"] = fileList[i].extension!;
-    }
+  var map = <String, dynamic>{};
+
+  map["class_config"] = classConfig;
+  map["message_category"] = msgCategory;
+  map["subject_id"] = subId;
+  map["message"] = msg;
+  map['notification_id'] = notifyId;
+  map['homework_date'] = homedate;
+  for (int i = 0; fileList.length > i; i++) {
+    map["attachment[$i]"] = base64Encode(fileList[i].bytes!);
+    map["ext[$i]"] = fileList[i].extension!;
+    map["file_name[$i]"] = fileList[i].name;
   }
-  request.fields["class_config"] = classConfig;
-  request.fields["message_category"] = msgCategory;
-  request.fields["subject_id"] = subId;
-  request.fields["message"] = msg;
-  request.fields['notification_id'] = notifyId;
-  request.fields['homework_date'] = homedate;
-  request.headers.putIfAbsent('Authorization', () => "Bearer $token");
-//};
+  log("$map");
   try {
-    final response = await request.send();
+    final response = await http.post(url, body: map, headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+    });
     if (response.statusCode == 200) {
-      final respStr = await response.stream.bytesToString();
-      return jsonDecode(respStr);
+      return jsonDecode(response.body);
     } else {
       print('Request failed with status: ${response.statusCode}.');
       return null;
     }
-    // ignore: duplicate_ignore
   } on Error catch (err) {
     print('changePassword -> error occured: $err.');
     return null;

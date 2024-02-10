@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ui/api/config/config_list.dart';
+import 'package:ui/config/images.dart';
 import 'package:ui/screens/login_page.dart';
 import 'package:ui/screens/splash_screen.dart';
 import 'package:ui/utils/session_management.dart';
 import 'package:ui/widget/settings/classes.dart';
 import 'package:ui/widget/settings/division.dart';
+import 'package:ui/widget/settings/excel_screen.dart';
 import 'package:ui/widget/settings/management.dart';
 import 'package:ui/widget/settings/review_section.dart';
 import 'package:ui/widget/settings/sections.dart';
@@ -46,6 +48,13 @@ class _SettingsPageState extends State<SettingsPage> {
         setState(() {
           var configuration = value.configuration;
           tabs = [
+            {
+              "name": "Excel",
+              "pages": ExcelScreen(
+                downloadUrl: value.excel,
+              ),
+              "config": true
+            },
             {
               "name": "Division",
               "pages": const DivisionWidget(),
@@ -161,15 +170,20 @@ class _SettingsPageState extends State<SettingsPage> {
                                 textStyle: const TextStyle(
                                     fontWeight: FontWeight.w400, fontSize: 16)),
                           ),
-                          tabs[i]['config'] == false
-                              ? const Icon(
-                                  Icons.cancel,
-                                  color: Colors.red,
+                          tabs[i]['name'] == "Excel"
+                              ? Image.asset(
+                                  Chat.excelIcon,
+                                  height: 20,
                                 )
-                              : const Icon(
-                                  Icons.check_circle,
-                                  color: Colors.green,
-                                )
+                              : tabs[i]['config'] == false
+                                  ? const Icon(
+                                      Icons.cancel,
+                                      color: Colors.red,
+                                    )
+                                  : const Icon(
+                                      Icons.check_circle,
+                                      color: Colors.green,
+                                    )
                         ],
                       ),
                     ),

@@ -96,7 +96,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void navigateToConfigPage() async {
-    print("settings page");
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => SettingsPage()),

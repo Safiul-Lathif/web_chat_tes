@@ -63,6 +63,7 @@ Future<dynamic> sendNewsWithImage({
   for (int i = 0; img.length > i; i++) {
     request.fields["images[$i]"] = base64Encode(img[i].bytes!);
     request.fields["ext[$i]"] = img[i].extension!;
+    request.fields["file_name[$i]"] = img[i].name;
   }
 
   request.fields["title"] = title;

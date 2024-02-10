@@ -189,7 +189,8 @@ class _AttendanceCardState extends State<AttendanceCard> {
                         onExpandedChanged: (value) {
                           setState(() {
                             if (value == true) {
-                              Utility.popUpDialog(context, widget.data);
+                              Utility.popUpDialog(
+                                  context, widget.data.message!);
                             }
                           });
                         },
@@ -335,7 +336,8 @@ class _AttendanceCardState extends State<AttendanceCard> {
                         onExpandedChanged: (value) {
                           setState(() {
                             if (value == true) {
-                              Utility.popUpDialog(context, widget.data);
+                              Utility.popUpDialog(
+                                  context, widget.data.message!);
                             }
                           });
                         },

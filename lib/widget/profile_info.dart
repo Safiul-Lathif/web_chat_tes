@@ -1,7 +1,9 @@
 // ignore_for_file: must_be_immutable
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ui/api/reset_resent_api.dart';
 import 'package:ui/config/images.dart';
+import 'package:ui/utils/utility.dart';
 import 'package:ui/utils/utils_file.dart';
 
 class ProfileInfo extends StatefulWidget {
@@ -136,6 +138,26 @@ class _ProfileInfoState extends State<ProfileInfo> {
                     const SizedBox(
                       height: 10,
                     ),
+                    ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(
+                                Colors.blueGrey.shade400)),
+                        onPressed: () async {
+                          await resetAndReSend(
+                                  id: widget.id.toString(), role: widget.role)
+                              .then((value) {
+                            if (value != null) {
+                              setState(() {
+                                Utility.displaySnackBar(
+                                    context, value["message"]);
+                              });
+                            }
+                          });
+                        },
+                        child: const Text(
+                          "Reset and Re-send",
+                          style: TextStyle(fontSize: 14, color: Colors.white),
+                        )),
                     // Row(
                     //   mainAxisAlignment: MainAxisAlignment.center,
                     //   children: [

@@ -1,15 +1,11 @@
 import 'dart:html';
-import 'dart:io';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/approve_deny.dart';
+import 'package:ui/custom/cutsom_text_widget.dart';
 import 'package:ui/custom/deleted_widget.dart';
 import 'package:ui/custom/info_delete.dart';
 import 'package:ui/custom/receive_message_importatnt_title.dart';
@@ -186,105 +182,12 @@ class _MaterialCardState extends State<MaterialCard> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     if (widget.data.caption != '')
-                                      Container(
-                                        constraints:
-                                            const BoxConstraints(maxHeight: 90),
-                                        child: SingleChildScrollView(
-                                          scrollDirection: Axis.vertical,
-                                          child: Text(
-                                            widget.data.caption.toString(),
-                                            textAlign: TextAlign.start,
-                                            style: SafeGoogleFont(
-                                              'Inter',
-                                              fontSize: 17 * ffem,
-                                              fontWeight: FontWeight.w500,
-                                              height: 1.2125 * ffem / fem,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    if (widget.data.caption != '')
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-
-                                    Container(
-                                      height: 1,
-                                      width: MediaQuery.of(context)
-                                          .size
-                                          .shortestSide,
-                                      color: Colors.grey,
+                                      CustomTextWidget(
+                                          data: widget.data.caption!),
+                                    const SizedBox(
+                                      height: 5,
                                     ),
-                                    if (widget.data.caption != null)
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                    InkWell(
-                                      onTap: () {
-                                        openFile(
-                                            url: widget.data.images![0],
-                                            fileName: //Ticket No 45 (removed unnecessary .pdf)
-                                                widget.data.images![0]
-                                                    .split('/')
-                                                    .last);
-                                        isDownloading = true;
-                                      },
-                                      child: Row(
-                                        children: [
-                                          !isDownloading
-                                              ? TextBottomWidget(
-                                                  text: 'Download',
-                                                  colors: Colors.pink.shade300,
-                                                )
-                                              : TextBottomWidget(
-                                                  text: 'Downloading',
-                                                  colors: Colors.pink.shade300,
-                                                ),
-                                          const SizedBox(
-                                            width: 4,
-                                          ),
-                                          !isDownloading
-                                              ? Icon(
-                                                  Icons.download,
-                                                  size: 20,
-                                                  color: Colors.pink.shade300,
-                                                )
-                                              : SizedBox(
-                                                  height: 10.0,
-                                                  width: 10.0,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    strokeWidth: 1,
-                                                    color: Colors.pink.shade300,
-                                                  ),
-                                                ),
-                                        ],
-                                      ),
-                                    ),
-                                    if (widget.role != 'Parent')
-                                      const SizedBox(
-                                        height: 3,
-                                      ),
-                                    // if (widget.role != 'Parent')
-                                    //   Row(
-                                    //     mainAxisAlignment:
-                                    //         MainAxisAlignment.end,
-                                    //     children: [
-                                    //       const Icon(
-                                    //         Icons.remove_red_eye_sharp,
-                                    //         size: 15,
-                                    //       ),
-                                    //       const SizedBox(
-                                    //         width: 3,
-                                    //       ),
-                                    //       Text(
-                                    //         "Watched: ${widget.watchCount != null ? widget.watchCount : '0'}",
-                                    //         style:
-                                    //             const TextStyle(fontSize: 11),
-                                    //       )
-                                    //     ],
-                                    //   ),
+                                    singleMaterial()
                                   ],
                                 )),
                           ),
@@ -420,81 +323,23 @@ class _MaterialCardState extends State<MaterialCard> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    widget.data.caption == ''
-                                        ? Container()
-                                        : Text(
-                                            widget.data.caption.toString(),
-                                            textAlign: TextAlign.start,
-                                            style: SafeGoogleFont(
-                                              'Inter',
-                                              fontSize: 17 * ffem,
-                                              fontWeight: FontWeight.w500,
-                                              height: 1.2125 * ffem / fem,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                    Container(
-                                      height: 1,
-                                      width: MediaQuery.of(context)
-                                          .size
-                                          .shortestSide,
-                                      color: Colors.grey,
-                                    ),
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        //
-                                        openFile(
-                                            url: widget.data.images![0],
-                                            fileName: //Ticket No 45 (removed unnecessary .pdf)
-                                                widget.data.images![0]
-                                                    .split('/')
-                                                    .last);
-                                        isDownloading = true;
-                                      },
-                                      child: Row(
-                                        children: [
-                                          !isDownloading
-                                              ? TextBottomWidget(
-                                                  text: 'Download',
-                                                  colors: Colors.pink.shade300,
-                                                )
-                                              : TextBottomWidget(
-                                                  text: 'Downloading',
-                                                  colors: Colors.pink.shade300,
-                                                ),
-                                          const SizedBox(
-                                            width: 4,
-                                          ),
-                                          !isDownloading
-                                              ? Icon(
-                                                  Icons.download,
-                                                  size: 20,
-                                                  color: Colors.pink.shade300,
-                                                )
-                                              : SizedBox(
-                                                  height: 10.0,
-                                                  width: 10.0,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    strokeWidth: 1,
-                                                    color: Colors.pink.shade300,
-                                                  ),
-                                                ),
-                                        ],
+                                    if (widget.data.caption != '')
+                                      Container(
+                                        constraints: BoxConstraints(
+                                          maxWidth: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.5,
+                                        ),
+                                        child: CustomTextWidget(
+                                            data: widget.data.caption!),
                                       ),
-                                    ),
+                                    singleMaterial(),
                                     const SizedBox(
                                       height: 3,
                                     ),
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         const Icon(
                                           Icons.remove_red_eye_sharp,
@@ -537,6 +382,35 @@ class _MaterialCardState extends State<MaterialCard> {
                   )
                 ],
               );
+  }
+
+  Stack singleMaterial() {
+    return Stack(
+      children: [
+        Image.asset(
+          "assets/icons/document.png",
+          width: 80,
+        ),
+        Positioned(
+            bottom: 0,
+            right: 0,
+            child: InkWell(
+              onTap: () {
+                openFile(
+                    url: widget.data.images![0],
+                    fileName: widget.data.images![0].split('/').last);
+                isDownloading = true;
+              },
+              child: CircleAvatar(
+                  backgroundColor: Colors.blueGrey,
+                  radius: 15,
+                  child: Icon(
+                    isDownloading ? Icons.downloading : Icons.download,
+                    size: 20,
+                  )),
+            ))
+      ],
+    );
   }
 
   Future openFile({required String url, required String fileName}) async {

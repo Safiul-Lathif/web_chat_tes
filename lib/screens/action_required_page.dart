@@ -393,14 +393,20 @@ class _ActionRequiredState extends State<ActionRequired> {
                                                                   .spaceEvenly,
                                                           children: [
                                                             SizedBox(
-                                                              height: 90,
+                                                              width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.25,
+                                                              height: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .height *
+                                                                  0.1,
                                                               child: GridView
                                                                   .builder(
                                                                       shrinkWrap:
                                                                           true,
-                                                                      scrollDirection:
-                                                                          Axis
-                                                                              .horizontal,
                                                                       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                                                                           maxCrossAxisExtent:
                                                                               200,

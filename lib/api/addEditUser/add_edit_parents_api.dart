@@ -16,6 +16,7 @@ Future<dynamic> addEditParent(ParentSearchList singleParent,
   for (int i = 0; profileImage.length > i; i++) {
     request.fields["photo"] = base64Encode(profileImage[i].bytes!);
     request.fields["ext"] = profileImage[i].extension!;
+    request.fields["file_name"] = profileImage[i].name;
   }
   request.fields['student_id'] = singleParent.studentId.toString();
   request.fields['id'] = singleParent.id.toString();

@@ -42,11 +42,11 @@ class StudentController {
     }
   }
 
-  Future<SingleParent?> fetchSingleStaff({required String id}) async {
+  Future<SingleParent?> fetchSingleStaff({required int id}) async {
     print(id);
     String? token = await pref.getAuthToken();
     var map = <String, dynamic>{};
-    map["id"] = id;
+    map["id"] = id.toString();
 
     try {
       final response = await http.post(getSingleParentUrl, body: map, headers: {
@@ -99,18 +99,22 @@ class StudentController {
     for (int i = 0; i < fatherPhoto.length; i++) {
       map["data[0][father_photo]"] = base64Encode(fatherPhoto[i].bytes!);
       map["data[0][father_ext]"] = fatherPhoto[i].extension.toString();
+      map["data[0][father_file_name]"] = fatherPhoto[i].name;
     }
     for (int i = 0; i < motherPhoto.length; i++) {
       map["data[0][mother_photo]"] = base64Encode(motherPhoto[i].bytes!);
       map["data[0][mother_ext]"] = motherPhoto[i].extension.toString();
+      map["data[0][mother_file_name]"] = motherPhoto[i].name;
     }
     for (int i = 0; i < guardianPhoto.length; i++) {
       map["data[0][guardian_photo]"] = base64Encode(guardianPhoto[i].bytes!);
       map["data[0][guardian_ext]"] = motherPhoto[i].extension.toString();
+      map["data[0][guardian_file_name]"] = motherPhoto[i].name;
     }
     for (int i = 0; i < studentPhoto.length; i++) {
       map["data[0][student_photo]"] = base64Encode(studentPhoto[i].bytes!);
       map["data[0][student_ext]"] = studentPhoto[i].extension.toString();
+      map["data[0][student_file_name"] = studentPhoto[i].name;
     }
     map["data[0][class_config]"] = student.classSection.toString();
     print(map);
@@ -162,18 +166,22 @@ class StudentController {
     for (int i = 0; i < fatherPhoto.length; i++) {
       map["father_photo"] = base64Encode(fatherPhoto[i].bytes!);
       map["father_ext"] = fatherPhoto[i].extension.toString();
+      map["father_file_name"] = fatherPhoto[i].name;
     }
     for (int i = 0; i < motherPhoto.length; i++) {
       map["mother_photo"] = base64Encode(motherPhoto[i].bytes!);
       map["mother_ext"] = motherPhoto[i].extension.toString();
+      map["mother_file_name"] = motherPhoto[i].name;
     }
     for (int i = 0; i < guardianPhoto.length; i++) {
       map["guardian_photo"] = base64Encode(guardianPhoto[i].bytes!);
       map["guardian_ext"] = motherPhoto[i].extension.toString();
+      map["guardian_file_name"] = motherPhoto[i].name;
     }
     for (int i = 0; i < studentPhoto.length; i++) {
       map["student_photo"] = base64Encode(studentPhoto[i].bytes!);
       map["student_ext"] = studentPhoto[i].extension.toString();
+      map["student_file_name"] = studentPhoto[i].name;
     }
     map["class_config"] = student.classSection.toString();
     print(map);

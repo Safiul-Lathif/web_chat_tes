@@ -52,7 +52,7 @@ class _HomeWorkScreenState extends State<HomeWorkScreen> {
         child: Column(children: [
           classGroup == null
               ? SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.9,
                   child: Center(
                     child: Lottie.network(
                       'https://assets8.lottiefiles.com/packages/lf20_fzmasdx7.json',
@@ -65,7 +65,7 @@ class _HomeWorkScreenState extends State<HomeWorkScreen> {
                 )
               : SingleChildScrollView(
                   child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.85,
+                      height: MediaQuery.of(context).size.height * 0.95,
                       child: MediaQuery.removePadding(
                           context: context,
                           removeTop: true,
@@ -89,6 +89,7 @@ class _HomeWorkScreenState extends State<HomeWorkScreen> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) => HomeWorkPage(
+                                              date: DateTime.now(),
                                               isParent: false,
                                               classId: classGroup!
                                                   .classGroup[index].classConfig

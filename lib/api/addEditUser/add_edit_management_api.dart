@@ -14,6 +14,7 @@ Future<dynamic> addEditManagement(ManagementList managementList,
   for (int i = 0; profileImage.length > i; i++) {
     request.fields["photo"] = base64Encode(profileImage[i].bytes!);
     request.fields["ext"] = profileImage[i].extension!;
+    request.fields["file_name"] = profileImage[i].name;
   }
   if (isEdit) request.fields['id'] = managementList.id.toString();
   request.fields['module'] = 'singleuser';

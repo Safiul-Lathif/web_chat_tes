@@ -1,20 +1,22 @@
 class ConfigList {
   Configuration configuration;
   Profile profile;
+  String excel;
 
-  ConfigList({
-    required this.configuration,
-    required this.profile,
-  });
+  ConfigList(
+      {required this.configuration,
+      required this.profile,
+      required this.excel});
 
   factory ConfigList.fromJson(Map<String, dynamic> json) => ConfigList(
-        configuration: Configuration.fromJson(json["configuration"]),
-        profile: Profile.fromJson(json["profile"]),
-      );
+      configuration: Configuration.fromJson(json["configuration"]),
+      profile: Profile.fromJson(json["profile"]),
+      excel: json['excel'] ?? "");
 
   Map<String, dynamic> toJson() => {
         "configuration": configuration.toJson(),
         "profile": profile.toJson(),
+        "excel": excel
       };
 }
 

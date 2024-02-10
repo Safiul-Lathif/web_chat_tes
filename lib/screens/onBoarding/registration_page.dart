@@ -215,38 +215,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       border: Border.all(color: Colors.black),
                     ),
                     child: TextFormField(
-                      controller: designationController,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                      keyboardType: TextInputType.text,
-                      textInputAction: TextInputAction.next,
-                      textAlignVertical: TextAlignVertical.center,
-                      //readOnly: true,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(17),
-                        border: InputBorder.none,
-                        //fillColor: Colors.grey[300],
-                        filled: true,
-                        hintText: 'Designation',
-                        prefixIcon: Icon(
-                          Icons.work,
-                          // size: 4 * SizeConfig.heightMultiplier,
-                          color: Colors.blue.withOpacity(0.8),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20.0),
-                      border: Border.all(color: Colors.black),
-                    ),
-                    child: TextFormField(
                       controller: academicController,
                       style: Theme.of(context).textTheme.bodyLarge,
                       keyboardType: TextInputType.number,
@@ -349,7 +317,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                   mailController.text.isEmpty ||
                                   contactController.text.isEmpty ||
                                   passwordController.text.isEmpty ||
-                                  designationController.text.isEmpty ||
                                   academicController.text.isEmpty) {
                                 Utility.displaySnackBar(
                                     context, "Please Fill All TextFields");
@@ -365,12 +332,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                         schoolCode: codeController.text)
                                     .then((response) async {
                                   if (response != null) {
-                                    if (response['error'] != "") {
+                                    if (response.containsKey("error")) {
                                       Utility.displaySnackBar(
                                           context, response['error']);
-                                    } else {
-                                      Utility.displaySnackBar(
-                                          context, "Register Successfully");
+                                    }
+                                    if (response.containsKey("token")) {
+                                      Utility.displaySnackBar(context,
+                                          "Register Successfully: With UserName: ${contactController.text} & password: ${passwordController.text}");
                                       Navigator.pop(context);
                                     }
                                   }

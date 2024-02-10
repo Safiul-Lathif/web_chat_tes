@@ -5,7 +5,6 @@ import 'package:lottie/lottie.dart';
 import 'package:ui/Utils/utility.dart';
 import 'package:ui/api/birthday/get_birthday_api.dart';
 import 'package:ui/api/birthday/send_birthday_api.dart';
-import 'package:ui/config/images.dart';
 import 'package:ui/custom/leading_image.dart';
 import 'package:ui/custom/loading_animator.dart';
 import 'package:ui/model/birthday/birthday_model.dart';
@@ -67,8 +66,8 @@ class _BirthdayPageState extends State<BirthdayPage> {
               ? Center(child: LoadingAnimator())
               : studentList.isEmpty
                   ? Center(
-                      child: Lottie.asset(
-                        "assets/lottie/no_data.json",
+                      child: Lottie.network(
+                        "https://lottie.host/e9f9e1f1-0bcd-4d28-9830-2d7e9b0c9e30/OU2PntbZoS.json",
                         width: MediaQuery.of(context).size.width * 0.5,
                         height: MediaQuery.of(context).size.height * 0.5,
                         repeat: true,
@@ -184,21 +183,20 @@ class _BirthdayPageState extends State<BirthdayPage> {
   }
 
   void onSendingBirthday() async {
+    setState(() => birthdayList = null);
     if (studentList.where((element) => element.sentStatus != 0).isEmpty) {
       await sendBirthday(classIds: classIds, bDayMessage: bDayMessage)
           .then((value) {
         if (value != null) {
-          setState(() {
-            birthdayList = null;
-          });
           initialize();
           Utility.displaySnackBar(
               context, "Birthday Wishes Added Successfully");
         }
       });
     } else {
+      initialize();
       Utility.displaySnackBar(
-          context, "Wishes Already send Successfully , dont send again");
+          context, "Wishes Already send Successfully , don't send again");
     }
   }
 }

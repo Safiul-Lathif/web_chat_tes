@@ -74,7 +74,7 @@ class Utility {
     }
   }
 
-  static void popUpDialog(BuildContext context, Message data) async {
+  static void popUpDialog(BuildContext context, String data) async {
     showDialog(
       context: context,
       builder: (context) {
@@ -85,13 +85,12 @@ class Utility {
                 BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
             child: AlertDialog(
               content: SingleChildScrollView(
-                child: Text(data.message.toString()),
+                child: Text(data.toString()),
               ),
               actions: [
                 IconButton(
                     onPressed: () {
-                      Clipboard.setData(
-                              ClipboardData(text: data.message.toString()))
+                      Clipboard.setData(ClipboardData(text: data.toString()))
                           .then((_) {
                         Utility.displaySnackBar(
                             context, 'Copied to your clipboard !');
@@ -100,7 +99,7 @@ class Utility {
                     icon: const Icon(Icons.copy)),
                 IconButton(
                     onPressed: () async {
-                      await Share.share(data.message.toString());
+                      await Share.share(data.toString());
                     },
                     icon: const Icon(Icons.share)),
                 IconButton(

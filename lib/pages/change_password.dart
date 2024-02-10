@@ -36,164 +36,170 @@ class _ChangePasswordState extends State<ChangePassword> {
                     repeat: ImageRepeat.repeat)),
             child: Stack(
               children: [
-                Column(children: [
-                  SizedBox(
-                    child: Center(
-                      child: Image.asset(Images.appLogo),
-                    ),
-                  ),
-                  Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Change Your Password",
-                          style: TextStyle(fontSize: 25),
-                          textAlign: TextAlign.left,
+                Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        child: Center(
+                          child: Image.asset(Images.appLogo),
                         ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.9,
-                          child: const Text(
-                            "Don't worry we wil follow this method to Change Password",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 15.0),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.25,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20.0),
-                              border: Border.all(color: Colors.black),
+                      ),
+                      Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "Change Your Password",
+                              style: TextStyle(fontSize: 25),
+                              textAlign: TextAlign.left,
                             ),
-                            child: TextFormField(
-                              controller: nameController,
-                              style: Theme.of(context).textTheme.bodyText1,
-                              keyboardType: TextInputType.emailAddress,
-                              textInputAction: TextInputAction.next,
-                              textAlignVertical: TextAlignVertical.center,
-                              //readOnly: true,
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.all(12),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              child: const Text(
+                                "Don't worry we wil follow this method to Change Password",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 15.0),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.25,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  border: Border.all(color: Colors.black),
+                                ),
+                                child: TextFormField(
+                                  controller: nameController,
+                                  style: Theme.of(context).textTheme.bodyText1,
+                                  keyboardType: TextInputType.emailAddress,
+                                  textInputAction: TextInputAction.next,
+                                  textAlignVertical: TextAlignVertical.center,
+                                  //readOnly: true,
+                                  decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.all(12),
 
-                                border: InputBorder.none,
-                                //fillColor: Colors.grey[300],
-                                hintText: 'Old Password',
-                                prefixIcon: Icon(
-                                  Icons.account_box,
-                                  color: Colors.green.shade400,
+                                    border: InputBorder.none,
+                                    //fillColor: Colors.grey[300],
+                                    hintText: 'Old Password',
+                                    prefixIcon: Icon(
+                                      Icons.account_box,
+                                      color: Colors.green.shade400,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 15.0),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.25,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20.0),
-                              border: Border.all(color: Colors.black),
+                            const SizedBox(
+                              height: 10,
                             ),
-                            child: TextFormField(
-                              controller: passwordController,
-                              obscureText: obscureText2,
-                              style: Theme.of(context).textTheme.bodyText1,
-                              keyboardType: TextInputType.emailAddress,
-                              textInputAction: TextInputAction.next,
-                              textAlignVertical: TextAlignVertical.center,
-                              //readOnly: true,
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.all(12),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 15.0),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.25,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  border: Border.all(color: Colors.black),
+                                ),
+                                child: TextFormField(
+                                  controller: passwordController,
+                                  obscureText: obscureText2,
+                                  style: Theme.of(context).textTheme.bodyText1,
+                                  keyboardType: TextInputType.emailAddress,
+                                  textInputAction: TextInputAction.next,
+                                  textAlignVertical: TextAlignVertical.center,
+                                  //readOnly: true,
+                                  decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.all(12),
 
-                                border: InputBorder.none,
-                                //fillColor: Colors.grey[300],
-                                hintText: 'New Password',
-                                prefixIcon: Icon(
-                                  Icons.account_box,
-                                  color: Colors.green.shade400,
+                                    border: InputBorder.none,
+                                    //fillColor: Colors.grey[300],
+                                    hintText: 'New Password',
+                                    prefixIcon: Icon(
+                                      Icons.account_box,
+                                      color: Colors.green.shade400,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.3,
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                value: value,
-                                //this.value,
-                                onChanged: (bool? values) {
-                                  setState(() {
-                                    value = values!;
-                                    obscureText2 = !obscureText2;
-                                  });
-                                },
-                                activeColor: Colors.blueAccent,
-                                checkColor: Colors.white,
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.25,
+                              child: Row(
+                                children: [
+                                  Checkbox(
+                                    value: value,
+                                    //this.value,
+                                    onChanged: (bool? values) {
+                                      setState(() {
+                                        value = values!;
+                                        obscureText2 = !obscureText2;
+                                      });
+                                    },
+                                    activeColor: Colors.blueAccent,
+                                    checkColor: Colors.white,
+                                  ),
+                                  const Text("Show Password"),
+                                ],
                               ),
-                              const Text("Show Password"),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15.0)),
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              if (nameController.text.isEmpty ||
-                                  passwordController.text.isEmpty) {
-                                _displaySnackBar(
-                                    context, "Please Enter Password");
-                              } else {
-                                await changePassword(
-                                        oldPassword: nameController.text,
-                                        newPassword: passwordController.text)
-                                    .then((value) {
-                                  if (value['status'] == true) {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const LoginPage()));
-                                    _displaySnackBar(context, value['message']);
-                                  } else {
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15.0)),
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  if (nameController.text.isEmpty ||
+                                      passwordController.text.isEmpty) {
                                     _displaySnackBar(
-                                        context, 'InValid Current Password');
+                                        context, "Please Enter Password");
+                                  } else {
+                                    await changePassword(
+                                            oldPassword: nameController.text,
+                                            newPassword:
+                                                passwordController.text)
+                                        .then((value) {
+                                      if (value != null &&
+                                          value['status'] == true) {
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const LoginPage()));
+                                        _displaySnackBar(
+                                            context, value['message']);
+                                      } else {
+                                        _displaySnackBar(context,
+                                            'InValid Current Password');
+                                      }
+                                    });
                                   }
-                                });
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                                shape: const StadiumBorder(),
-                                primary: Colors.blueAccent,
-                                onPrimary: Colors.white),
-                            child: const Text("DONE"),
-                          ),
-                        ),
-                      ])
-                ]),
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    shape: const StadiumBorder(),
+                                    primary: Colors.blueAccent,
+                                    onPrimary: Colors.white),
+                                child: const Text("DONE"),
+                              ),
+                            ),
+                          ])
+                    ]),
                 Positioned(
                     top: 0,
                     right: 0,
@@ -207,7 +213,11 @@ class _ChangePasswordState extends State<ChangePassword> {
   }
 
   _displaySnackBar(BuildContext context, String msg) {
-    final snackBar = SnackBar(content: Text(msg));
+    final snackBar = SnackBar(
+      content: Text(msg),
+      behavior: SnackBarBehavior.floating,
+      padding: const EdgeInsets.all(20),
+    );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

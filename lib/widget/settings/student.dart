@@ -357,8 +357,7 @@ class _StudentWidgetState extends State<StudentWidget> {
                                                     onTap: () async {
                                                       await StudentController()
                                                           .fetchSingleStaff(
-                                                              id: parent.id
-                                                                  .toString())
+                                                              id: parent.id)
                                                           .then((value) {
                                                         if (value != null) {
                                                           setState(() {

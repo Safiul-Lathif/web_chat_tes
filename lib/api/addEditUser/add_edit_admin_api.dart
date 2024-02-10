@@ -14,6 +14,7 @@ Future<dynamic> addEditAdmin(
   for (int i = 0; profileImage.length > i; i++) {
     request.fields["photo"] = base64Encode(profileImage[i].bytes!);
     request.fields["ext"] = profileImage[i].extension!;
+    request.fields["file_name[$i]"] = profileImage[i].name;
   }
   if (isEdit) request.fields['id'] = adminList.id.toString();
   request.fields['name'] = adminList.firstName.toString();

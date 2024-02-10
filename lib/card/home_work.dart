@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
-import 'package:ui/api/delete_api.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/deleted_widget.dart';
 import 'package:ui/custom/info_delete.dart';
@@ -11,25 +10,25 @@ import 'package:ui/custom/visibility_widget.dart';
 import 'package:ui/model/home_work_parent_model.dart';
 import 'package:ui/model/info_model.dart';
 import 'package:ui/model/message_view_model.dart';
-import 'package:ui/utils/utility.dart';
+import 'package:ui/pages/home_work_page.dart';
 
 class HomeWorkCard extends StatefulWidget {
-  const HomeWorkCard({
-    super.key,
-    required this.data,
-    required this.itemIndex,
-    required this.id,
-    required this.notiid,
-    // ignore: non_constant_identifier_names
-    required this.usr_Name,
-    required this.callback,
-    required this.role,
-    required this.type,
-    required this.clsId,
-    required this.redCount,
-    required this.parentCount,
-    required this.watchCount,
-  });
+  const HomeWorkCard(
+      {super.key,
+      required this.data,
+      required this.itemIndex,
+      required this.id,
+      required this.notiid,
+      // ignore: non_constant_identifier_names
+      required this.usr_Name,
+      required this.callback,
+      required this.role,
+      required this.type,
+      required this.clsId,
+      required this.redCount,
+      required this.parentCount,
+      required this.watchCount,
+      required this.className});
 //  final int completeCount;
   final Message data;
   final int itemIndex;
@@ -44,6 +43,7 @@ class HomeWorkCard extends StatefulWidget {
   final int redCount;
   final int watchCount;
   final String parentCount;
+  final String className;
 
   @override
   State<HomeWorkCard> createState() => _HomeWorkCardState();
@@ -302,22 +302,16 @@ class _HomeWorkCardState extends State<HomeWorkCard> {
                           });
                         },
                         onTap: () async {
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //       builder: (context) => HomeWorkScreen(
-                          //         // sibling: widget.sibling,
-                          //         classId: widget.clsId,
-                          //         role: widget.role,
-                          //         isHomeWork: true,
-                          //         selectedDate: widget.data.dateTime,
-                          //       ),
-                          //     ));
-
-                          // await messageRead(
-                          //         msgStatus: '3',
-                          //         notifyid: '')
-                          //     .then((value) {});
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HomeWorkPage(
+                                  isParent: false,
+                                  classId: widget.clsId,
+                                  className: widget.className,
+                                  date: widget.data.dateTime,
+                                ),
+                              ));
                         },
                         child: ChatBubble(
                           clipper:

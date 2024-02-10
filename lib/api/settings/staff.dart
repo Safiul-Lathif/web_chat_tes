@@ -85,6 +85,7 @@ class StaffController {
     for (int i = 0; i < profileImage.length; i++) {
       map["data[0][photo]"] = base64Encode(profileImage[i].bytes!);
       map["data[0][ext]"] = profileImage[i].extension!.toString();
+      map["data[0][file_name]"] = profileImage[i].name.toString();
     }
     map["data[0][dob]"] = staffList.dob.toString();
     map["data[0][doj]"] = staffList.doj.toString();
@@ -133,6 +134,7 @@ class StaffController {
     for (int i = 0; i < profileImage.length; i++) {
       map['photo'] = base64Encode(profileImage[i].bytes!);
       map['ext'] = profileImage[i].extension!.toString();
+      map['file_name'] = profileImage[i].name.toString();
     }
     map['dob'] = staffList.dob.toString();
     map['doj'] = staffList.doj.toString();

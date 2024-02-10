@@ -33,10 +33,10 @@ class DeliveredUser {
   DateTime viewTime;
 
   factory DeliveredUser.fromJson(Map<String, dynamic> json) => DeliveredUser(
-        name: json["name"],
-        designation: json["designation"],
-        mobileNo: json["mobile_no"],
-        messageStatus: json["message_status"],
+        name: json["name"] ?? '',
+        designation: json["designation"] ?? '',
+        mobileNo: json["mobile_no"] ?? 0,
+        messageStatus: json["message_status"] ?? 0,
         viewTime: DateTime.parse(json["view_time"]),
       );
 

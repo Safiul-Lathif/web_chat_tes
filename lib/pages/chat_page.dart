@@ -368,6 +368,7 @@ class _ChatPageState extends State<ChatPage> {
                                         0.81,
                                     child: NewsFeedInfo(
                                       classId: widget.clsId,
+                                      className: widget.name,
                                       id: widget.id,
                                       role: widget.role,
                                     )),

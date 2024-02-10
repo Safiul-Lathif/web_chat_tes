@@ -106,6 +106,7 @@ class ManagementController {
     for (int i = 0; i < profileImage.length; i++) {
       map["data[0][photo]"] = base64Encode(profileImage.first.bytes!);
       map["data[0][ext]"] = profileImage.first.extension.toString();
+      map["data[0][file_name]"] = profileImage.first.extension.toString();
     }
     map["data[0][dob]"] = managementList.dob.toString();
     map["data[0][doj]"] = managementList.doj.toString();
@@ -143,6 +144,7 @@ class ManagementController {
     for (int i = 0; i < profileImage.length; i++) {
       map['photo'] = base64Encode(profileImage.first.bytes!).toString();
       map['ext'] = profileImage.first.extension.toString();
+      map['file_name'] = profileImage.first.name;
     }
     map['dob'] = managementList.dob.toString();
     map['doj'] = managementList.doj.toString();

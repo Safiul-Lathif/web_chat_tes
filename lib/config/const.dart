@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 bool READ_ACCESS = true;
 int ACTION_REQUIRED_COUNT = 0;
-int IMG_SIZE_RESTRICTION = 1;
+int IMG_SIZE_RESTRICTION = 10;
 
 ButtonStyle buttonStyle = ButtonStyle(
     shape: MaterialStatePropertyAll(

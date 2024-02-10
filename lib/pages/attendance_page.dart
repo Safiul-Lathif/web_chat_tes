@@ -54,7 +54,7 @@ class _AttendancePageState extends State<AttendancePage> {
         });
       }
     });
-    getAttendance();
+    await getAttendance();
     setState(() {
       isLoading = false;
     });
@@ -72,7 +72,7 @@ class _AttendancePageState extends State<AttendancePage> {
     });
   }
 
-  void getAttendance() async {
+  Future<void> getAttendance() async {
     await getSchoolAttendanceList().then((value) {
       if (value != null) {
         setState(() {

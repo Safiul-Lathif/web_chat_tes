@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:ui/api/attendance/attendance_api.dart';
 import 'package:ui/api/dashboard/dashboard_api.dart';
 import 'package:ui/api/main_group_api.dart';
 import 'package:ui/api/profile/edit_profile.dart';
@@ -12,6 +13,7 @@ import 'package:ui/api/profile_api.dart';
 import 'package:ui/config/const.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/controllers/image_controller.dart';
+import 'package:ui/model/attendance/attendance_model.dart';
 import 'package:ui/model/dashboard/dashboard_model.dart';
 import 'package:ui/model/main_group_model.dart';
 import 'package:ui/model/profile_model.dart';
@@ -84,6 +86,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         dashboard = value;
       });
     });
+    getAttendance();
   }
 
   bool isForgetPasswordScreen = true;
@@ -120,6 +123,28 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       if (value != null) {
         setState(() {
           profiles = value;
+        });
+      }
+    });
+  }
+
+  void getAttendance() async {
+    await getAttendanceInfo().then((value) {
+      if (value != null) {
+        setState(() {
+          AttendanceInfo.allAttendanceInfos.clear();
+          AttendanceInfo.allAttendanceInfos = [
+            AttendanceInfo(
+                'P',
+                [const Color(0xff64a78b), const Color(0xff69c767)],
+                value.presentTotal.toString(),
+                value.presentPercentage.toString()),
+            AttendanceInfo(
+                'A',
+                [Colors.pinkAccent, Colors.pink],
+                value.absentTotal.toString(),
+                value.absentPercentage.toString()),
+          ];
         });
       }
     });
@@ -457,7 +482,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                                 Expanded(
                                   child: Container(
                                     height: MediaQuery.of(context).size.height *
-                                        0.83,
+                                        0.93,
                                     padding: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
                                         color: Colors.blue.shade50,
@@ -666,6 +691,140 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                                                       .totalInstalledManagement,
                                                   Colors.blue),
                                             ],
+                                          ),
+                                          const SizedBox(
+                                            height: 20,
+                                          ),
+                                          InkWell(
+                                            onTap: () {},
+                                            child: Container(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.55,
+                                              // height: MediaQuery.of(context).size.height * 0.30,
+                                              padding: const EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                  color:
+                                                      Colors.blueGrey.shade300,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                        color: Colors.grey
+                                                            .withOpacity(.5),
+                                                        offset:
+                                                            const Offset(3, 2),
+                                                        blurRadius: 7)
+                                                  ],
+                                                  borderRadius:
+                                                      const BorderRadius.all(
+                                                          Radius.circular(15))),
+                                              child: Column(
+                                                children: [
+                                                  Text(
+                                                    "Today's Attendance",
+                                                    style: GoogleFonts.lato(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    )),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      for (int i = 0;
+                                                          i <
+                                                              AttendanceInfo
+                                                                  .allAttendanceInfos
+                                                                  .length;
+                                                          i++)
+                                                        Column(
+                                                          children: [
+                                                            Container(
+                                                              height: 50,
+                                                              width: 50,
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      bottom:
+                                                                          10),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                                boxShadow: const [
+                                                                  BoxShadow(
+                                                                    color: Colors
+                                                                        .grey,
+                                                                    offset: Offset(
+                                                                        0.0,
+                                                                        1.0), //(x,y)
+                                                                    blurRadius:
+                                                                        6.0,
+                                                                  ),
+                                                                ],
+                                                                gradient: LinearGradient(
+                                                                    colors: AttendanceInfo
+                                                                        .allAttendanceInfos[
+                                                                            i]
+                                                                        .colors,
+                                                                    begin: Alignment
+                                                                        .topLeft,
+                                                                    end: Alignment
+                                                                        .centerRight),
+                                                              ),
+                                                              child: Center(
+                                                                child: Text(
+                                                                    AttendanceInfo
+                                                                        .allAttendanceInfos[
+                                                                            i]
+                                                                        .title,
+                                                                    style: GoogleFonts.lato(
+                                                                        textStyle: const TextStyle(
+                                                                            color:
+                                                                                Colors.white,
+                                                                            fontWeight: FontWeight.bold,
+                                                                            fontSize: 30))),
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              AttendanceInfo
+                                                                  .allAttendanceInfos[
+                                                                      i]
+                                                                  .attendance,
+                                                              style: GoogleFonts.lato(
+                                                                  textStyle: const TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontSize:
+                                                                          20)),
+                                                            ),
+                                                            Text(
+                                                              "${AttendanceInfo.allAttendanceInfos[i].percentage}%",
+                                                              style: GoogleFonts.lato(
+                                                                  textStyle: const TextStyle(
+                                                                      fontSize:
+                                                                          18,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: Colors
+                                                                          .blueGrey)),
+                                                            ),
+                                                          ],
+                                                        )
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ],
                                       ),
