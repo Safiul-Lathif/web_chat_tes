@@ -205,81 +205,101 @@ class _ManagementProfileInfoState extends State<ManagementProfileInfo> {
                       spacing: 8.0, // gap between adjacent chips
                       runSpacing: 4.0, // gap between lines
                       children: [
-                        ListTile(
-                          title: const Text(
-                            "Mobile Number",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xff575757)),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          child: ListTile(
+                            title: const Text(
+                              "Mobile Number",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xff575757)),
+                            ),
+                            subtitle: Text(
+                                widget.managementList.mobileNumber.toString()),
                           ),
-                          subtitle: Text(
-                              widget.managementList.mobileNumber.toString()),
                         ),
-                        ListTile(
-                          title: const Text(
-                            "Email address",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xff575757)),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          child: ListTile(
+                            title: const Text(
+                              "Email address",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xff575757)),
+                            ),
+                            subtitle:
+                                Text(widget.managementList.emailId.toString()),
                           ),
-                          subtitle:
-                              Text(widget.managementList.emailId.toString()),
                         ),
                         // ticket no :- 92
-                        ListTile(
-                          title: const Text(
-                            "Date of Birth",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xff575757)),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          child: ListTile(
+                            title: const Text(
+                              "Date of Birth",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xff575757)),
+                            ),
+                            subtitle: Text(widget.managementList.dob == ''
+                                ? "N/A"
+                                : widget.managementList.dob),
                           ),
-                          subtitle: Text(widget.managementList.dob == ''
-                              ? "N/A"
-                              : widget.managementList.dob),
                         ),
-                        ListTile(
-                            title: const Text(
-                              "Employee Number",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xff575757)),
-                            ),
-                            subtitle: Text(widget.managementList.employeeNo ==
-                                    ''
-                                ? "N/A"
-                                : widget.managementList.employeeNo.toString())),
-                        ListTile(
-                            title: const Text(
-                              "Date Of Joining",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xff575757)),
-                            ),
-                            subtitle: Text(widget.managementList.doj == ''
-                                ? "N/A"
-                                : widget.managementList.doj)),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          child: ListTile(
+                              title: const Text(
+                                "Employee Number",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff575757)),
+                              ),
+                              subtitle: Text(
+                                  widget.managementList.employeeNo == ''
+                                      ? "N/A"
+                                      : widget.managementList.employeeNo
+                                          .toString())),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          child: ListTile(
+                              title: const Text(
+                                "Date Of Joining",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff575757)),
+                              ),
+                              subtitle: Text(widget.managementList.doj == ''
+                                  ? "N/A"
+                                  : widget.managementList.doj)),
+                        ),
 
-                        ListTile(
-                            title: const Text(
-                              "Designation",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xff575757)),
-                            ),
-                            trailing: widget.role.toUpperCase() == "MANAGEMENT"
-                                ? IconButton(
-                                    onPressed: () {
-                                      _showAlertDialog();
-                                    },
-                                    icon: const Icon(
-                                      Icons.manage_accounts,
-                                      color: Colors.black,
-                                    ))
-                                : null,
-                            subtitle: Text(
-                                widget.managementList.designation == ''
-                                    ? "N/A"
-                                    : widget.managementList.designation)),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          child: ListTile(
+                              title: const Text(
+                                "Designation",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff575757)),
+                              ),
+                              trailing:
+                                  widget.role.toUpperCase() == "MANAGEMENT"
+                                      ? IconButton(
+                                          onPressed: () {
+                                            _showAlertDialog();
+                                          },
+                                          icon: const Icon(
+                                            Icons.manage_accounts,
+                                            color: Colors.black,
+                                          ))
+                                      : null,
+                              subtitle: Text(
+                                  widget.managementList.designation == ''
+                                      ? "N/A"
+                                      : widget.managementList.designation)),
+                        ),
                       ],
                     ),
                   ),

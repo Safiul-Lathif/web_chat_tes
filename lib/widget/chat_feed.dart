@@ -35,10 +35,12 @@ class NewsFeedInfo extends StatefulWidget {
     required this.role,
     required this.id,
     required this.classId,
+    required this.className,
   });
   final String role;
   final String classId;
   final String id;
+  final String className;
 
   @override
   State<NewsFeedInfo> createState() => _NewsFeedInfoState();
@@ -465,6 +467,7 @@ class _NewsFeedInfoState extends State<NewsFeedInfo> {
                         return HomeWorkCard(
                           watchCount: message.watched,
                           redCount: message.readCount,
+                          className: widget.className,
                           clsId: widget.classId,
                           type: message.viewType,
                           role: widget.role,

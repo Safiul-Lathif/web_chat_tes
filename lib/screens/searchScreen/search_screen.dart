@@ -31,6 +31,8 @@ import '../../model/search/admin_list_model.dart';
 import '../../model/search/student_list_model.dart';
 import 'package:ui/model/search/management_list_model.dart';
 
+import '../../widget/users/add_edit_student.dart';
+
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
@@ -1226,47 +1228,62 @@ class _SearchPageState extends State<SearchPage> {
                                                                             white)),
                                                           ),
                                                         )),
-                                                        DataCell(SizedBox(
-                                                            width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                0.08,
-                                                            child: ElevatedButton(
-                                                                clipBehavior: Clip.antiAlias,
-                                                                style: ButtonStyle(
-                                                                    backgroundColor: MaterialStatePropertyAll(listOfStudent!.elementAt(i).userStatus == 1
-                                                                        ? Colors.green
-                                                                        : listOfStudent!.elementAt(i).userStatus == 3
-                                                                            ? Colors.yellow
-                                                                            : Colors.red)),
+                                                        DataCell(Row(
+                                                          children: [
+                                                            IconButton(
                                                                 onPressed: () {
-                                                                  activeInactiveStudent(
-                                                                    listOfStudent!
-                                                                        .elementAt(
-                                                                            i)
-                                                                        .userStatus,
-                                                                    listOfStudent!
-                                                                        .elementAt(
-                                                                            i)
-                                                                        .firstName,
-                                                                    listOfStudent!
-                                                                        .elementAt(
-                                                                            i)
-                                                                        .fatherMobile
-                                                                        .toString(),
-                                                                    listOfStudent!
-                                                                        .elementAt(
-                                                                            i)
-                                                                        .id
-                                                                        .toString(),
-                                                                  );
+                                                                  addEditUserPopUp(
+                                                                      StudentEditPage(
+                                                                    studentList:
+                                                                        listOfStudent!
+                                                                            .elementAt(i),
+                                                                  ));
                                                                 },
-                                                                child: Text(listOfStudent!.elementAt(i).userStatus == 1
-                                                                    ? "Active"
-                                                                    : listOfStudent!.elementAt(i).userStatus == 3
-                                                                        ? "Par-active"
-                                                                        : "Inactive")))),
+                                                                icon: const Icon(
+                                                                    Icons
+                                                                        .edit)),
+                                                            const SizedBox(
+                                                              width: 20,
+                                                            ),
+                                                            SizedBox(
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.08,
+                                                                child: ElevatedButton(
+                                                                    clipBehavior: Clip.antiAlias,
+                                                                    style: ButtonStyle(
+                                                                        backgroundColor: MaterialStatePropertyAll(listOfStudent!.elementAt(i).userStatus == 1
+                                                                            ? Colors.green
+                                                                            : listOfStudent!.elementAt(i).userStatus == 3
+                                                                                ? Colors.yellow
+                                                                                : Colors.red)),
+                                                                    onPressed: () {
+                                                                      activeInactiveStudent(
+                                                                        listOfStudent!
+                                                                            .elementAt(i)
+                                                                            .userStatus,
+                                                                        listOfStudent!
+                                                                            .elementAt(i)
+                                                                            .firstName,
+                                                                        listOfStudent!
+                                                                            .elementAt(i)
+                                                                            .fatherMobile
+                                                                            .toString(),
+                                                                        listOfStudent!
+                                                                            .elementAt(i)
+                                                                            .id
+                                                                            .toString(),
+                                                                      );
+                                                                    },
+                                                                    child: Text(listOfStudent!.elementAt(i).userStatus == 1
+                                                                        ? "Active"
+                                                                        : listOfStudent!.elementAt(i).userStatus == 3
+                                                                            ? "Par-active"
+                                                                            : "Inactive"))),
+                                                          ],
+                                                        )),
                                                       ]),
                                               ]),
                                         ),
@@ -2052,23 +2069,6 @@ class _SearchPageState extends State<SearchPage> {
                                                         )),
                                                         DataCell(Row(
                                                           children: [
-                                                            IconButton(
-                                                                onPressed: () {
-                                                                  addEditUserPopUp(
-                                                                      AddEditManagementPage(
-                                                                    userModel:
-                                                                        listOfManagement!
-                                                                            .elementAt(i),
-                                                                    isEdit:
-                                                                        true,
-                                                                  ));
-                                                                },
-                                                                icon: const Icon(
-                                                                    Icons
-                                                                        .edit)),
-                                                            const SizedBox(
-                                                              width: 20,
-                                                            ),
                                                             SizedBox(
                                                               width: MediaQuery.of(
                                                                           context)
@@ -2100,6 +2100,23 @@ class _SearchPageState extends State<SearchPage> {
                                                               MainAxisAlignment
                                                                   .center,
                                                           children: [
+                                                            IconButton(
+                                                                onPressed: () {
+                                                                  addEditUserPopUp(
+                                                                      AddEditManagementPage(
+                                                                    userModel:
+                                                                        listOfManagement!
+                                                                            .elementAt(i),
+                                                                    isEdit:
+                                                                        true,
+                                                                  ));
+                                                                },
+                                                                icon: const Icon(
+                                                                    Icons
+                                                                        .edit)),
+                                                            const SizedBox(
+                                                              width: 20,
+                                                            ),
                                                             SizedBox(
                                                                 width: MediaQuery.of(
                                                                             context)

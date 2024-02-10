@@ -14,11 +14,11 @@ class StaffListModel {
   String profileImage;
 
   factory StaffListModel.fromJson(Map<String, dynamic> json) => StaffListModel(
-        id: json["id"],
-        userId: json["user_id"],
-        firstName: json["first_name"],
-        mobileNumber: json["mobile_number"],
-        profileImage: json["profile_image"],
+        id: json["id"] ?? 0,
+        userId: json["user_id"] ?? '',
+        firstName: json["first_name"] ?? '',
+        mobileNumber: json["mobile_number"] ?? 0,
+        profileImage: json["profile_image"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {

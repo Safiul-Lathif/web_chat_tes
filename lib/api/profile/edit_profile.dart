@@ -15,6 +15,7 @@ Future<dynamic> editYourProfile(
   for (int i = 0; profileImage.length > i; i++) {
     request.fields["profile_image"] = base64Encode(profileImage[i].bytes!);
     request.fields["ext"] = profileImage[i].extension!;
+    request.fields["file_name"] = profileImage[i].name;
   }
   if (userName != '') request.fields["first_name"] = userName;
 

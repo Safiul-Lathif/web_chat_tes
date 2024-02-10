@@ -5,3 +5,5 @@ export './section_model.dart';
 export './staff_model.dart';
 export './subject_model.dart';
 export './review_model.dart';
+export './management_model.dart';
+export './student.dart';

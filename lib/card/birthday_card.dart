@@ -68,8 +68,8 @@ class _BirthdayCardState extends State<BirthdayCard> {
                     borderRadius: const BorderRadius.all(Radius.circular(15)),
                   ),
                   child: Column(children: [
-                    Lottie.asset(
-                      'assets/lottie/bDay.json',
+                    Lottie.network(
+                      "https://lottie.host/ed6500c4-b0ca-41d9-89bb-96eeabf0b752/QeeTfHqF5p.json",
                       height: 200.0,
                       repeat: true,
                       reverse: true,
@@ -92,8 +92,8 @@ class _BirthdayCardState extends State<BirthdayCard> {
           ),
         ),
         Positioned(
-          child: Lottie.asset(
-            'assets/lottie/celebration.json',
+          child: Lottie.network(
+            "https://lottie.host/54e0f0af-0389-4f06-ab8c-0ff561d25246/LV8A47ZIZa.json",
             height: 200.0,
             repeat: true,
             reverse: true,
@@ -102,8 +102,8 @@ class _BirthdayCardState extends State<BirthdayCard> {
         ),
         Positioned(
           right: 0,
-          child: Lottie.asset(
-            'assets/lottie/celebration.json',
+          child: Lottie.network(
+            "https://lottie.host/54e0f0af-0389-4f06-ab8c-0ff561d25246/LV8A47ZIZa.json",
             height: 200.0,
             repeat: true,
             reverse: true,

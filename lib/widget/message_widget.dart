@@ -337,872 +337,991 @@ class _MessageWidgetState extends State<MessageWidget> {
               image: const AssetImage(Images.bgImage),
               fit: BoxFit.fill,
             )),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <
-                Widget>[
-          const Icon(Icons.arrow_drop_down),
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 10,
-            ),
-            child: Row(
-              children: [
-                Container(
-                  // group38wXp (7:1664)
-                  margin:
-                      EdgeInsets.fromLTRB(0 * fem, 0 * fem, 10 * fem, 0 * fem),
-                  width: 25 * fem,
-                  height: 24 * fem,
-                  child: Image.asset(
-                    checkListItems[0]["value"]
-                        ? 'assets/images/group-38-ZQv.png'
-                        : checkListItems[2]["value"]
-                            ? 'assets/images/parentIcon.png'
-                            : 'assets/images/teacherIcon.png',
-                    width: 25 * fem,
-                    height: 24 * fem,
-                  ),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              const Icon(Icons.arrow_drop_down),
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 10,
                 ),
-                Container(
-                  // group18dfY (7:1623)
-                  width: 130.5 * fem,
-                  height: 25,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: AssetImage(
-                        checkListItems[2]["value"]
-                            ? 'assets/images/parents.png'
-                            : checkListItems[0]["value"]
-                                ? 'assets/images/rectangle-7-55t.png'
-                                : 'assets/images/teacher.png',
+                child: Row(
+                  children: [
+                    Container(
+                      // group38wXp (7:1664)
+                      margin: EdgeInsets.fromLTRB(
+                          0 * fem, 0 * fem, 10 * fem, 0 * fem),
+                      width: 25 * fem,
+                      height: 24 * fem,
+                      child: Image.asset(
+                        checkListItems[0]["value"]
+                            ? 'assets/images/group-38-ZQv.png'
+                            : checkListItems[2]["value"]
+                                ? 'assets/images/parentIcon.png'
+                                : 'assets/images/teacherIcon.png',
+                        width: 25 * fem,
+                        height: 24 * fem,
                       ),
                     ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      checkListItems[0]["value"] ? 'EveryOne' : text,
-                      style: SafeGoogleFont(
-                        'Inter',
-                        fontSize: 16 * ffem,
-                        fontWeight: FontWeight.w700,
-                        height: 1.2125 * ffem / fem,
-                        color: const Color(0xffffffff),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 10,
-              right: 10,
-            ),
-            child: Container(
-              padding: const EdgeInsets.only(top: 10, bottom: 5),
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(0),
-                    topRight: Radius.circular(15),
-                    bottomLeft: Radius.circular(15),
-                    bottomRight: Radius.circular(15)),
-                border: Border.all(color: color),
-              ),
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.4 * fem,
-                    height: 30 * fem,
-                    child: Text(
-                      count <= 1
-                          ? "This message will be visible for $count user"
-                          : "This message will be visible for $count users",
-                      style: SafeGoogleFont(
-                        'Inter',
-                        fontSize: 16 * ffem,
-                        fontWeight: FontWeight.w400,
-                        height: 0.915227294 * ffem / fem,
-                        letterSpacing: 1.6 * fem,
-                        color: const Color(0xff000000),
-                      ),
-                    ),
-                  ),
-                  DefaultTabController(
-                      length: widget.role == 'staff' ? 5 : 8,
-                      initialIndex: 0,
-                      child: Column(children: <Widget>[
-                        TabBar(
-                          indicatorColor: Colors.blue.shade50,
-                          isScrollable: true,
-                          onTap: (value) {
-                            setState(() {
-                              textController.text = '';
-                              textTitleController.text = '';
-                              imgController.text = '';
-                              speaksController.text = '';
-                              materialController.text = '';
-                              videoCaptionController.text = '';
-                              videoLinkController.text = '';
-                              circularController.text = '';
-                              docController.text = '';
-                              document = [];
-                              material = [];
-                              image = [];
-                            });
-                          },
-                          labelPadding: const EdgeInsets.only(
-                              top: 10, left: 10, right: 10),
-                          labelStyle: SafeGoogleFont(
-                            'Inter',
-                            fontSize: 12 * ffem,
-                            fontWeight: FontWeight.w700,
-                            height: 0.9152272542 * ffem / fem,
-                            letterSpacing: 1.2 * fem,
-                            color: const Color(0xff000000),
-                            decoration: TextDecoration.underline,
-                            decorationColor: const Color(0xff2c5ec0),
+                    Container(
+                      // group18dfY (7:1623)
+                      width: 130.5 * fem,
+                      height: 25,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: AssetImage(
+                            checkListItems[2]["value"]
+                                ? 'assets/images/parents.png'
+                                : checkListItems[0]["value"]
+                                    ? 'assets/images/rectangle-7-55t.png'
+                                    : 'assets/images/teacher.png',
                           ),
-                          labelColor: Colors.blue.shade800,
-                          unselectedLabelStyle:
-                              const TextStyle(color: Colors.black),
-                          unselectedLabelColor: Colors.black,
-                          tabs: [
-                            TabWidget(
-                              text: 'text',
-                              assetImage:
-                                  const AssetImage("assets/images/text.png"),
-                            ),
-                            TabWidget(
-                                assetImage: const AssetImage(
-                                    "assets/images/image-76-9a2.png"),
-                                text: 'Document'),
-                            // TabWidget(
-                            //     assetImage: const AssetImage(
-                            //         "assets/images/image-79-RTQ.png"),
-                            //     text: 'Audio'),
-                            TabWidget(
-                                assetImage:
-                                    const AssetImage("assets/images/video.png"),
-                                text: 'Video'),
-                            TabWidget(
-                                assetImage: const AssetImage(
-                                    "assets/images/image-78-LEe.png"),
-                                text: 'Material'),
-                            TabWidget(
-                                assetImage: const AssetImage(
-                                    "assets/images/image-77-Mfg.png"),
-                                text: 'Image'),
-                            if (widget.role != 'staff')
-                              TabWidget(
-                                  assetImage: const AssetImage(
-                                      "assets/images/quote.png"),
-                                  text: 'Quote'),
-                            if (widget.role != 'staff')
-                              TabWidget(
-                                  assetImage: const AssetImage(
-                                      "assets/images/speaks.png"),
-                                  text: 'Speaks'),
-                            if (widget.role != 'staff')
-                              TabWidget(
-                                  assetImage: const AssetImage(
-                                      "assets/images/circular.png"),
-                                  text: 'Circular'),
-                          ],
                         ),
-                        SizedBox(
-                          height: 150,
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          child: TabBarView(children: <Widget>[
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: MediaQuery.of(context).size.width *
-                                      0.4 *
-                                      fem,
-                                  height: 100 * fem,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(7 * fem),
-                                    border: Border.all(
-                                        color: const Color(0xff9f9f9f)),
-                                  ),
-                                  child: Center(
-                                    child: TextField(
-                                      controller: textController,
-                                      focusNode: widget.focusNode,
-                                      textAlign: TextAlign.center,
-                                      maxLines: 10,
-                                      decoration: InputDecoration.collapsed(
-                                        hintText: 'Type Your Text Here',
-                                        hintStyle: SafeGoogleFont(
-                                          'Inter',
-                                          fontSize: 12 * ffem,
-                                          fontWeight: FontWeight.w400,
-                                          height: 0.9152272542 * ffem / fem,
-                                          letterSpacing: 1.2 * fem,
-                                          color: const Color(0xff797979),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          checkListItems[0]["value"] ? 'EveryOne' : text,
+                          style: SafeGoogleFont(
+                            'Inter',
+                            fontSize: 16 * ffem,
+                            fontWeight: FontWeight.w700,
+                            height: 1.2125 * ffem / fem,
+                            color: const Color(0xffffffff),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 10,
+                  right: 10,
+                ),
+                child: Container(
+                  padding: const EdgeInsets.only(top: 10, bottom: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(0),
+                        topRight: Radius.circular(15),
+                        bottomLeft: Radius.circular(15),
+                        bottomRight: Radius.circular(15)),
+                    border: Border.all(color: color),
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.4 * fem,
+                        height: 30 * fem,
+                        child: Text(
+                          count <= 1
+                              ? "This message will be visible for $count user"
+                              : "This message will be visible for $count users",
+                          style: SafeGoogleFont(
+                            'Inter',
+                            fontSize: 16 * ffem,
+                            fontWeight: FontWeight.w400,
+                            height: 0.915227294 * ffem / fem,
+                            letterSpacing: 1.6 * fem,
+                            color: const Color(0xff000000),
+                          ),
+                        ),
+                      ),
+                      DefaultTabController(
+                          length: widget.role == 'staff' ? 5 : 8,
+                          initialIndex: 0,
+                          child: Column(children: <Widget>[
+                            TabBar(
+                              indicatorColor: Colors.blue.shade50,
+                              isScrollable: true,
+                              onTap: (value) {
+                                setState(() {
+                                  textController.text = '';
+                                  textTitleController.text = '';
+                                  imgController.text = '';
+                                  speaksController.text = '';
+                                  materialController.text = '';
+                                  videoCaptionController.text = '';
+                                  videoLinkController.text = '';
+                                  circularController.text = '';
+                                  docController.text = '';
+                                  document = [];
+                                  material = [];
+                                  image = [];
+                                });
+                              },
+                              labelPadding: const EdgeInsets.only(
+                                  top: 10, left: 10, right: 10),
+                              labelStyle: SafeGoogleFont(
+                                'Inter',
+                                fontSize: 12 * ffem,
+                                fontWeight: FontWeight.w700,
+                                height: 0.9152272542 * ffem / fem,
+                                letterSpacing: 1.2 * fem,
+                                color: const Color(0xff000000),
+                                decoration: TextDecoration.underline,
+                                decorationColor: const Color(0xff2c5ec0),
+                              ),
+                              labelColor: Colors.blue.shade800,
+                              unselectedLabelStyle:
+                                  const TextStyle(color: Colors.black),
+                              unselectedLabelColor: Colors.black,
+                              tabs: [
+                                TabWidget(
+                                  text: 'text',
+                                  assetImage: const AssetImage(
+                                      "assets/images/text_icon.png"),
                                 ),
+                                TabWidget(
+                                    assetImage: const AssetImage(
+                                        "assets/images/document.png"),
+                                    text: 'Document'),
+                                TabWidget(
+                                    assetImage: const AssetImage(
+                                        "assets/images/video_icon.png"),
+                                    text: 'Video'),
+                                TabWidget(
+                                    assetImage: const AssetImage(
+                                        "assets/images/material.png"),
+                                    text: 'Material'),
+                                TabWidget(
+                                    assetImage: const AssetImage(
+                                        "assets/images/images.png"),
+                                    text: 'Image'),
+                                if (widget.role != 'staff')
+                                  TabWidget(
+                                      assetImage: const AssetImage(
+                                          "assets/images/quote.png"),
+                                      text: 'Quote'),
+                                if (widget.role != 'staff')
+                                  TabWidget(
+                                      assetImage: const AssetImage(
+                                          "assets/images/speaks.png"),
+                                      text: 'Speaks'),
+                                if (widget.role != 'staff')
+                                  TabWidget(
+                                      assetImage: const AssetImage(
+                                          "assets/images/circular.png"),
+                                      text: 'Circular'),
                               ],
                             ),
-                            Column(
-                              children: [
-                                Container(
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(7 * fem),
-                                    border: Border.all(
-                                        color: const Color(0xff9f9f9f)),
-                                  ),
-                                  child: Center(
-                                    child: TextField(
-                                      inputFormatters: [
-                                        LengthLimitingTextInputFormatter(100),
-                                      ],
-                                      controller: docController,
-                                      focusNode: widget.focusNode,
-                                      textAlign: TextAlign.center,
-                                      decoration: InputDecoration.collapsed(
-                                        hintText: 'Add Document Caption',
-                                        hintStyle: SafeGoogleFont(
-                                          'Inter',
-                                          fontSize: 12 * ffem,
-                                          fontWeight: FontWeight.w400,
-                                          height: 0.9152272542 * ffem / fem,
-                                          letterSpacing: 1.2 * fem,
-                                          color: Colors.black,
+                            SizedBox(
+                              height: 150,
+                              width: MediaQuery.of(context).size.width * 0.4,
+                              child: TabBarView(children: <Widget>[
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.4 *
+                                          fem,
+                                      height: 100 * fem,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(7 * fem),
+                                        border: Border.all(
+                                            color: const Color(0xff9f9f9f)),
+                                      ),
+                                      child: Center(
+                                        child: TextField(
+                                          controller: textController,
+                                          focusNode: widget.focusNode,
+                                          textAlign: TextAlign.center,
+                                          maxLines: 10,
+                                          decoration: InputDecoration.collapsed(
+                                            hintText: 'Type Your Text Here',
+                                            hintStyle: SafeGoogleFont(
+                                              'Inter',
+                                              fontSize: 12 * ffem,
+                                              fontWeight: FontWeight.w400,
+                                              height: 0.9152272542 * ffem / fem,
+                                              letterSpacing: 1.2 * fem,
+                                              color: const Color(0xff797979),
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                                const SizedBox(
-                                  height: 10,
+                                Column(
+                                  children: [
+                                    Container(
+                                      height: 30,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(7 * fem),
+                                        border: Border.all(
+                                            color: const Color(0xff9f9f9f)),
+                                      ),
+                                      child: Center(
+                                        child: TextField(
+                                          inputFormatters: [
+                                            LengthLimitingTextInputFormatter(
+                                                100),
+                                          ],
+                                          controller: docController,
+                                          focusNode: widget.focusNode,
+                                          textAlign: TextAlign.center,
+                                          decoration: InputDecoration.collapsed(
+                                            hintText: 'Add Document Caption',
+                                            hintStyle: SafeGoogleFont(
+                                              'Inter',
+                                              fontSize: 12 * ffem,
+                                              fontWeight: FontWeight.w400,
+                                              height: 0.9152272542 * ffem / fem,
+                                              letterSpacing: 1.2 * fem,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.4 *
+                                          fem,
+                                      height: 102 * fem,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(7 * fem),
+                                        border: Border.all(
+                                            color: const Color(0xff9f9f9f)),
+                                      ),
+                                      child: InkWell(
+                                        onTap: pickDoc,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Column(children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 10),
+                                                child: Container(
+                                                  height: 25,
+                                                  width: 25,
+                                                  decoration: const BoxDecoration(
+                                                      image: DecorationImage(
+                                                          image: NetworkImage(
+                                                            "https://cdn-icons-png.flaticon.com/128/3143/3143540.png",
+                                                          ),
+                                                          fit: BoxFit.fill)),
+                                                ),
+                                              ),
+                                              document.isEmpty
+                                                  ? Text(
+                                                      "Please select Documents files to upload",
+                                                      style: SafeGoogleFont(
+                                                        'Inter',
+                                                        fontSize: 12 * ffem,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        height: 0.9152272542 *
+                                                            ffem /
+                                                            fem,
+                                                        letterSpacing:
+                                                            1.2 * fem,
+                                                        color: const Color(
+                                                            0xff797979),
+                                                      ),
+                                                    )
+                                                  : FileListView(
+                                                      file: document,
+                                                    ),
+                                            ])
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
                                 ),
-                                Container(
-                                  width: MediaQuery.of(context).size.width *
-                                      0.4 *
-                                      fem,
-                                  height: 102 * fem,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(7 * fem),
-                                    border: Border.all(
-                                        color: const Color(0xff9f9f9f)),
-                                  ),
-                                  child: InkWell(
-                                    onTap: pickDoc,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Column(children: [
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.only(top: 10),
-                                            child: Container(
+                                Column(
+                                  children: [
+                                    Container(
+                                      height: 30,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(7 * fem),
+                                        border: Border.all(
+                                            color: const Color(0xff9f9f9f)),
+                                      ),
+                                      child: Center(
+                                        child: TextField(
+                                          inputFormatters: [
+                                            LengthLimitingTextInputFormatter(
+                                                100),
+                                          ],
+                                          controller: videoCaptionController,
+                                          textAlign: TextAlign.center,
+                                          decoration: InputDecoration.collapsed(
+                                            hintText:
+                                                'Add Caption about the video Here',
+                                            hintStyle: SafeGoogleFont(
+                                              'Inter',
+                                              fontSize: 12 * ffem,
+                                              fontWeight: FontWeight.w400,
+                                              height: 0.9152272542 * ffem / fem,
+                                              letterSpacing: 1.2 * fem,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.4 *
+                                          fem,
+                                      height: 102 * fem,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(7 * fem),
+                                        border: Border.all(
+                                            color: const Color(0xff9f9f9f)),
+                                      ),
+                                      child: Center(
+                                        child: TextField(
+                                          controller:
+                                              videoLinkController, //Ticket No 17
+                                          textAlign: TextAlign.center,
+
+                                          maxLines: 10,
+                                          decoration: InputDecoration.collapsed(
+                                            hintText: //Ticket No 17
+                                                "Paste your video link \n\n (for Multiple links use comma ',' at end of each link)",
+                                            hintStyle: SafeGoogleFont(
+                                              'Inter',
+                                              fontSize: 12 * ffem,
+                                              fontWeight: FontWeight.w400,
+                                              height: 0.9152272542 * ffem / fem,
+                                              letterSpacing: 1.2 * fem,
+                                              color: const Color(0xff797979),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                Column(
+                                  children: [
+                                    Container(
+                                      height: 30,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(7 * fem),
+                                        border: Border.all(
+                                            color: const Color(0xff9f9f9f)),
+                                      ),
+                                      child: Center(
+                                        child: TextField(
+                                          //Ticket No
+                                          inputFormatters: [
+                                            LengthLimitingTextInputFormatter(
+                                                100),
+
+                                            /// here char limit is 5
+                                          ],
+                                          controller: materialController,
+
+                                          focusNode: widget.focusNode,
+                                          textAlign: TextAlign.center,
+                                          decoration: InputDecoration.collapsed(
+                                            hintText:
+                                                'Add Material Caption Here',
+                                            hintStyle: SafeGoogleFont(
+                                              'Inter',
+                                              fontSize: 12 * ffem,
+                                              fontWeight: FontWeight.w400,
+                                              height: 0.9152272542 * ffem / fem,
+                                              letterSpacing: 1.2 * fem,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.4 *
+                                          fem,
+                                      height: 105 * fem,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(7 * fem),
+                                        border: Border.all(
+                                            color: const Color(0xff9f9f9f)),
+                                      ),
+                                      //Ticket No 30
+                                      child: InkWell(
+                                          onTap: pickMaterial,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                //
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                height: 25,
+                                                width: 25,
+                                                padding: const EdgeInsets.only(
+                                                    top: 10),
+                                                decoration: const BoxDecoration(
+                                                    image: DecorationImage(
+                                                        image: NetworkImage(
+                                                          "https://cdn-icons-png.flaticon.com/128/1981/1981438.png",
+                                                        ),
+                                                        fit: BoxFit.fill)),
+                                              ),
+                                              material.isEmpty
+                                                  ? Text(
+                                                      "Please select Material files to upload",
+                                                      style: SafeGoogleFont(
+                                                        'Inter',
+                                                        fontSize: 12 * ffem,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        height: 0.9152272542 *
+                                                            ffem /
+                                                            fem,
+                                                        letterSpacing:
+                                                            1.2 * fem,
+                                                        color: const Color(
+                                                            0xff797979),
+                                                      ),
+                                                    )
+                                                  : FileListView(
+                                                      file: material,
+                                                    ),
+                                            ],
+                                          )),
+                                    )
+                                  ],
+                                ),
+                                Column(
+                                  children: [
+                                    Container(
+                                      height: 30,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(7 * fem),
+                                        border: Border.all(
+                                            color: const Color(0xff9f9f9f)),
+                                      ),
+                                      child: Center(
+                                        child: TextField(
+                                          //Ticket No
+                                          inputFormatters: [
+                                            LengthLimitingTextInputFormatter(
+                                                100),
+
+                                            /// here char limit is 5
+                                          ],
+                                          controller: imgController,
+
+                                          focusNode: widget.focusNode,
+                                          textAlign: TextAlign.center,
+                                          decoration: InputDecoration.collapsed(
+                                            hintText: 'Add image caption Here',
+                                            hintStyle: SafeGoogleFont(
+                                              'Inter',
+                                              fontSize: 12 * ffem,
+                                              fontWeight: FontWeight.w400,
+                                              height: 0.9152272542 * ffem / fem,
+                                              letterSpacing: 1.2 * fem,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.4 *
+                                          fem,
+                                      height: 102 * fem,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(7 * fem),
+                                        border: Border.all(
+                                            color: const Color(0xff9f9f9f)),
+                                      ),
+                                      child: GestureDetector(
+                                        onTap: () async {
+                                          var getImage = await ImageController
+                                              .pickAndProcessImage();
+                                          if (getImage.images.isNotEmpty) {
+                                            imageView(getImage);
+                                          }
+                                          if (getImage.errorText != '') {
+                                            setState(() {
+                                              errorImage = getImage.errorText;
+                                            });
+                                          }
+                                        },
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
                                               height: 25,
                                               width: 25,
                                               decoration: const BoxDecoration(
                                                   image: DecorationImage(
                                                       image: NetworkImage(
-                                                        "https://cdn-icons-png.flaticon.com/128/3143/3143540.png",
+                                                        ("https://cdn-icons-png.flaticon.com/128/6632/6632547.png"),
                                                       ),
                                                       fit: BoxFit.fill)),
                                             ),
-                                          ),
-                                          document.isEmpty
-                                              ? Text(
-                                                  "Please select Documents files to upload",
-                                                  style: SafeGoogleFont(
-                                                    'Inter',
-                                                    fontSize: 12 * ffem,
-                                                    fontWeight: FontWeight.w400,
-                                                    height: 0.9152272542 *
-                                                        ffem /
-                                                        fem,
-                                                    letterSpacing: 1.2 * fem,
-                                                    color:
-                                                        const Color(0xff797979),
-                                                  ),
-                                                )
-                                              : FileListView(
-                                                  file: document,
-                                                ),
-                                        ])
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                Container(
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(7 * fem),
-                                    border: Border.all(
-                                        color: const Color(0xff9f9f9f)),
-                                  ),
-                                  child: Center(
-                                    child: TextField(
-                                      inputFormatters: [
-                                        LengthLimitingTextInputFormatter(100),
-                                      ],
-                                      controller: videoCaptionController,
-                                      textAlign: TextAlign.center,
-                                      decoration: InputDecoration.collapsed(
-                                        hintText:
-                                            'Add Caption about the video Here',
-                                        hintStyle: SafeGoogleFont(
-                                          'Inter',
-                                          fontSize: 12 * ffem,
-                                          fontWeight: FontWeight.w400,
-                                          height: 0.9152272542 * ffem / fem,
-                                          letterSpacing: 1.2 * fem,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                  width: MediaQuery.of(context).size.width *
-                                      0.4 *
-                                      fem,
-                                  height: 102 * fem,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(7 * fem),
-                                    border: Border.all(
-                                        color: const Color(0xff9f9f9f)),
-                                  ),
-                                  child: Center(
-                                    child: TextField(
-                                      controller:
-                                          videoLinkController, //Ticket No 17
-                                      textAlign: TextAlign.center,
-
-                                      maxLines: 10,
-                                      decoration: InputDecoration.collapsed(
-                                        hintText: //Ticket No 17
-                                            "Paste your video link \n\n (for Multiple links use comma ',' at end of each link)",
-                                        hintStyle: SafeGoogleFont(
-                                          'Inter',
-                                          fontSize: 12 * ffem,
-                                          fontWeight: FontWeight.w400,
-                                          height: 0.9152272542 * ffem / fem,
-                                          letterSpacing: 1.2 * fem,
-                                          color: const Color(0xff797979),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                Container(
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(7 * fem),
-                                    border: Border.all(
-                                        color: const Color(0xff9f9f9f)),
-                                  ),
-                                  child: Center(
-                                    child: TextField(
-                                      //Ticket No
-                                      inputFormatters: [
-                                        LengthLimitingTextInputFormatter(100),
-
-                                        /// here char limit is 5
-                                      ],
-                                      controller: materialController,
-
-                                      focusNode: widget.focusNode,
-                                      textAlign: TextAlign.center,
-                                      decoration: InputDecoration.collapsed(
-                                        hintText: 'Add Material Caption Here',
-                                        hintStyle: SafeGoogleFont(
-                                          'Inter',
-                                          fontSize: 12 * ffem,
-                                          fontWeight: FontWeight.w400,
-                                          height: 0.9152272542 * ffem / fem,
-                                          letterSpacing: 1.2 * fem,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                  width: MediaQuery.of(context).size.width *
-                                      0.4 *
-                                      fem,
-                                  height: 105 * fem,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(7 * fem),
-                                    border: Border.all(
-                                        color: const Color(0xff9f9f9f)),
-                                  ),
-                                  //Ticket No 30
-                                  child: InkWell(
-                                      onTap: pickMaterial,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            //
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            height: 25,
-                                            width: 25,
-                                            padding:
-                                                const EdgeInsets.only(top: 10),
-                                            decoration: const BoxDecoration(
-                                                image: DecorationImage(
-                                                    image: NetworkImage(
-                                                      "https://cdn-icons-png.flaticon.com/128/1981/1981438.png",
+                                            images.isEmpty
+                                                ? Text(
+                                                    "Please select image files to upload",
+                                                    style: SafeGoogleFont(
+                                                      'Inter',
+                                                      fontSize: 12 * ffem,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      height: 0.9152272542 *
+                                                          ffem /
+                                                          fem,
+                                                      letterSpacing: 1.2 * fem,
+                                                      color: Colors.black,
                                                     ),
-                                                    fit: BoxFit.fill)),
+                                                  )
+                                                : FileListViewNew(
+                                                    file: images,
+                                                    iconPath: Images.folderImg)
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                if (widget.role != 'staff')
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.4 *
+                                                fem,
+                                        height: 102 * fem,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(7 * fem),
+                                          border: Border.all(
+                                              color: const Color(0xff9f9f9f)),
+                                        ),
+                                        child: Center(
+                                          child: TextField(
+                                            controller: quoteController,
+                                            focusNode: widget.focusNode,
+                                            textAlign: TextAlign.center,
+                                            maxLines: 10,
+                                            decoration:
+                                                InputDecoration.collapsed(
+                                              hintText: 'Type Your Quotes Here',
+                                              hintStyle: SafeGoogleFont(
+                                                'Inter',
+                                                fontSize: 12 * ffem,
+                                                fontWeight: FontWeight.w400,
+                                                height:
+                                                    0.9152272542 * ffem / fem,
+                                                letterSpacing: 1.2 * fem,
+                                                color: const Color(0xff797979),
+                                              ),
+                                            ),
                                           ),
-                                          material.isEmpty
-                                              ? Text(
-                                                  "Please select Material files to upload",
-                                                  style: SafeGoogleFont(
-                                                    'Inter',
-                                                    fontSize: 12 * ffem,
-                                                    fontWeight: FontWeight.w400,
-                                                    height: 0.9152272542 *
-                                                        ffem /
-                                                        fem,
-                                                    letterSpacing: 1.2 * fem,
-                                                    color:
-                                                        const Color(0xff797979),
-                                                  ),
-                                                )
-                                              : FileListView(
-                                                  file: material,
-                                                ),
-                                        ],
-                                      )),
-                                )
-                              ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                if (widget.role != 'staff')
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.4 *
+                                                fem,
+                                        height: 102 * fem,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(7 * fem),
+                                          border: Border.all(
+                                              color: const Color(0xff9f9f9f)),
+                                        ),
+                                        child: Center(
+                                          child: TextField(
+                                            controller: speaksController,
+                                            focusNode: widget.focusNode,
+                                            textAlign: TextAlign.center,
+                                            maxLines: 10,
+                                            decoration:
+                                                InputDecoration.collapsed(
+                                              hintText:
+                                                  'Type Announcements here',
+                                              hintStyle: SafeGoogleFont(
+                                                'Inter',
+                                                fontSize: 12 * ffem,
+                                                fontWeight: FontWeight.w400,
+                                                height:
+                                                    0.9152272542 * ffem / fem,
+                                                letterSpacing: 1.2 * fem,
+                                                color: const Color(0xff797979),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                if (widget.role != 'staff')
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.4 *
+                                                fem,
+                                        height: 102 * fem,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(7 * fem),
+                                          border: Border.all(
+                                              color: const Color(0xff9f9f9f)),
+                                        ),
+                                        child: Center(
+                                          child: TextField(
+                                            controller: circularController,
+                                            focusNode: widget.focusNode,
+                                            textAlign: TextAlign.center,
+                                            maxLines: 10,
+                                            decoration:
+                                                InputDecoration.collapsed(
+                                              hintText: 'Type Circular here',
+                                              hintStyle: SafeGoogleFont(
+                                                'Inter',
+                                                fontSize: 12 * ffem,
+                                                fontWeight: FontWeight.w400,
+                                                height:
+                                                    0.9152272542 * ffem / fem,
+                                                letterSpacing: 1.2 * fem,
+                                                color: const Color(0xff797979),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                              ]),
                             ),
-                            Column(
-                              children: [
-                                Container(
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(7 * fem),
-                                    border: Border.all(
-                                        color: const Color(0xff9f9f9f)),
-                                  ),
-                                  child: Center(
-                                    child: TextField(
-                                      //Ticket No
-                                      inputFormatters: [
-                                        LengthLimitingTextInputFormatter(100),
-
-                                        /// here char limit is 5
-                                      ],
-                                      controller: imgController,
-
-                                      focusNode: widget.focusNode,
-                                      textAlign: TextAlign.center,
-                                      decoration: InputDecoration.collapsed(
-                                        hintText: 'Add image caption Here',
-                                        hintStyle: SafeGoogleFont(
-                                          'Inter',
-                                          fontSize: 12 * ffem,
-                                          fontWeight: FontWeight.w400,
-                                          height: 0.9152272542 * ffem / fem,
-                                          letterSpacing: 1.2 * fem,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                  width: MediaQuery.of(context).size.width *
-                                      0.4 *
-                                      fem,
-                                  height: 102 * fem,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(7 * fem),
-                                    border: Border.all(
-                                        color: const Color(0xff9f9f9f)),
-                                  ),
-                                  child: GestureDetector(
-                                    onTap: () async {
-                                      var getImage = await ImageController
-                                          .pickAndProcessImage();
-                                      if (getImage.images.isNotEmpty) {
-                                        imageView(getImage);
-                                      }
-                                      if (getImage.errorText != '') {
-                                        setState(() =>
-                                            errorImage = getImage.errorText);
-                                      }
-                                    },
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          height: 25,
-                                          width: 25,
-                                          decoration: const BoxDecoration(
-                                              image: DecorationImage(
-                                                  image: NetworkImage(
-                                                    ("https://cdn-icons-png.flaticon.com/128/6632/6632547.png"),
-                                                  ),
-                                                  fit: BoxFit.fill)),
-                                        ),
-                                        image.isEmpty
-                                            ? Text(
-                                                "Please select image files to upload",
-                                                style: SafeGoogleFont(
-                                                  'Inter',
-                                                  fontSize: 12 * ffem,
-                                                  fontWeight: FontWeight.w400,
-                                                  height:
-                                                      0.9152272542 * ffem / fem,
-                                                  letterSpacing: 1.2 * fem,
-                                                  color: Colors.black,
-                                                ),
-                                              )
-                                            : FileListViewNew(
-                                                file: images,
-                                                iconPath: Images.folderImg)
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
+                            const SizedBox(
+                              height: 5,
                             ),
-                            if (widget.role != 'staff')
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 20, right: 20),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.4 *
-                                        fem,
-                                    height: 102 * fem,
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(7 * fem),
-                                      border: Border.all(
-                                          color: const Color(0xff9f9f9f)),
-                                    ),
-                                    child: Center(
-                                      child: TextField(
-                                        controller: quoteController,
-                                        focusNode: widget.focusNode,
-                                        textAlign: TextAlign.center,
-                                        maxLines: 10,
-                                        decoration: InputDecoration.collapsed(
-                                          hintText: 'Type Your Quotes Here',
-                                          hintStyle: SafeGoogleFont(
-                                            'Inter',
-                                            fontSize: 12 * ffem,
-                                            fontWeight: FontWeight.w400,
-                                            height: 0.9152272542 * ffem / fem,
-                                            letterSpacing: 1.2 * fem,
-                                            color: const Color(0xff797979),
+                                  widget.id == "1" ||
+                                          widget.id == '3' ||
+                                          widget.id == '4' ||
+                                          widget.id == '5'
+                                      ? Container()
+                                      : SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.35,
+                                          child: ExpandableText(
+                                            visibilityMessage,
+                                            expandText: 'show more',
+                                            collapseText: 'show less',
+                                            maxLines: 3,
+                                            style: SafeGoogleFont(
+                                              'Inter',
+                                              fontSize: 12 * ffem,
+                                              fontWeight: FontWeight.w400,
+                                              letterSpacing: 1.2 * fem,
+                                              color: const Color(0xff303030),
+                                            ),
+                                            linkColor: Colors.blue,
+                                          ),
+                                        ),
+                                  Visibility(
+                                    visible: !isTapped,
+                                    child: InkWell(
+                                      onTap: !isTapped && isMessageSend
+                                          ? onMessageSend
+                                          : null,
+                                      child: Container(
+                                        margin: EdgeInsets.fromLTRB(
+                                            0 * fem, 3 * fem, 2 * fem, 0 * fem),
+                                        width: 55 * fem,
+                                        height: 22 * fem,
+                                        decoration: BoxDecoration(
+                                          color: color,
+                                          borderRadius:
+                                              BorderRadius.circular(10 * fem),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: const Color(0x93000000),
+                                              offset: Offset(-1 * fem, 1 * fem),
+                                              blurRadius: 2 * fem,
+                                            ),
+                                          ],
+                                        ),
+                                        child: Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 5,
+                                                right: 5,
+                                                top: 6,
+                                                bottom: 3),
+                                            child: Text(
+                                              'Send',
+                                              style: SafeGoogleFont(
+                                                'Inter',
+                                                fontSize: 12 * ffem,
+                                                fontWeight: FontWeight.w400,
+                                                height:
+                                                    0.9152272542 * ffem / fem,
+                                                letterSpacing: 1.2 * fem,
+                                                color: const Color(0xffffffff),
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
+                                  )
                                 ],
                               ),
-                            if (widget.role != 'staff')
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.4 *
-                                        fem,
-                                    height: 102 * fem,
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(7 * fem),
-                                      border: Border.all(
-                                          color: const Color(0xff9f9f9f)),
-                                    ),
-                                    child: Center(
-                                      child: TextField(
-                                        controller: speaksController,
-                                        focusNode: widget.focusNode,
-                                        textAlign: TextAlign.center,
-                                        maxLines: 10,
-                                        decoration: InputDecoration.collapsed(
-                                          hintText: 'Type Announcements here',
-                                          hintStyle: SafeGoogleFont(
-                                            'Inter',
-                                            fontSize: 12 * ffem,
-                                            fontWeight: FontWeight.w400,
-                                            height: 0.9152272542 * ffem / fem,
-                                            letterSpacing: 1.2 * fem,
-                                            color: const Color(0xff797979),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            if (widget.role != 'staff')
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.4 *
-                                        fem,
-                                    height: 102 * fem,
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(7 * fem),
-                                      border: Border.all(
-                                          color: const Color(0xff9f9f9f)),
-                                    ),
-                                    child: Center(
-                                      child: TextField(
-                                        controller: circularController,
-                                        focusNode: widget.focusNode,
-                                        textAlign: TextAlign.center,
-                                        maxLines: 10,
-                                        decoration: InputDecoration.collapsed(
-                                          hintText: 'Type Circular here',
-                                          hintStyle: SafeGoogleFont(
-                                            'Inter',
-                                            fontSize: 12 * ffem,
-                                            fontWeight: FontWeight.w400,
-                                            height: 0.9152272542 * ffem / fem,
-                                            letterSpacing: 1.2 * fem,
-                                            color: const Color(0xff797979),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                          ]),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20, right: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              widget.id == "1" ||
-                                      widget.id == '3' ||
-                                      widget.id == '4' ||
-                                      widget.id == '5'
-                                  ? Container()
-                                  : SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.35,
-                                      child: ExpandableText(
-                                        visibilityMessage,
-                                        expandText: 'show more',
-                                        collapseText: 'show less',
-                                        maxLines: 3,
-                                        style: SafeGoogleFont(
-                                          'Inter',
-                                          fontSize: 12 * ffem,
-                                          fontWeight: FontWeight.w400,
-                                          letterSpacing: 1.2 * fem,
-                                          color: const Color(0xff303030),
-                                        ),
-                                        linkColor: Colors.blue,
-                                      ),
-                                    ),
-                              Visibility(
-                                visible: !isTapped,
-                                child: InkWell(
-                                  onTap: !isTapped && isMessageSend
-                                      ? onMessageSend
-                                      : null,
-                                  child: Container(
-                                    margin: EdgeInsets.fromLTRB(
-                                        0 * fem, 3 * fem, 2 * fem, 0 * fem),
-                                    width: 55 * fem,
-                                    height: 22 * fem,
-                                    decoration: BoxDecoration(
-                                      color: color,
-                                      borderRadius:
-                                          BorderRadius.circular(10 * fem),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: const Color(0x93000000),
-                                          offset: Offset(-1 * fem, 1 * fem),
-                                          blurRadius: 2 * fem,
-                                        ),
-                                      ],
-                                    ),
-                                    child: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 5,
-                                            right: 5,
-                                            top: 6,
-                                            bottom: 3),
-                                        child: Text(
-                                          'Send',
-                                          style: SafeGoogleFont(
-                                            'Inter',
-                                            fontSize: 12 * ffem,
-                                            fontWeight: FontWeight.w400,
-                                            height: 0.9152272542 * ffem / fem,
-                                            letterSpacing: 1.2 * fem,
-                                            color: const Color(0xffffffff),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        SizedBox(
-                          height: 35,
-                          width: MediaQuery.of(context).size.width,
-                          child: ListView.builder(
-                              itemCount: widget.id == "1" ||
-                                      widget.id == '3' ||
-                                      widget.id == '4' ||
-                                      widget.id == '5'
-                                  ? 1
-                                  : widget.name.toUpperCase() ==
-                                          "ADMIN-MANAGEMENT"
-                                      ? 2
-                                      : checkListItems.length,
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, index) {
-                                checkListItems[0]['title'] = widget.name;
-                                var width = widget.name.toUpperCase() ==
-                                        "ADMIN-MANAGEMENT"
-                                    ? checkListItems2[index]['width']
-                                    : widget.id == '2'
-                                        ? checkListItems[index]['width']
-                                        : checkListItems1[index]['width'];
-                                return Container(
-                                  constraints: BoxConstraints(
-                                      maxWidth:
-                                          MediaQuery.of(context).size.width *
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            SizedBox(
+                              height: 35,
+                              width: MediaQuery.of(context).size.width,
+                              child: ListView.builder(
+                                  itemCount: widget.id == "1" ||
+                                          widget.id == '3' ||
+                                          widget.id == '4' ||
+                                          widget.id == '5'
+                                      ? 1
+                                      : widget.name.toUpperCase() ==
+                                              "ADMIN-MANAGEMENT"
+                                          ? 2
+                                          : checkListItems.length,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    checkListItems[0]['title'] = widget.name;
+                                    var width = widget.name.toUpperCase() ==
+                                            "ADMIN-MANAGEMENT"
+                                        ? checkListItems2[index]['width']
+                                        : widget.id == '2'
+                                            ? checkListItems[index]['width']
+                                            : checkListItems1[index]['width'];
+                                    return Container(
+                                      constraints: BoxConstraints(
+                                          maxWidth: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
                                               width),
-                                  child: CheckboxListTile(
-                                    visualDensity: const VisualDensity(
-                                        horizontal: -4.0, vertical: -4.0),
-                                    controlAffinity:
-                                        ListTileControlAffinity.leading,
-                                    contentPadding: EdgeInsets.zero,
-                                    dense: true,
-                                    title: Transform.translate(
-                                      offset: const Offset(-10, 0),
-                                      child: Text(
-                                        widget.id == '2'
-                                            ? checkListItems[index]["title"]
-                                            : widget.name.toUpperCase() ==
-                                                        "ADMIN-MANAGEMENT" &&
-                                                    widget.role.toUpperCase() ==
-                                                        "ADMIN"
-                                                ? checkListItems2[index]
-                                                    ["title"]
+                                      child: CheckboxListTile(
+                                        visualDensity: const VisualDensity(
+                                            horizontal: -4.0, vertical: -4.0),
+                                        controlAffinity:
+                                            ListTileControlAffinity.leading,
+                                        contentPadding: EdgeInsets.zero,
+                                        dense: true,
+                                        title: Transform.translate(
+                                          offset: const Offset(-10, 0),
+                                          child: Text(
+                                            widget.id == '2'
+                                                ? checkListItems[index]["title"]
                                                 : widget.name.toUpperCase() ==
                                                             "ADMIN-MANAGEMENT" &&
                                                         widget.role
                                                                 .toUpperCase() ==
-                                                            "MANAGEMENT"
-                                                    ? checkListItems3[index]
-                                                        ['title']
-                                                    : checkListItems1[index]
-                                                        ['title'],
-                                        style: SafeGoogleFont(
-                                          'Inter',
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w400,
-                                          height: 0.9152272542 * ffem / fem,
-                                          letterSpacing: 1,
-                                          color: const Color(0xff8e8e8e),
+                                                            "ADMIN"
+                                                    ? checkListItems2[index]
+                                                        ["title"]
+                                                    : widget.name.toUpperCase() ==
+                                                                "ADMIN-MANAGEMENT" &&
+                                                            widget.role
+                                                                    .toUpperCase() ==
+                                                                "MANAGEMENT"
+                                                        ? checkListItems3[index]
+                                                            ['title']
+                                                        : checkListItems1[index]
+                                                            ['title'],
+                                            style: SafeGoogleFont(
+                                              'Inter',
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w400,
+                                              height: 0.9152272542 * ffem / fem,
+                                              letterSpacing: 1,
+                                              color: const Color(0xff8e8e8e),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                    activeColor: checkListItems[0]["value"]
-                                        ? const Color(0xfff98a1d)
-                                        : checkListItems[1]["value"]
-                                            ? Colors.green
-                                            : Colors.pink,
-                                    value: checkListItems[index]["value"],
-                                    onChanged:
-                                        widget.id == "1" ||
-                                                widget.id == '3' ||
-                                                widget.id == '4' ||
-                                                widget.id == '5'
-                                            ? null
-                                            : (value) {
-                                                HapticFeedback.vibrate();
-                                                if (index == 1) {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) => widget
-                                                                    .id !=
-                                                                '2' &&
-                                                            studentGroupList
-                                                                .isEmpty &&
-                                                            widget.name
-                                                                    .toUpperCase() !=
-                                                                "ADMIN-MANAGEMENT"
-                                                        ? const AlertDialog(
-                                                            title: Text(
-                                                                "No students in the group"),
-                                                          )
-                                                        : widget.id == '2'
-                                                            ? AlertDialog(
-                                                                actions: [
-                                                                    TextButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          setState(
+                                        activeColor: checkListItems[0]["value"]
+                                            ? const Color(0xfff98a1d)
+                                            : checkListItems[1]["value"]
+                                                ? Colors.green
+                                                : Colors.pink,
+                                        value: checkListItems[index]["value"],
+                                        onChanged:
+                                            widget.id == "1" ||
+                                                    widget.id == '3' ||
+                                                    widget.id == '4' ||
+                                                    widget.id == '5'
+                                                ? null
+                                                : (value) {
+                                                    HapticFeedback.vibrate();
+                                                    if (index == 1) {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (context) => widget
+                                                                        .id !=
+                                                                    '2' &&
+                                                                studentGroupList
+                                                                    .isEmpty &&
+                                                                widget.name
+                                                                        .toUpperCase() !=
+                                                                    "ADMIN-MANAGEMENT"
+                                                            ? const AlertDialog(
+                                                                title: Text(
+                                                                    "No students in the group"),
+                                                              )
+                                                            : widget.id == '2'
+                                                                ? AlertDialog(
+                                                                    actions: [
+                                                                        TextButton(
+                                                                            onPressed:
+                                                                                () {
+                                                                              setState(() {
+                                                                                for (var element in checkListItems) {
+                                                                                  element["value"] = false;
+                                                                                }
+                                                                                checkListItems[index]["value"] = value;
+                                                                                visibilityMessage = selectedItems.toString();
+                                                                                errorText = '';
+                                                                                List<int> selectedIds = [];
+                                                                                if (distributionType == 6) {
+                                                                                  for (int i = 0; i < selectedItems.length; i++) {
+                                                                                    selectedIds.add(class_!.classGroup.firstWhere((element) => element.groupName == selectedItems[i]).allUserCount.toInt());
+                                                                                  }
+                                                                                } else {
+                                                                                  for (int i = 0; i < selectedItems.length; i++) {
+                                                                                    selectedIds.add(groupList!.classes.firstWhere((element) => element.className == selectedItems[i]).totalCount);
+                                                                                  }
+                                                                                }
+                                                                                var totalCount = selectedIds.reduce((value, element) => value + element);
+                                                                                count = totalCount;
+                                                                                color = Colors.green;
+                                                                                text = "ClassWise";
+                                                                                isMessageSend = value!;
+                                                                              });
+                                                                              Navigator.pop(context);
+                                                                            },
+                                                                            child:
+                                                                                const Text("Ok"))
+                                                                      ],
+                                                                    title: const Text(
+                                                                        'Select Classes'),
+                                                                    content:
+                                                                        SingleChildScrollView(
+                                                                      child:
+                                                                          StatefulBuilder(
+                                                                        builder:
+                                                                            (context,
+                                                                                setState) {
+                                                                          return Column(
+                                                                            children: [
+                                                                              Visibility(
+                                                                                visible: isSectionWise,
+                                                                                child: MultiSelectDialogField(
+                                                                                  items: sectionWise.map((e) => MultiSelectItem(e, e)).toList(),
+                                                                                  listType: MultiSelectListType.CHIP,
+                                                                                  buttonText: const Text("Select section wise"),
+                                                                                  onConfirm: (List<String> values) {
+                                                                                    setState(() {
+                                                                                      distributionType = 6;
+                                                                                      selectedItems = values;
+                                                                                      isClassWise = false;
+                                                                                    });
+                                                                                  },
+                                                                                  searchable: true,
+                                                                                  title: const Text("Select  classes"),
+                                                                                  searchHint: 'Select section wise',
+                                                                                  decoration: BoxDecoration(shape: BoxShape.rectangle, border: Border.all(color: Colors.black)),
+                                                                                ),
+                                                                              ),
+                                                                              const SizedBox(
+                                                                                height: 10,
+                                                                              ),
+                                                                              Visibility(
+                                                                                visible: isClassWise,
+                                                                                child: MultiSelectDialogField(
+                                                                                  items: classWise.map((e) => MultiSelectItem(e, e)).toList(),
+                                                                                  listType: MultiSelectListType.CHIP,
+                                                                                  buttonText: const Text("Select ClassWise"),
+                                                                                  onConfirm: (List<String> values) {
+                                                                                    setState(() {
+                                                                                      distributionType = 8;
+                                                                                      selectedItems = values;
+                                                                                      isSectionWise = false;
+                                                                                    });
+                                                                                  },
+                                                                                  searchable: true,
+                                                                                  title: const Text("Select  classes"),
+                                                                                  searchHint: 'Select ClassWise',
+                                                                                  decoration: BoxDecoration(shape: BoxShape.rectangle, border: Border.all(color: Colors.black)),
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          );
+                                                                        },
+                                                                      ),
+                                                                    ))
+                                                                : AlertDialog(
+                                                                    title: Text(
+                                                                      widget.name.toUpperCase() ==
+                                                                              "ADMIN-MANAGEMENT"
+                                                                          ? dropDownTitle
+                                                                          : 'Select Individual Student',
+                                                                    ),
+                                                                    actions: [
+                                                                      TextButton(
+                                                                          onPressed:
                                                                               () {
                                                                             for (var element
                                                                                 in checkListItems) {
@@ -1210,256 +1329,136 @@ class _MessageWidgetState extends State<MessageWidget> {
                                                                             }
                                                                             checkListItems[index]["value"] =
                                                                                 value;
-                                                                            visibilityMessage =
-                                                                                selectedItems.toString();
-                                                                            errorText =
-                                                                                '';
-                                                                            List<int>
-                                                                                selectedIds =
-                                                                                [];
-                                                                            if (distributionType ==
-                                                                                6) {
-                                                                              for (int i = 0; i < selectedItems.length; i++) {
-                                                                                selectedIds.add(class_!.classGroup.firstWhere((element) => element.groupName == selectedItems[i]).allUserCount.toInt());
-                                                                              }
-                                                                            } else {
-                                                                              for (int i = 0; i < selectedItems.length; i++) {
-                                                                                selectedIds.add(groupList!.classes.firstWhere((element) => element.className == selectedItems[i]).totalCount);
-                                                                              }
-                                                                            }
-                                                                            var totalCount = selectedIds.reduce((value, element) =>
-                                                                                value +
-                                                                                element);
-                                                                            count =
-                                                                                totalCount;
-                                                                            color =
-                                                                                Colors.green;
-                                                                            text =
-                                                                                "ClassWise";
-                                                                            isMessageSend =
-                                                                                value!;
-                                                                          });
-                                                                          Navigator.pop(
-                                                                              context);
-                                                                        },
-                                                                        child: const Text(
-                                                                            "Ok"))
-                                                                  ],
-                                                                title: const Text(
-                                                                    'Select Classes'),
-                                                                content:
-                                                                    SingleChildScrollView(
-                                                                  child:
-                                                                      StatefulBuilder(
-                                                                    builder:
-                                                                        (context,
-                                                                            setState) {
-                                                                      return Column(
-                                                                        children: [
-                                                                          Visibility(
-                                                                            visible:
-                                                                                isSectionWise,
-                                                                            child:
-                                                                                MultiSelectDialogField(
-                                                                              items: sectionWise.map((e) => MultiSelectItem(e, e)).toList(),
-                                                                              listType: MultiSelectListType.CHIP,
-                                                                              buttonText: const Text("Select section wise"),
-                                                                              onConfirm: (List<String> values) {
-                                                                                setState(() {
-                                                                                  distributionType = 6;
-                                                                                  selectedItems = values;
-                                                                                  isClassWise = false;
-                                                                                });
-                                                                              },
-                                                                              searchable: true,
-                                                                              title: const Text("Select  classes"),
-                                                                              searchHint: 'Select section wise',
-                                                                              decoration: BoxDecoration(shape: BoxShape.rectangle, border: Border.all(color: Colors.black)),
-                                                                            ),
-                                                                          ),
-                                                                          const SizedBox(
-                                                                            height:
-                                                                                10,
-                                                                          ),
-                                                                          Visibility(
-                                                                            visible:
-                                                                                isClassWise,
-                                                                            child:
-                                                                                MultiSelectDialogField(
-                                                                              items: classWise.map((e) => MultiSelectItem(e, e)).toList(),
-                                                                              listType: MultiSelectListType.CHIP,
-                                                                              buttonText: const Text("Select ClassWise"),
-                                                                              onConfirm: (List<String> values) {
-                                                                                setState(() {
-                                                                                  distributionType = 8;
-                                                                                  selectedItems = values;
-                                                                                  isSectionWise = false;
-                                                                                });
-                                                                              },
-                                                                              searchable: true,
-                                                                              title: const Text("Select  classes"),
-                                                                              searchHint: 'Select ClassWise',
-                                                                              decoration: BoxDecoration(shape: BoxShape.rectangle, border: Border.all(color: Colors.black)),
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      );
-                                                                    },
-                                                                  ),
-                                                                ))
-                                                            : AlertDialog(
-                                                                title: Text(
-                                                                  widget.name.toUpperCase() ==
-                                                                          "ADMIN-MANAGEMENT"
-                                                                      ? dropDownTitle
-                                                                      : 'Select Individual Student',
-                                                                ),
-                                                                actions: [
-                                                                  TextButton(
-                                                                      onPressed:
-                                                                          () {
-                                                                        for (var element
-                                                                            in checkListItems) {
-                                                                          element["value"] =
-                                                                              false;
-                                                                        }
-                                                                        checkListItems[index]["value"] =
-                                                                            value;
-                                                                        setState(
-                                                                            () {
-                                                                          visibilityMessage =
-                                                                              selectedItems.toString();
-                                                                          errorText =
-                                                                              '';
-                                                                          count = widget.name.toUpperCase() == "ADMIN-MANAGEMENT"
-                                                                              ? selectedItems.length
-                                                                              : groupCount + selectedItems.length;
+                                                                            setState(() {
+                                                                              visibilityMessage = selectedItems.toString();
+                                                                              errorText = '';
+                                                                              count = widget.name.toUpperCase() == "ADMIN-MANAGEMENT" ? selectedItems.length : groupCount + selectedItems.length;
 
-                                                                          color =
-                                                                              Colors.green;
-                                                                          text = widget.name.toUpperCase() == "ADMIN-MANAGEMENT"
-                                                                              ? "Management"
-                                                                              : 'StudentWise';
-                                                                          isMessageSend =
-                                                                              value!;
-                                                                        });
-                                                                        Navigator.pop(
-                                                                            context);
-                                                                      },
-                                                                      child: const Text(
-                                                                          "Ok"))
-                                                                ],
-                                                                content:
-                                                                    SingleChildScrollView(
-                                                                  child:
-                                                                      MultiSelectDialogField(
-                                                                    dialogHeight:
-                                                                        MediaQuery.of(context)
+                                                                              color = Colors.green;
+                                                                              text = widget.name.toUpperCase() == "ADMIN-MANAGEMENT" ? "Management" : 'StudentWise';
+                                                                              isMessageSend = value!;
+                                                                            });
+                                                                            Navigator.pop(context);
+                                                                          },
+                                                                          child:
+                                                                              const Text("Ok"))
+                                                                    ],
+                                                                    content:
+                                                                        SingleChildScrollView(
+                                                                      child:
+                                                                          MultiSelectDialogField(
+                                                                        dialogHeight: MediaQuery.of(context)
                                                                             .size
                                                                             .height,
-                                                                    items: menuItems
-                                                                        .map((e) => MultiSelectItem(
-                                                                            e,
-                                                                            e))
-                                                                        .toList(),
-                                                                    searchable:
-                                                                        true,
-                                                                    listType:
-                                                                        MultiSelectListType
-                                                                            .CHIP,
-                                                                    onConfirm: (List<
-                                                                            String>
-                                                                        values) {
-                                                                      selectedItems =
-                                                                          values;
-                                                                    },
+                                                                        items: menuItems
+                                                                            .map((e) =>
+                                                                                MultiSelectItem(e, e))
+                                                                            .toList(),
+                                                                        searchable:
+                                                                            true,
+                                                                        listType:
+                                                                            MultiSelectListType.CHIP,
+                                                                        onConfirm:
+                                                                            (List<String>
+                                                                                values) {
+                                                                          selectedItems =
+                                                                              values;
+                                                                        },
+                                                                      ),
+                                                                    ),
                                                                   ),
-                                                                ),
-                                                              ),
-                                                  );
-                                                } else if (value == true) {
-                                                  setState(() {
-                                                    selectedItems.clear();
-                                                    errorText = '';
-                                                    visibilityMessage =
-                                                        "visible to ";
-                                                    for (var element
-                                                        in checkListItems) {
-                                                      element["value"] = false;
-                                                    }
-                                                    checkListItems[index]
-                                                        ["value"] = value;
-                                                    checkListItems[0]["value"]
-                                                        ? color = const Color(
-                                                            0xfff98a1d)
-                                                        : checkListItems[1]
+                                                      );
+                                                    } else if (value == true) {
+                                                      setState(() {
+                                                        selectedItems.clear();
+                                                        errorText = '';
+                                                        visibilityMessage =
+                                                            "visible to ";
+                                                        for (var element
+                                                            in checkListItems) {
+                                                          element["value"] =
+                                                              false;
+                                                        }
+                                                        checkListItems[index]
+                                                            ["value"] = value;
+                                                        checkListItems[0]
                                                                 ["value"]
                                                             ? color =
-                                                                Colors.green
-                                                            : color =
-                                                                Colors.pink;
-                                                    text = checkListItems[index]
-                                                        ['title'];
-                                                    distributionType =
-                                                        checkListItems[index]
-                                                            ['id'];
-                                                    isMessageSend = value!;
-                                                    checkListItems[0]["value"]
-                                                        ? count = (int.parse(
-                                                                msgCount!.admin
+                                                                const Color(
+                                                                    0xfff98a1d)
+                                                            : checkListItems[1]
+                                                                    ["value"]
+                                                                ? color =
+                                                                    Colors.green
+                                                                : color =
+                                                                    Colors.pink;
+                                                        text = checkListItems[
+                                                            index]['title'];
+                                                        distributionType =
+                                                            checkListItems[
+                                                                index]['id'];
+                                                        isMessageSend = value!;
+                                                        checkListItems[0]
+                                                                ["value"]
+                                                            ? count = (int.parse(msgCount!.admin.length.toString()) +
+                                                                int.parse(msgCount!
+                                                                    .management
                                                                     .length
                                                                     .toString()) +
-                                                            int.parse(msgCount!
-                                                                .management
-                                                                .length
-                                                                .toString()) +
-                                                            int.parse(msgCount!
-                                                                .parent.length
-                                                                .toString()) +
-                                                            int.parse(msgCount!
-                                                                .staff.length
-                                                                .toString()))
-                                                        : checkListItems[1]
-                                                                ['value']
-                                                            ? count = msgCount!.staff.length
-                                                            : count = msgCount!.parent.length;
-                                                  });
-                                                } else {
-                                                  setState(() {
-                                                    errorText =
-                                                        'Cant unselect all the field select any one !';
-                                                  });
-                                                }
-                                              },
-                                  ),
-                                );
-                              }),
+                                                                int.parse(msgCount!
+                                                                    .parent
+                                                                    .length
+                                                                    .toString()) +
+                                                                int.parse(msgCount!
+                                                                    .staff
+                                                                    .length
+                                                                    .toString()))
+                                                            : checkListItems[1]
+                                                                    ['value']
+                                                                ? count = msgCount!
+                                                                    .staff
+                                                                    .length
+                                                                : count =
+                                                                    msgCount!
+                                                                        .parent
+                                                                        .length;
+                                                      });
+                                                    } else {
+                                                      setState(() {
+                                                        errorText =
+                                                            'Cant unselect all the field select any one !';
+                                                      });
+                                                    }
+                                                  },
+                                      ),
+                                    );
+                                  }),
+                            )
+                          ])),
+                      if (errorText != '')
+                        const SizedBox(
+                          height: 10,
+                        ),
+                      if (errorText != '')
+                        Text(
+                          errorText,
+                          style: SafeGoogleFont(
+                            'Inter',
+                            fontSize: 12 * ffem,
+                            fontWeight: FontWeight.w400,
+                            height: 0.9152272542 * ffem / fem,
+                            letterSpacing: 1.2 * fem,
+                            color: const Color(0xff303030),
+                          ),
                         )
-                      ])),
-                  if (errorText != '')
-                    const SizedBox(
-                      height: 10,
-                    ),
-                  if (errorText != '')
-                    Text(
-                      errorText,
-                      style: SafeGoogleFont(
-                        'Inter',
-                        fontSize: 12 * ffem,
-                        fontWeight: FontWeight.w400,
-                        height: 0.9152272542 * ffem / fem,
-                        letterSpacing: 1.2 * fem,
-                        color: const Color(0xff303030),
-                      ),
-                    )
-                ],
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
-          const SizedBox(
-            height: 40,
-          )
-        ]),
+              const SizedBox(
+                height: 40,
+              )
+            ]),
       ),
     );
   }
@@ -1477,7 +1476,7 @@ class _MessageWidgetState extends State<MessageWidget> {
               onPressed: () {
                 setState(() {
                   errorImage = getImage.errorText;
-                  image.addAll(getImage.images);
+                  images.addAll(getImage.images);
                 });
                 Navigator.pop(context);
               },
@@ -1706,8 +1705,8 @@ class TabWidget extends StatelessWidget {
           children: [
             Container(
               margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 10 * fem),
-              width: 12 * fem,
-              height: 12 * fem,
+              width: 15 * fem,
+              height: 15 * fem,
               child: Image.asset(
                 assetImage.assetName,
                 fit: BoxFit.cover,

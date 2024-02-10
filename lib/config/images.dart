@@ -12,13 +12,14 @@ class Images {
 
 class Animations {
   Animations._();
-  static const String noData = 'assets/lottie/no_data.json';
+  static const String noData = "assets/lottie/no_data.json";
 }
 
 class Chat {
   Chat._();
 
   static const String chatIcon = "assets/chat/text.png";
+  static const String excelIcon = "assets/icons/xls.png";
   static const String imageIcon = "assets/chat/image.png";
   static const String docIcon = "assets/chat/document.png";
   static const String materialIcon = "assets/chat/material.png";

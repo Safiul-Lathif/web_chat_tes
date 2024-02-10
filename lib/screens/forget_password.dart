@@ -1,3 +1,4 @@
+// ignore_for_file: must_be_immutable
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:ui/api/loginApi.dart';
@@ -89,13 +90,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                       return null;
                                     },
                                     controller: nameController,
-
                                     style:
                                         Theme.of(context).textTheme.bodyText1,
                                     keyboardType: TextInputType.emailAddress,
                                     textInputAction: TextInputAction.next,
-                                    // textAlignVertical: TextAlignVertical.center,
-                                    //readOnly: true,
                                     decoration: InputDecoration(
                                       contentPadding: const EdgeInsets.all(12),
                                       border: InputBorder.none,

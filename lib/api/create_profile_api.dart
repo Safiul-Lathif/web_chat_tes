@@ -10,11 +10,8 @@ Future<dynamic> createProfile({required String token}) async {
       HttpHeaders.authorizationHeader: 'Bearer $token',
     });
     if (response.statusCode == 200) {
+      print(response.body);
       return jsonDecode(response.body);
-
-      // return jsonResponse
-      //     .map((json) => ActionRequiredModel.fromJson(json))
-      //     .toList();
     } else {
       print('Request failed with status: ${response.statusCode}.');
       return null;

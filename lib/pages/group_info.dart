@@ -39,6 +39,8 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
   List<ParticipantsList> listOfParticipants = [];
 
   int totalItem = 0;
+  bool isSearch = false;
+
   bool isLoading = false;
   Future<bool> activeInactiveUser(
     String number,
@@ -82,6 +84,8 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
     });
   }
 
+  TextEditingController controller = TextEditingController();
+
   void _loadNextPage() {
     setState(() {
       page++;
@@ -107,6 +111,17 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  String searchText = '';
+
+  void searchMember() {
+    final listOfData = groupInfo!.where((element) {
+      final name = element.name.toLowerCase();
+      final text = searchText.toLowerCase();
+      return name.contains(text);
+    });
+    setState(() => groupInfo = listOfData);
   }
 
   @override
@@ -165,6 +180,67 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
                             child: const Text("Resend Credentials")),
                       ],
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      height: 45,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
+                          border: Border.all(color: Colors.black)),
+                      child: TextField(
+                        onTap: () {
+                          setState(() {
+                            isSearch = !isSearch;
+                            // listOfParticipants.clear();
+                            // groupInfo = null;
+                            // page = 0;
+                            // getGroupList(0);
+                          });
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            searchText = value;
+                            searchMember();
+                          });
+                        },
+                        controller: controller,
+                        decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.only(
+                              top: 12,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: !isSearch
+                                  ? Colors.black38
+                                  : Colors.grey.shade600,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                Icons.clear,
+                                color: !isSearch
+                                    ? Colors.black38
+                                    : Colors.grey.shade600,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  controller.clear();
+                                  searchText = '';
+                                  isSearch = !isSearch;
+                                });
+                              },
+                            ),
+                            hintText: 'Search...',
+                            hintStyle: TextStyle(
+                              color: !isSearch
+                                  ? Colors.black38
+                                  : Colors.grey.shade600,
+                            ),
+                            border: InputBorder.none),
+                      ),
+                    ),
                     SizedBox(
                       height: 320,
                       child: ListView.builder(
@@ -178,8 +254,8 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
                                 message:
                                     groupInfo!.elementAt(index).appStatus !=
                                             "Not Installed"
-                                        ? 'Active User'
-                                        : 'InActive User',
+                                        ? 'Installed User'
+                                        : 'Not Installed User',
                                 child: ListTile(
                                   leading: Stack(
                                     children: [

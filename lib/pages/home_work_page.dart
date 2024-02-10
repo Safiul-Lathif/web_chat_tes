@@ -1,19 +1,12 @@
 // ignore_for_file: unnecessary_null_comparison, must_be_immutable
 import 'dart:html';
-import 'dart:io';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:time_remaining/time_remaining.dart';
 import 'package:ui/Utils/Utility.dart';
-import 'package:ui/api/approve_home_work_api.dart';
 import 'package:ui/api/deleteApi.dart';
 import 'package:ui/api/edit_homework_api.dart';
 import 'package:ui/api/homeWork/homework_status_api.dart';
@@ -28,7 +21,6 @@ import 'package:ui/model/parenthomeworkmodel.dart';
 import 'package:ui/model/staff_home_work_model.dart';
 import 'package:ui/utils/session_management.dart';
 import 'package:ui/utils/utils_file.dart';
-import 'package:device_info/device_info.dart';
 
 class HomeWorkPage extends StatefulWidget {
   HomeWorkPage({
@@ -36,10 +28,12 @@ class HomeWorkPage extends StatefulWidget {
     required this.isParent,
     required this.classId,
     this.className,
+    required this.date,
   });
   final bool isParent;
   final String classId;
   String? className;
+  DateTime date;
 
   @override
   State<HomeWorkPage> createState() => _HomeWorkPageState();
@@ -98,6 +92,7 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
   void initState() {
     super.initState();
     setState(() {
+      _selectedDay = widget.date;
       homeworkDate =
           Utility.convertDateFormat(_selectedDay.toString(), "yyyy-MM-dd");
     });
@@ -125,10 +120,10 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
     if (mounted) {
       await homeWork(homWorkDate: homeworkDate);
       SessionManager prefs = SessionManager();
-      logId = (await prefs.getStudentId())!;
       setState(() {
         taskAdded = false;
       });
+      logId = await prefs.getStudentId() ?? '';
     }
   }
 
@@ -136,10 +131,10 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
     if (mounted) {
       await update(homWorkDate: homeworkDate, index: index);
       SessionManager prefs = SessionManager();
-      logId = (await prefs.getStudentId())!;
       setState(() {
         taskAdded = false;
       });
+      logId = await prefs.getStudentId() ?? '';
     }
   }
 
@@ -600,8 +595,8 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
                     maxHeight: MediaQuery.of(context).size.height * height),
                 child: completedList.isEmpty
                     ? Center(
-                        child: Lottie.asset(
-                          'assets/lottie/no_data.json',
+                        child: Lottie.network(
+                          'https://assets7.lottiefiles.com/private_files/lf30_lkquf6qz.json',
                           width: MediaQuery.of(context).size.width * 0.5,
                           repeat: true,
                           reverse: true,
@@ -1023,97 +1018,91 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
                                       backgroundImage: NetworkImage(
                                           staffHomework[index].profileImage),
                                     ),
-                              title: Row(
-                                children: [
-                                  Text(
-                                    staffHomework[index].subjectName,
-                                    style: const TextStyle(color: Colors.black),
-                                  ),
-                                  staffHomework[index].homeworkContent != "" ||
-                                          staffHomework[index].images.isNotEmpty
-                                      ? Row(
-                                          children: [
-                                            staffHomework[index].edited == 1
-                                                ? Text(
-                                                    "Edited",
-                                                    style: GoogleFonts.lato(
-                                                        fontSize: 12),
-                                                  )
-                                                : Container(),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.all(0.0),
-                                              width: 30.0,
-                                              child: IconButton(
-                                                onPressed: () async {
-                                                  await getHomeworkStatusList(
-                                                          staffHomework[index]
-                                                              .notificationId
-                                                              .toString(),
-                                                          "1")
-                                                      .then((value) {
-                                                    if (value != null) {
-                                                      completedNotCompletedDialog(
-                                                          completedList: value,
-                                                          isCompleted: true);
-                                                    }
-                                                  });
-                                                },
-                                                icon: const Icon(
-                                                  Icons.thumb_up,
-                                                  size: 18,
-                                                  color: Colors.green,
-                                                ),
-                                              ),
+                              subtitle: staffHomework[index].homeworkContent !=
+                                          "" ||
+                                      staffHomework[index].images.isNotEmpty
+                                  ? Row(
+                                      children: [
+                                        staffHomework[index].edited == 1
+                                            ? Text(
+                                                "Edited",
+                                                style: GoogleFonts.lato(
+                                                    fontSize: 12),
+                                              )
+                                            : Container(),
+                                        Container(
+                                          padding: const EdgeInsets.all(0.0),
+                                          width: 30.0,
+                                          height: 30,
+                                          child: IconButton(
+                                            onPressed: () async {
+                                              await getHomeworkStatusList(
+                                                      staffHomework[index]
+                                                          .notificationId
+                                                          .toString(),
+                                                      "1")
+                                                  .then((value) {
+                                                if (value != null) {
+                                                  completedNotCompletedDialog(
+                                                      completedList: value,
+                                                      isCompleted: true);
+                                                }
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.thumb_up,
+                                              size: 18,
+                                              color: Colors.green,
                                             ),
-                                            Text(
-                                              staffHomework[index]
-                                                  .completedCount
-                                                  .toString(),
-                                              style: const TextStyle(
-                                                  color: Colors.black),
+                                          ),
+                                        ),
+                                        Text(
+                                          staffHomework[index]
+                                              .completedCount
+                                              .toString(),
+                                          style: const TextStyle(
+                                              color: Colors.black),
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.all(0.0),
+                                          width: 30.0,
+                                          height: 30,
+                                          child: IconButton(
+                                            onPressed: () async {
+                                              await getHomeworkStatusList(
+                                                      staffHomework[index]
+                                                          .notificationId
+                                                          .toString(),
+                                                      "2")
+                                                  .then((value) {
+                                                if (value != null) {
+                                                  completedNotCompletedDialog(
+                                                      completedList: value,
+                                                      isCompleted: false);
+                                                }
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.thumb_down,
+                                              size: 18,
+                                              color: Colors.red,
                                             ),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.all(0.0),
-                                              width: 30.0,
-                                              child: IconButton(
-                                                onPressed: () async {
-                                                  await getHomeworkStatusList(
-                                                          staffHomework[index]
-                                                              .notificationId
-                                                              .toString(),
-                                                          "2")
-                                                      .then((value) {
-                                                    if (value != null) {
-                                                      completedNotCompletedDialog(
-                                                          completedList: value,
-                                                          isCompleted: false);
-                                                    }
-                                                  });
-                                                },
-                                                icon: const Icon(
-                                                  Icons.thumb_down,
-                                                  size: 18,
-                                                  color: Colors.red,
-                                                ),
-                                              ),
-                                            ),
-                                            Text(
-                                              staffHomework[index]
-                                                  .notCompletedStudents
-                                                  .toString(),
-                                              style: const TextStyle(
-                                                  color: Colors.black),
-                                            )
-                                          ],
+                                          ),
+                                        ),
+                                        Text(
+                                          staffHomework[index]
+                                              .notCompletedStudents
+                                              .toString(),
+                                          style: const TextStyle(
+                                              color: Colors.black),
                                         )
-                                      : Container(),
-                                ],
+                                      ],
+                                    )
+                                  : Container(),
+                              title: Text(
+                                staffHomework[index].subjectName,
+                                style: const TextStyle(color: Colors.black),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 10,
                             ),
                             staffHomework[index].notificationId != 0 ||
                                     staffHomework[index].images.isNotEmpty
@@ -1270,7 +1259,7 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
                                         },
                                         child: Container(
                                           width: 350,
-                                          height: 112,
+                                          height: 100,
                                           decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(7),

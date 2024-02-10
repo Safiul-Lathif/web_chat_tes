@@ -207,23 +207,16 @@ Future<dynamic> deleteStaff({required String staffId}) async {
   String token;
   token = (await pref.getAuthToken())!;
   var map = <String, dynamic>{};
-  //var request = http.MultipartRequest("POST", url);
+  map["id"] = staffId;
 
-  map["id"] = staffId; //division_
-
-  // request.headers.putIfAbsent('Authorization', () => "Bearer $token");
-  //};
   try {
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      //final jsonResponse = jsonDecode(response.body);
-      // ignore: avoid_print
       print(response.body);
 
       return jsonDecode(response.body);
     } else {
-      // ignore: avoid_print
       print('Onboarding Request failed with status: ${response.statusCode}.');
       return null;
     }

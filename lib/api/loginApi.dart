@@ -74,7 +74,6 @@ Future<dynamic> changePassword(
   var map = <String, dynamic>{};
   map["current_password"] = oldPassword;
   map["new_password"] = newPassword;
-  //};
   try {
     final response = await http.post(
       url,
@@ -82,7 +81,8 @@ Future<dynamic> changePassword(
       body: map,
     );
     if (response.statusCode == 200) {
-      return response.body;
+      print(response.body);
+      return jsonDecode(response.body);
     } else {
       print('Request failed with status: ${response.statusCode}.');
       return null;

@@ -25,6 +25,7 @@ Future<dynamic> sendEvents(
   for (int i = 0; img.length > i; i++) {
     request.fields["images[$i]"] = base64Encode(img[i].bytes!);
     request.fields["ext[$i]"] = img[i].extension!;
+    request.fields["file_name[$i]"] = img[i].name;
   }
   for (int i = 0; i < classIds.length; i++) {
     request.fields['visible_to[$i]'] = classIds[i];
