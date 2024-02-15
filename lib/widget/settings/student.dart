@@ -5,7 +5,6 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:ui/Utils/utility.dart';
-import 'package:ui/api/excelAPiservice.dart';
 import 'package:ui/api/search/check_mobile_number.dart';
 import 'package:ui/api/search/get_management_list_api.dart';
 import 'package:ui/api/settings/get_admissin_number.dart';
@@ -14,7 +13,9 @@ import 'package:ui/config/images.dart';
 import 'package:ui/custom/loading_animator.dart';
 
 import 'package:ui/model/search/management_list_model.dart';
+import 'package:ui/model/search/student_list_model.dart';
 import 'package:ui/model/settings/index.dart';
+import 'package:ui/widget/search_profile_student.dart';
 
 class StudentWidget extends StatefulWidget {
   const StudentWidget({super.key});
@@ -103,40 +104,62 @@ class _StudentWidgetState extends State<StudentWidget> {
     }
   }
 
+  Future<bool> studentProfileInfo(
+    StudentList studentList,
+  ) async {
+    return await showDialog(
+            context: context,
+            builder: (context) => Material(
+                  type: MaterialType.transparency,
+                  child: Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: StudentProfileInfo(
+                        studentList: studentList,
+                      ),
+                    ),
+                  ),
+                )) ??
+        false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.green,
-        onPressed: () {
-          addEditPopUp(SingleParent(
-              studentId: 0,
-              studentName: '',
-              fatherMobileNumber: 0,
-              fatherEmailAddress: '',
-              fatherName: '',
-              fatherId: 0,
-              motherMobileNumber: 0,
-              motherEmailAddress: '',
-              motherName: '',
-              motherId: 0,
-              guardianMobileNumber: 0,
-              guardianEmailAddress: '',
-              guardianName: '',
-              guardianId: 0,
-              admissionNumber: '',
-              rollNo: 0,
-              dob: '',
-              employeeNo: '',
-              gender: '',
-              photo: '',
-              temporaryStudent: '',
-              classSection: classSection));
-        },
-        icon: const Icon(Icons.add),
-        label: const Text("Add Students"),
-        tooltip: 'Add Students',
-      ),
+      floatingActionButton: divisions != null && sectionList.isNotEmpty
+          ? FloatingActionButton.extended(
+              backgroundColor: Colors.green,
+              onPressed: () {
+                addEditPopUp(SingleParent(
+                    studentId: 0,
+                    studentName: '',
+                    fatherMobileNumber: 0,
+                    fatherEmailAddress: '',
+                    fatherName: '',
+                    fatherId: 0,
+                    motherMobileNumber: 0,
+                    motherEmailAddress: '',
+                    motherName: '',
+                    motherId: 0,
+                    guardianMobileNumber: 0,
+                    guardianEmailAddress: '',
+                    guardianName: '',
+                    guardianId: 0,
+                    admissionNumber: '',
+                    rollNo: 0,
+                    dob: '',
+                    employeeNo: '',
+                    gender: '',
+                    photo: '',
+                    temporaryStudent: '',
+                    classSection: classSection));
+              },
+              icon: const Icon(Icons.add),
+              label: const Text("Add Students"),
+              tooltip: 'Add Students',
+            )
+          : null,
       body: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -319,27 +342,56 @@ class _StudentWidgetState extends State<StudentWidget> {
                                                 content: SingleChildScrollView(
                                                     child: Column(children: [
                                                   InkWell(
-                                                    onTap: () async {
-                                                      await StudentController()
-                                                          .deleteParent(
-                                                              id: parent.id
-                                                                  .toString())
-                                                          .then((value) {
-                                                        if (value != null) {
-                                                          Navigator.pop(
-                                                              context);
-                                                          Utility.displaySnackBar(
-                                                              context,
-                                                              "Delete Successfully");
-                                                        } else {
-                                                          Navigator.pop(
-                                                              context);
-                                                          Utility
-                                                              .displaySnackBar(
-                                                                  context,
-                                                                  "Not Deleted");
-                                                        }
-                                                      });
+                                                    onTap: () {
+                                                      Navigator.pop(context);
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (context) {
+                                                          return AlertDialog(
+                                                            title: const Text(
+                                                                "Do you want to Delete this User"),
+                                                            actions: [
+                                                              TextButton(
+                                                                  onPressed:
+                                                                      () async {
+                                                                    await StudentController()
+                                                                        .deleteParent(
+                                                                            id: parent.id
+                                                                                .toString())
+                                                                        .then(
+                                                                            (value) {
+                                                                      if (value !=
+                                                                          null) {
+                                                                        Navigator.pop(
+                                                                            context);
+                                                                        Utility.displaySnackBar(
+                                                                            context,
+                                                                            "Delete Successfully");
+                                                                      } else {
+                                                                        Navigator.pop(
+                                                                            context);
+                                                                        Utility.displaySnackBar(
+                                                                            context,
+                                                                            "Not Deleted");
+                                                                      }
+                                                                    });
+                                                                  },
+                                                                  child:
+                                                                      const Text(
+                                                                          "Yes")),
+                                                              TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  },
+                                                                  child:
+                                                                      const Text(
+                                                                          "No"))
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
                                                     },
                                                     child: Container(
                                                         width: double.infinity,
@@ -389,6 +441,76 @@ class _StudentWidgetState extends State<StudentWidget> {
                                                         child: Center(
                                                           child: Text(
                                                               "Edit ${parent.firstName}"),
+                                                        )),
+                                                  ),
+                                                  InkWell(
+                                                    onTap: () async {
+                                                      await StudentController()
+                                                          .fetchSingleStaff(
+                                                              id: parent.id)
+                                                          .then((value) {
+                                                        if (value != null) {
+                                                          studentProfileInfo(StudentList(
+                                                              id: value
+                                                                  .studentId,
+                                                              userId: '',
+                                                              firstName: value
+                                                                  .studentName,
+                                                              admissionNumber: value
+                                                                  .admissionNumber,
+                                                              dob: value.dob,
+                                                              rollNumber:
+                                                                  value.rollNo,
+                                                              gender: 0,
+                                                              profileImage:
+                                                                  value.photo,
+                                                              classConfig: value
+                                                                  .classSection,
+                                                              userStatus: 0,
+                                                              createdBy: 0,
+                                                              createdTime: DateTime
+                                                                  .now(),
+                                                              updatedTime:
+                                                                  DateTime
+                                                                      .now(),
+                                                              guardianName: value
+                                                                  .guardianName,
+                                                              motherName: value
+                                                                  .motherName,
+                                                              fatherName: value
+                                                                  .fatherName,
+                                                              guardianMobile: value
+                                                                  .guardianMobileNumber,
+                                                              motherMobile: value
+                                                                  .motherMobileNumber,
+                                                              fatherMobile: value
+                                                                  .fatherMobileNumber,
+                                                              studentName: value
+                                                                  .studentName,
+                                                              studentListClass:
+                                                                  'yes',
+                                                              classTeacher: value
+                                                                  .classSection
+                                                                  .toString(),
+                                                              studentProfileImage:
+                                                                  value.photo,
+                                                              fatherId: value
+                                                                  .fatherId,
+                                                              motherId: value.motherId,
+                                                              guardianId: value.guardianId));
+                                                        }
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                        width: double.infinity,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                top: 10,
+                                                                bottom: 10),
+                                                        child: Center(
+                                                          child: Text(
+                                                              "View ${parent.firstName}"),
                                                         )),
                                                   ),
                                                 ])));
@@ -520,7 +642,7 @@ class _StudentWidgetState extends State<StudentWidget> {
         selectedDate = picked;
         switch (field) {
           case 'dob':
-            singleStudent.dob = DateFormat('yyyy-MM-dd').format(selectedDate);
+            singleStudent.dob = DateFormat('dd-MM-yyyy').format(selectedDate);
             dobController.text = singleStudent.dob;
             break;
         }
@@ -555,7 +677,7 @@ class _StudentWidgetState extends State<StudentWidget> {
         return Form(
           key: _formKey,
           child: AlertDialog(
-            title: Text(isEdit ? "Edit Management" : "Add Management"),
+            title: Text(isEdit ? "Edit Student" : "Add Student"),
             actions: [
               TextButton(
                   onPressed: () async {
@@ -574,8 +696,8 @@ class _StudentWidgetState extends State<StudentWidget> {
                             Utility.displaySnackBar(
                                 context,
                                 isEdit
-                                    ? "Management Updated Scuessfully"
-                                    : 'Management added scuessfully');
+                                    ? "Student Updated Scuessfully"
+                                    : 'Student added scuessfully');
                             Navigator.pop(context);
                           } else {
                             Utility.displaySnackBar(context,
@@ -597,8 +719,8 @@ class _StudentWidgetState extends State<StudentWidget> {
                             Utility.displaySnackBar(
                                 context,
                                 isEdit
-                                    ? "Management Updated Scuessfully"
-                                    : 'Management added scuessfully');
+                                    ? "Student Updated Scuessfully"
+                                    : 'Student added scuessfully');
                             Navigator.pop(context);
                           } else {
                             Utility.displaySnackBar(context,
@@ -687,7 +809,9 @@ class _StudentWidgetState extends State<StudentWidget> {
                         child: FormBuilderTextField(
                           name: "",
                           keyboardType: TextInputType.text,
-                          initialValue: student.rollNo.toString(),
+                          initialValue: student.rollNo == 0
+                              ? null
+                              : student.rollNo.toString(),
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.only(
                                 top: 5, bottom: 5, left: 15),
@@ -702,6 +826,9 @@ class _StudentWidgetState extends State<StudentWidget> {
                             });
                           },
                         ),
+                      ),
+                      const SizedBox(
+                        height: 15,
                       ),
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.3,
@@ -791,7 +918,9 @@ class _StudentWidgetState extends State<StudentWidget> {
                         child: FormBuilderTextField(
                           name: "",
                           keyboardType: TextInputType.phone,
-                          initialValue: student.fatherMobileNumber.toString(),
+                          initialValue: student.fatherMobileNumber == 0
+                              ? null
+                              : student.fatherMobileNumber.toString(),
                           validator: (value) {
                             if (student.fatherMobileNumber == 0 &&
                                 student.motherMobileNumber == 0 &&
@@ -906,7 +1035,9 @@ class _StudentWidgetState extends State<StudentWidget> {
                         child: FormBuilderTextField(
                           name: "",
                           keyboardType: TextInputType.phone,
-                          initialValue: student.motherMobileNumber.toString(),
+                          initialValue: student.motherMobileNumber == 0
+                              ? null
+                              : student.motherMobileNumber.toString(),
                           validator: (value) {
                             if (student.fatherMobileNumber == 0 &&
                                 student.motherMobileNumber == 0 &&
@@ -1064,8 +1195,9 @@ class _StudentWidgetState extends State<StudentWidget> {
                               return null;
                             },
                             keyboardType: TextInputType.phone,
-                            initialValue:
-                                student.guardianMobileNumber.toString(),
+                            initialValue: student.guardianMobileNumber == 0
+                                ? null
+                                : student.guardianMobileNumber.toString(),
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.only(
                                   top: 5, bottom: 5, left: 15),

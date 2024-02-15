@@ -108,6 +108,24 @@ class _NewsScreenState extends State<NewsScreen> {
     });
   }
 
+  Future<bool> createNewsForm() async {
+    return await showDialog(
+            context: context,
+            builder: (context) => Material(
+                  type: MaterialType.transparency,
+                  child: Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      height: MediaQuery.of(context).size.height * 0.65,
+                      child: AddNewsForm(
+                        callback: updateLatestNews,
+                      ),
+                    ),
+                  ),
+                )) ??
+        false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return isDetailScreen
@@ -141,15 +159,7 @@ class _NewsScreenState extends State<NewsScreen> {
                           ),
                           widget.accessiblePerson
                               ? InkWell(
-                                  onTap: () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                          builder: (context) =>
-                                              const AddNewsForm(),
-                                        ))
-                                        .then((value) =>
-                                            value ? updateLatestNews() : null);
-                                  },
+                                  onTap: () => createNewsForm(),
                                   child: Container(
                                     padding: const EdgeInsets.all(10),
                                     margin: const EdgeInsets.only(

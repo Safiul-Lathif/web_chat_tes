@@ -4,14 +4,12 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:ui/Utils/utility.dart';
-import 'package:ui/api/addEditUser/add_edit_management_api.dart';
 import 'package:ui/api/deleteApi.dart';
 import 'package:ui/api/designation_list_api.dart';
-import 'package:ui/api/settings/management.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/loading_animator.dart';
 import 'package:ui/model/settings/index.dart';
-import 'package:ui/model/settings/management_model.dart';
+import 'package:ui/widget/search_profile_management.dart';
 import '../../model/search/management_list_model.dart';
 import 'package:ui/api/settings/index.dart';
 
@@ -78,6 +76,27 @@ class _ManagementWidgetState extends State<ManagementWidget> {
   bool isEdit = false;
   final _formKey = GlobalKey<FormState>();
 
+  Future<bool> managementProfileInfo(
+    ManagementList managementList,
+  ) async {
+    return await showDialog(
+            context: context,
+            builder: (context) => Material(
+                  type: MaterialType.transparency,
+                  child: Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: ManagementProfileInfo(
+                        managementList: managementList,
+                        role: 'Admin',
+                      ),
+                    ),
+                  ),
+                )) ??
+        false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,7 +106,19 @@ class _ManagementWidgetState extends State<ManagementWidget> {
           setState(() {
             isEdit = false;
           });
-          addEditPopUp(ManagementList.managementModelData);
+          addEditPopUp(ManagementList(
+              id: 0,
+              firstName: '',
+              mobileNumber: 0,
+              userStatus: 0,
+              profileImage: '',
+              designation: '',
+              userCategory: 0,
+              userId: '',
+              dob: '',
+              doj: '',
+              employeeNo: '',
+              emailId: ''));
         },
         icon: const Icon(Icons.add),
         label: const Text("Add Management"),
@@ -151,23 +182,52 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                             child: Column(children: [
                                           InkWell(
                                             onTap: () async {
-                                              await deleteManagement(
-                                                      managementId: management
-                                                          .id
-                                                          .toString())
-                                                  .then((value) {
-                                                getListOfManagement();
-                                                if (value != null) {
-                                                  Navigator.pop(context);
-                                                  Utility.displaySnackBar(
-                                                      context,
-                                                      "Delete Successfully");
-                                                } else {
-                                                  Navigator.pop(context);
-                                                  Utility.displaySnackBar(
-                                                      context, "Not Deleted");
-                                                }
-                                              });
+                                              Navigator.pop(context);
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    title: const Text(
+                                                        "Do you want to Delete this User"),
+                                                    actions: [
+                                                      TextButton(
+                                                          onPressed: () async {
+                                                            await deleteManagement(
+                                                                    managementId:
+                                                                        management
+                                                                            .id
+                                                                            .toString())
+                                                                .then((value) {
+                                                              getListOfManagement();
+                                                              if (value !=
+                                                                  null) {
+                                                                Navigator.pop(
+                                                                    context);
+                                                                Utility.displaySnackBar(
+                                                                    context,
+                                                                    "Delete Successfully");
+                                                              } else {
+                                                                Navigator.pop(
+                                                                    context);
+                                                                Utility.displaySnackBar(
+                                                                    context,
+                                                                    "Not Deleted");
+                                                              }
+                                                            });
+                                                          },
+                                                          child: const Text(
+                                                              "Yes")),
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          child:
+                                                              const Text("No"))
+                                                    ],
+                                                  );
+                                                },
+                                              );
                                             },
                                             child: Container(
                                                 width: double.infinity,
@@ -208,6 +268,27 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                                                 child: Center(
                                                   child: Text(
                                                       "Edit ${management.firstName}"),
+                                                )),
+                                          ),
+                                          InkWell(
+                                            onTap: () async {
+                                              ManagementList? managementList =
+                                                  await ManagementController()
+                                                      .fetchSingleManagementList(
+                                                          id: management.id
+                                                              .toString());
+                                              if (managementList != null) {
+                                                managementProfileInfo(
+                                                    managementList);
+                                              }
+                                            },
+                                            child: Container(
+                                                width: double.infinity,
+                                                padding: const EdgeInsets.only(
+                                                    top: 10, bottom: 10),
+                                                child: Center(
+                                                  child: Text(
+                                                      "View ${management.firstName}"),
                                                 )),
                                           ),
                                         ])));
@@ -333,11 +414,11 @@ class _ManagementWidgetState extends State<ManagementWidget> {
         selectedDate = picked;
         switch (field) {
           case 'dob':
-            managementList.dob = DateFormat('yyyy-MM-dd').format(selectedDate);
+            managementList.dob = DateFormat('dd-MM-yyyy').format(selectedDate);
             dobController.text = managementList.dob;
             break;
           case 'doj':
-            managementList.doj = DateFormat('yyyy-MM-dd').format(selectedDate);
+            managementList.doj = DateFormat('dd-MM-yyyy').format(selectedDate);
             dojController.text = managementList.doj;
         }
       });
@@ -367,8 +448,9 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                             Utility.displaySnackBar(
                                 context,
                                 isEdit
-                                    ? "Management Updated Scuessfully"
-                                    : 'Management added scuessfully');
+                                    ? "Management Updated Successfully "
+                                    : 'Management added Successfully ');
+                            getListOfManagement();
                             Navigator.pop(context);
                           } else {
                             Utility.displaySnackBar(context,
@@ -387,8 +469,9 @@ class _ManagementWidgetState extends State<ManagementWidget> {
                             Utility.displaySnackBar(
                                 context,
                                 isEdit
-                                    ? "Management Updated Scuessfully"
-                                    : 'Management added scuessfully');
+                                    ? "Management Updated Successfully "
+                                    : 'Management added Successfully ');
+                            getListOfManagement();
                             Navigator.pop(context);
                           } else {
                             Utility.displaySnackBar(context,

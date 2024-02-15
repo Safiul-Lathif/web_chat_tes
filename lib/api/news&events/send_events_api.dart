@@ -12,6 +12,7 @@ Future<dynamic> sendEvents(
     required String title,
     required String description,
     required DateTime eventDate,
+    required String eventsId,
     required String link,
     required String eventTime,
     required List<String> classIds}) async {
@@ -37,6 +38,8 @@ Future<dynamic> sendEvents(
   request.fields["event_date"] = eventDates;
   request.fields["event_time"] = eventTime;
   request.fields["youtube_link"] = link;
+
+  if (eventsId != '') request.fields['newsevents_id'] = eventsId;
 
   request.headers.putIfAbsent('Authorization', () => "Bearer $token");
   try {

@@ -21,6 +21,7 @@ class ConfigList {
 }
 
 class Configuration {
+  bool division;
   bool classes;
   bool sections;
   bool mapClassesSections;
@@ -31,6 +32,7 @@ class Configuration {
   bool students;
 
   Configuration({
+    required this.division,
     required this.classes,
     required this.sections,
     required this.mapClassesSections,
@@ -42,6 +44,7 @@ class Configuration {
   });
 
   factory Configuration.fromJson(Map<String, dynamic> json) => Configuration(
+        division: json['division'],
         classes: json["classes"],
         sections: json["sections"],
         mapClassesSections: json["map_classes_sections"],
@@ -53,6 +56,7 @@ class Configuration {
       );
 
   Map<String, dynamic> toJson() => {
+        'division': division,
         "classes": classes,
         "sections": sections,
         "map_classes_sections": mapClassesSections,

@@ -156,16 +156,15 @@ class _RegisterPageState extends State<RegisterPage> {
                       keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.next,
                       textAlignVertical: TextAlignVertical.center,
-                      //readOnly: true,
+                      maxLength: 10,
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.all(17),
                         border: InputBorder.none,
-                        //fillColor: Colors.grey[300],
                         filled: true,
                         hintText: 'Contact No',
+                        counterText: "",
                         prefixIcon: Icon(
                           Icons.contact_phone,
-                          // size: 4 * SizeConfig.heightMultiplier,
                           color: Colors.blue.withOpacity(0.8),
                         ),
                       ),

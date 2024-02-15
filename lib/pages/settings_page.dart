@@ -58,7 +58,7 @@ class _SettingsPageState extends State<SettingsPage> {
             {
               "name": "Division",
               "pages": const DivisionWidget(),
-              "config": true
+              "config": configuration.division
             },
             {
               "name": "Sections",

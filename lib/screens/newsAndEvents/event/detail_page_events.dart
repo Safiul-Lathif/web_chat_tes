@@ -9,9 +9,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:ui/api/news&events/event_accept_decline_api.dart';
 import 'package:ui/api/news&events/single_news_event.dart';
+import 'package:ui/config/const.dart';
 import 'package:ui/custom/detail_page_image.dart';
 import 'package:ui/custom/loading_animator.dart';
 import 'package:ui/model/news&events/single_news_events_model.dart';
+import 'package:ui/screens/newsAndEvents/event/add_event_form.dart';
 import 'package:ui/utils/session_management.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -24,10 +26,12 @@ class DetailsPageEvents extends StatefulWidget {
       {super.key,
       required this.isPast,
       required this.eventId,
-      required this.accessiblePerson});
+      required this.accessiblePerson,
+      required this.callBack});
   bool isPast;
   String eventId;
   bool accessiblePerson;
+  Function callBack;
   @override
   State<DetailsPageEvents> createState() => _DetailsPageEventsState();
 }
@@ -98,6 +102,25 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
     return true;
   }
 
+  Future<bool> editEvents() async {
+    return await showDialog(
+            context: context,
+            builder: (context) => Material(
+                  type: MaterialType.transparency,
+                  child: Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      height: MediaQuery.of(context).size.height * 0.65,
+                      child: AddEventForm(
+                        callback: getIndividualEvent,
+                        eventFeed: eventFeed,
+                      ),
+                    ),
+                  ),
+                )) ??
+        false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,7 +156,7 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                           child: CircleAvatar(
                             backgroundColor: Colors.white70,
                             child: IconButton(
-                                onPressed: () => Navigator.pop(context),
+                                onPressed: () => widget.callBack(),
                                 icon: const Icon(
                                   Icons.arrow_back_ios_new,
                                   color: Colors.black,
@@ -211,7 +234,7 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                         eventFeed.declined == 0
                                             ? "Declined"
                                             : "Declined (${eventFeed.declined.toString()})",
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           color: Colors.white,
                                         ),
                                       ),
@@ -283,98 +306,13 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                             const SizedBox(
                               width: 10,
                             ),
-                            // IconButton(
-                            //     padding: const EdgeInsets.all(5),
-                            //     constraints: const BoxConstraints(),
-                            //     onPressed: () async {
-                            //       List<String> paths = [];
-                            //       var path = '';
-                            //       HapticFeedback.vibrate();
-                            //       for (int i = 0;
-                            //           i < eventFeed.images.length;
-                            //           i++) {
-                            //         final url =
-                            //             Uri.parse(eventFeed.images[i]);
-                            //         final response = await http.get(url);
-                            //         final bytes = response.bodyBytes;
-                            //         final temp = await getTemporaryDirectory();
-                            //         path = '${temp.path}/Image$i.jpg';
-                            //         paths.add(path);
-                            //         File(paths[i]).writeAsBytes(bytes);
-                            //       }
-                            //       await Share.shareFiles(paths,
-                            //           text: eventFeed.description == ''
-                            //               ? "Title: ${eventFeed.title}"
-                            //               : "Title: ${eventFeed.title} \nDescription:${eventFeed.description}");
-                            //     },
-                            //     icon: const Icon(
-                            //       Icons.share,
-                            //     )),
-                            PopupMenuButton<int>(
-                              padding: const EdgeInsets.only(
-                                  top: 5, left: 5, right: 10, bottom: 5),
-                              icon: const Icon(
-                                Icons.share,
-                                size: 27,
-                              ),
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  onTap: () async {
-                                    List<String> paths = [];
-                                    var path = '';
-                                    setState(() {
-                                      path = '';
-                                      paths.clear();
-                                    });
-                                    HapticFeedback.vibrate();
-                                    for (int i = 0;
-                                        i < eventFeed.images.length;
-                                        i++) {
-                                      final url =
-                                          Uri.parse(eventFeed.images[i].image);
-                                      final response = await http.get(url);
-                                      final bytes = response.bodyBytes;
-                                      final temp =
-                                          await getTemporaryDirectory();
-                                      path = '${temp.path}/Image$i.jpg';
-                                      paths.add(path);
-                                      File(paths[i]).writeAsBytes(bytes);
-                                    }
-                                    await Share.shareFiles(
-                                      paths,
-                                    );
-                                  },
-                                  value: 1,
-                                  child: const Text("Send All Image"),
-                                ),
-                                PopupMenuItem(
-                                  onTap: () async {
-                                    List<String> paths = [];
-                                    var path = '';
-                                    setState(() {
-                                      path = '';
-                                      paths.clear();
-                                    });
-                                    HapticFeedback.vibrate();
-                                    final url =
-                                        Uri.parse(eventFeed.images[0].image);
-                                    final response = await http.get(url);
-                                    final bytes = response.bodyBytes;
-                                    final temp = await getTemporaryDirectory();
-                                    path = '${temp.path}/Image.jpg';
-                                    paths.add(path);
-                                    File(path).writeAsBytes(bytes);
-
-                                    await Share.shareFiles(paths,
-                                        text: eventFeed.description == ''
-                                            ? "Title: ${eventFeed.title}"
-                                            : "Title: ${eventFeed.title} \nDescription:${eventFeed.description}");
-                                  },
-                                  value: 2,
-                                  child: const Text("Send Content"),
-                                ),
-                              ],
-                            ),
+                            widget.isPast || !widget.accessiblePerson
+                                ? Container()
+                                : READ_ACCESS
+                                    ? IconButton(
+                                        onPressed: () => editEvents(),
+                                        icon: const Icon(Icons.edit))
+                                    : Container(),
                           ],
                         ),
                       ),
@@ -443,30 +381,8 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                     const BorderRadius.all(Radius.circular(20)),
                                 child: InkWell(
                                   onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return YoutubePlayer(
-                                          controller: YoutubePlayerController(
-                                            initialVideoId:
-                                                "${YoutubePlayer.convertUrlToId(eventFeed.youtubeLink)}",
-                                            flags: const YoutubePlayerFlags(
-                                              enableCaption: true,
-                                              captionLanguage: 'en',
-                                            ),
-                                          ),
-                                          liveUIColor: Colors.amber,
-                                          showVideoProgressIndicator: true,
-                                          bottomActions: [
-                                            CurrentPosition(),
-                                            ProgressBar(
-                                              isExpanded: true,
-                                            ),
-                                            const PlaybackSpeedButton()
-                                          ],
-                                        );
-                                      },
-                                    );
+                                    launchUrl(Uri.parse(eventFeed.youtubeLink),
+                                        mode: LaunchMode.externalApplication);
                                   },
                                   child: Container(
                                       height: 200,

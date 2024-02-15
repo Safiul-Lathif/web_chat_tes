@@ -21,6 +21,7 @@ Future<dynamic> addEditClass(
   try {
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
+    print("$map ${response.statusCode}");
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
