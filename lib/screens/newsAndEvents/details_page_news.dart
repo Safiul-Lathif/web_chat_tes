@@ -11,7 +11,9 @@ import 'package:ui/Utils/Utility.dart';
 import 'package:ui/api/news&events/like_dislike_api.dart';
 import 'package:ui/custom/detail_page_image.dart';
 import 'package:ui/custom/loading_animator.dart';
+import 'package:ui/model/news&events/news_data_model.dart';
 import 'package:ui/model/news&events/single_news_events_model.dart';
+import 'package:ui/screens/newsAndEvents/news/add_news_form.dart';
 import 'package:ui/utils/session_management.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -89,6 +91,31 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
 
   int itemIndex = 0;
 
+  Future<bool> editNews() async {
+    return await showDialog(
+            context: context,
+            builder: (context) => Material(
+                  type: MaterialType.transparency,
+                  child: Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      height: MediaQuery.of(context).size.height * 0.65,
+                      child: AddNewsForm(
+                        callback: getNewsIndividual,
+                        newsEventsData: NewsEventsData(
+                            newsFeed.title,
+                            newsFeed.description,
+                            newsFeed.youtubeLink,
+                            newsFeed.images,
+                            newsFeed.visibility,
+                            newsFeed.id.toString()),
+                      ),
+                    ),
+                  ),
+                )) ??
+        false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -157,6 +184,9 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                           Row(
                             children: [
                               IconButton(
+                                  onPressed: () => editNews(),
+                                  icon: const Icon(Icons.edit)),
+                              IconButton(
                                   padding: const EdgeInsets.only(
                                       top: 5, left: 5, right: 10, bottom: 5),
                                   constraints: const BoxConstraints(),
@@ -215,85 +245,6 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                                 ),
                             ],
                           ),
-                          Row(
-                            children: [
-                              PopupMenuButton<int>(
-                                padding: const EdgeInsets.only(
-                                    top: 5, left: 5, right: 10, bottom: 5),
-                                icon: const Icon(
-                                  Icons.share,
-                                  size: 27,
-                                ),
-                                itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                    onTap: () async {
-                                      List<String> paths = [];
-                                      var path = '';
-                                      setState(() {
-                                        path = '';
-                                        paths.clear();
-                                      });
-                                      HapticFeedback.vibrate();
-                                      for (int i = 0;
-                                          i < newsFeed.images.length;
-                                          i++) {
-                                        final url =
-                                            Uri.parse(newsFeed.images[i].image);
-                                        final response = await http.get(url);
-                                        final bytes = response.bodyBytes;
-                                        final temp =
-                                            await getTemporaryDirectory();
-                                        path = '${temp.path}/Image$i.jpg';
-                                        paths.add(path);
-                                        File(paths[i]).writeAsBytes(bytes);
-                                      }
-                                      await Share.shareFiles(
-                                        paths,
-                                      );
-                                    },
-                                    value: 1,
-                                    child: const Text("Send All Image"),
-                                  ),
-                                  PopupMenuItem(
-                                    onTap: () async {
-                                      List<String> paths = [];
-                                      var path = '';
-                                      setState(() {
-                                        path = '';
-                                        paths.clear();
-                                      });
-                                      HapticFeedback.vibrate();
-                                      final url =
-                                          Uri.parse(newsFeed.images[0].image);
-                                      final response = await http.get(url);
-                                      final bytes = response.bodyBytes;
-                                      final temp =
-                                          await getTemporaryDirectory();
-                                      path = '${temp.path}/Image.jpg';
-                                      paths.add(path);
-                                      File(path).writeAsBytes(bytes);
-
-                                      await Share.shareFiles(paths,
-                                          text: newsFeed.description == ''
-                                              ? "Title: ${newsFeed.title}"
-                                              : "Title: ${newsFeed.title} \nDescription:${newsFeed.description}");
-                                    },
-                                    value: 2,
-                                    child: const Text("Send Content"),
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                "Share",
-                                style: GoogleFonts.lato(
-                                  textStyle: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w400,
-                                      height: 1.6),
-                                ),
-                              ),
-                            ],
-                          ),
                           const SizedBox(
                             width: 20,
                           )
@@ -316,7 +267,7 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                             children: [
                               SizedBox(
                                 height:
-                                    MediaQuery.of(context).size.height * 0.25,
+                                    MediaQuery.of(context).size.height * 0.4,
                                 width: MediaQuery.of(context).size.width,
                                 child: InkWell(
                                   onTap: () {
@@ -356,9 +307,6 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                                           : () {
                                               setState(() {
                                                 itemIndex++;
-
-                                                print(newsFeed.images.length);
-                                                print(itemIndex);
                                               });
                                             },
                                       icon: const Icon(
@@ -378,8 +326,6 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                                           : () {
                                               setState(() {
                                                 itemIndex--;
-                                                print(newsFeed.images.length);
-                                                print(itemIndex);
                                               });
                                             },
                                       icon: const Icon(
@@ -411,33 +357,32 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                                   const BorderRadius.all(Radius.circular(20)),
                               child: InkWell(
                                 onTap: () {
-                                  // setState(() {
-                                  //   playVideo = !playVideo;
-                                  // });
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return YoutubePlayer(
-                                        controller: YoutubePlayerController(
-                                          initialVideoId:
-                                              "${YoutubePlayer.convertUrlToId(newsFeed.youtubeLink)}",
-                                          flags: const YoutubePlayerFlags(
-                                            enableCaption: true,
-                                            captionLanguage: 'en',
-                                          ),
-                                        ),
-                                        liveUIColor: Colors.amber,
-                                        showVideoProgressIndicator: true,
-                                        bottomActions: [
-                                          CurrentPosition(),
-                                          ProgressBar(
-                                            isExpanded: true,
-                                          ),
-                                          const PlaybackSpeedButton()
-                                        ],
-                                      );
-                                    },
-                                  );
+                                  launchUrl(Uri.parse(newsFeed.youtubeLink),
+                                      mode: LaunchMode.externalApplication);
+                                  // showDialog(
+                                  //   context: context,
+                                  //   builder: (context) {
+                                  //     return YoutubePlayer(
+                                  //       controller: YoutubePlayerController(
+                                  //         initialVideoId:
+                                  //             "${YoutubePlayer.convertUrlToId(newsFeed.youtubeLink)}",
+                                  //         flags: const YoutubePlayerFlags(
+                                  //           enableCaption: true,
+                                  //           captionLanguage: 'en',
+                                  //         ),
+                                  //       ),
+                                  //       liveUIColor: Colors.amber,
+                                  //       showVideoProgressIndicator: true,
+                                  //       bottomActions: [
+                                  //         CurrentPosition(),
+                                  //         ProgressBar(
+                                  //           isExpanded: true,
+                                  //         ),
+                                  //         const PlaybackSpeedButton()
+                                  //       ],
+                                  //     );
+                                  //   },
+                                  // );
                                 },
                                 child: Container(
                                     height: 200,

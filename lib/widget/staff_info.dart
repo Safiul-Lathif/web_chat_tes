@@ -6,11 +6,11 @@ import 'package:ui/model/search/staff_list_model.dart';
 import 'package:ui/utils/utils_file.dart';
 
 class StaffProfileInfo extends StatefulWidget {
-  final StaffSearchList staffProfile;
+  final StaffSearchList? staffProfile;
   final ProfileModel profileModel;
 
   const StaffProfileInfo(
-      {super.key, required this.staffProfile, required this.profileModel});
+      {super.key, this.staffProfile, required this.profileModel});
 
   @override
   State<StaffProfileInfo> createState() => _StaffProfileInfoState();
@@ -94,7 +94,7 @@ class _StaffProfileInfoState extends State<StaffProfileInfo> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          widget.staffProfile.firstName,
+                          widget.profileModel.name,
                           style: const TextStyle(
                               color: Color(0xff575757),
                               fontSize: 15,
@@ -170,8 +170,8 @@ class _StaffProfileInfoState extends State<StaffProfileInfo> {
                                       fontWeight: FontWeight.bold,
                                       color: Color(0xff575757)),
                                 ),
-                                subtitle: Text(widget.staffProfile.mobileNumber
-                                    .toString()),
+                                subtitle: Text(
+                                    widget.profileModel.mobileNo.toString()),
                               ),
                             ),
                             // ticket no :- 92
@@ -226,7 +226,7 @@ class _StaffProfileInfoState extends State<StaffProfileInfo> {
                                         color: Color(0xff575757)),
                                   ),
                                   subtitle: Text(
-                                    widget.staffProfile.userCategory,
+                                    widget.profileModel.designation.toString(),
                                     softWrap: true,
                                     style: const TextStyle(
                                       color: Color(0xff575757),

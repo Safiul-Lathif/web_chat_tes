@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:ui/Utils/utility.dart';
 import 'package:ui/api/categoryListAPI.dart';
+import 'package:ui/api/profile_api.dart';
 import 'package:ui/api/settings/index.dart';
 import 'package:ui/api/excelAPiservice.dart';
 import 'package:ui/api/settings/staff.dart';
@@ -13,7 +14,10 @@ import 'package:ui/controllers/image_controller.dart';
 import 'package:ui/custom/loading_animator.dart';
 import 'package:ui/model/categorylistModel.dart';
 import 'package:ui/model/fetch_staff_model.dart';
+import 'package:ui/model/profile_model.dart';
+import 'package:ui/model/search/staff_list_model.dart';
 import 'package:ui/model/settings/index.dart';
+import 'package:ui/widget/staff_info.dart';
 
 class StaffWidget extends StatefulWidget {
   const StaffWidget({super.key});
@@ -193,15 +197,33 @@ class _StaffWidgetState extends State<StaffWidget> {
         selectedDate = picked;
         switch (field) {
           case 'dob':
-            staff.dob = DateFormat('yyyy-MM-dd').format(selectedDate);
+            staff.dob = DateFormat('dd-MM-yyyy').format(selectedDate);
             _dobController.text = staff.dob;
             break;
           case 'doj':
-            staff.doj = DateFormat('yyyy-MM-dd').format(selectedDate);
+            staff.doj = DateFormat('dd-MM-yyyy').format(selectedDate);
             _dojController.text = staff.doj;
         }
       });
     }
+  }
+
+  Future<bool> staffProfileInfo(
+    ProfileModel profile,
+  ) async {
+    return await showDialog(
+            context: context,
+            builder: (context) => Material(
+                  type: MaterialType.transparency,
+                  child: Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: StaffProfileInfo(profileModel: profile),
+                    ),
+                  ),
+                )) ??
+        false;
   }
 
   @override
@@ -289,23 +311,52 @@ class _StaffWidgetState extends State<StaffWidget> {
                                             child: Column(children: [
                                           InkWell(
                                             onTap: () async {
-                                              await StaffController()
-                                                  .deleteStaff(
-                                                      staffId:
-                                                          staff.id.toString())
-                                                  .then((value) {
-                                                fetchAllStaff();
-                                                if (value != null) {
-                                                  Navigator.pop(context);
-                                                  Utility.displaySnackBar(
-                                                      context,
-                                                      "Delete Successfully");
-                                                } else {
-                                                  Navigator.pop(context);
-                                                  Utility.displaySnackBar(
-                                                      context, "Not Deleted");
-                                                }
-                                              });
+                                              Navigator.pop(context);
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    title: const Text(
+                                                        "Do you want to Delete this User"),
+                                                    actions: [
+                                                      TextButton(
+                                                          onPressed: () async {
+                                                            await StaffController()
+                                                                .deleteStaff(
+                                                                    staffId: staff
+                                                                        .id
+                                                                        .toString())
+                                                                .then((value) {
+                                                              fetchAllStaff();
+                                                              if (value !=
+                                                                  null) {
+                                                                Navigator.pop(
+                                                                    context);
+                                                                Utility.displaySnackBar(
+                                                                    context,
+                                                                    "Delete Successfully");
+                                                              } else {
+                                                                Navigator.pop(
+                                                                    context);
+                                                                Utility.displaySnackBar(
+                                                                    context,
+                                                                    "Not Deleted");
+                                                              }
+                                                            });
+                                                          },
+                                                          child: const Text(
+                                                              "Yes")),
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          child:
+                                                              const Text("No"))
+                                                    ],
+                                                  );
+                                                },
+                                              );
                                             },
                                             child: Container(
                                                 width: double.infinity,
@@ -330,9 +381,7 @@ class _StaffWidgetState extends State<StaffWidget> {
                                                 isEdit = true;
                                                 Navigator.pop(context);
                                               });
-                                              print(FetchStaffList
-                                                  .singleStaffData
-                                                  .toJson());
+
                                               addEditPopUp(FetchStaffList
                                                   .singleStaffData);
                                             },
@@ -343,6 +392,27 @@ class _StaffWidgetState extends State<StaffWidget> {
                                                 child: Center(
                                                   child: Text(
                                                       "Edit ${staff.firstName}"),
+                                                )),
+                                          ),
+                                          InkWell(
+                                            onTap: () async {
+                                              await getProfile(
+                                                      id: staff.id.toString(),
+                                                      role: "2",
+                                                      studentId: '')
+                                                  .then((value) {
+                                                if (value != null) {
+                                                  staffProfileInfo(value);
+                                                }
+                                              });
+                                            },
+                                            child: Container(
+                                                width: double.infinity,
+                                                padding: const EdgeInsets.only(
+                                                    top: 10, bottom: 10),
+                                                child: Center(
+                                                  child: Text(
+                                                      "View ${staff.firstName}"),
                                                 )),
                                           ),
                                         ])));
@@ -607,7 +677,9 @@ class _StaffWidgetState extends State<StaffWidget> {
                           singleStaffData.mobileNumber = int.parse(value!);
                         });
                       },
-                      initialValue: singleStaffData.mobileNumber.toString(),
+                      initialValue: singleStaffData.mobileNumber == 0
+                          ? null
+                          : singleStaffData.mobileNumber.toString(),
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                           border: const OutlineInputBorder(

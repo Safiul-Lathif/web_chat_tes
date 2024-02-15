@@ -1,6 +1,4 @@
 // ignore_for_file: must_be_immutable, deprecated_member_use
-import 'dart:io';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -57,29 +55,55 @@ class _DetailScreenState extends State<PhotoViewPage> {
         ),
         body: Container(
             child: widget.images.length != 1
-                ? Center(
-                    child: CarouselSlider(
-                      items: List.generate(widget.images.length, (index) {
-                        return RotatedBox(
-                          quarterTurns: angle,
-                          child: SingleImageView(
-                            image: widget.images[index],
+                ? SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: RotatedBox(
+                      quarterTurns: angle,
+                      child: Stack(
+                        children: [
+                          SingleImageView(
+                            image: widget.images[currentPage],
                           ),
-                        );
-                      }).toList(),
-                      options: CarouselOptions(
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              currentPage = index;
-                              angle = 0;
-                            });
-                          },
-                          viewportFraction: 1,
-                          height: MediaQuery.of(context).size.height,
-                          initialPage: 0),
-                      carouselController: _controller,
-                    ),
-                  )
+                          if (currentPage != 0)
+                            Positioned(
+                              left: 10,
+                              bottom: MediaQuery.of(context).size.height * 0.4,
+                              child: CircleAvatar(
+                                backgroundColor: Colors.white,
+                                child: IconButton(
+                                    onPressed: () => setState(() {
+                                          currentPage--;
+                                          angle = 0;
+                                        }),
+                                    icon: const Icon(
+                                      Icons.arrow_back_ios_new,
+                                      color: Colors.black,
+                                    )),
+                              ),
+                            ),
+                          currentPage >= widget.images.length - 1
+                              ? Container()
+                              : Positioned(
+                                  right: 10,
+                                  bottom:
+                                      MediaQuery.of(context).size.height * 0.4,
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    child: IconButton(
+                                        onPressed: () => setState(() {
+                                              currentPage++;
+                                              angle = 0;
+                                            }),
+                                        icon: const Icon(
+                                          Icons.arrow_forward_ios_outlined,
+                                          color: Colors.black,
+                                        )),
+                                  ),
+                                )
+                        ],
+                      ),
+                    ))
                 : RotatedBox(
                     quarterTurns: angle,
                     child: SingleImageView(

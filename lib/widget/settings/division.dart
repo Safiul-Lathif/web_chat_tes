@@ -94,7 +94,7 @@ class _DivisionWidgetState extends State<DivisionWidget> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.green,
         onPressed: () {
-          addEditPopUp(false, Division(id: 0, divisionName: ''));
+          addEditPopUp(true, Division(id: 0, divisionName: ''));
         },
         icon: const Icon(Icons.add),
         label: const Text("Add Division"),

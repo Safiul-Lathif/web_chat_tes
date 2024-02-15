@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
-import 'package:image_picker/image_picker.dart';
-
 import 'package:http/http.dart' as http;
 import 'package:ui/config/strings.dart';
 import 'package:ui/utils/session_management.dart';
@@ -12,6 +10,7 @@ Future<dynamic> sendNewsText(
     {required String title,
     required String msgCategory,
     required String description,
+    required String newsId,
     required String link,
     required List<String> classIds}) async {
   var url = Uri.parse("${Strings.baseURL}api/user/store_news_events");
@@ -27,6 +26,7 @@ Future<dynamic> sendNewsText(
   map["description"] = description;
   map["news_events_category"] = msgCategory;
   map['youtube_link'] = link;
+  if (newsId != '') map['newsevents_id'] = newsId;
 
   try {
     final response = await http.post(url, body: map, headers: {
@@ -53,6 +53,7 @@ Future<dynamic> sendNewsWithImage(
     {required List<PlatformFile> img,
     required String title,
     required String description,
+    required String newsId,
     required String link,
     required List<String> classIds}) async {
   var url = Uri.parse("${Strings.baseURL}api/user/store_news_events");
@@ -73,6 +74,8 @@ Future<dynamic> sendNewsWithImage(
   request.fields["description"] = description;
   request.fields["youtube_link"] = link;
   request.fields["news_events_category"] = description == '' ? '2' : '3';
+  if (newsId != '') request.fields['newsevents_id'] = newsId;
+
   request.headers.putIfAbsent('Authorization', () => "Bearer $token");
   try {
     final response = await request.send();
@@ -98,6 +101,7 @@ Future<dynamic> sendNewsWithMultiImage(
     {required List<PlatformFile> img,
     required String title,
     required String description,
+    required String newsId,
     required String link,
     required List<String> classIds}) async {
   var url = Uri.parse("${Strings.baseURL}api/user/store_news_events");
@@ -118,6 +122,8 @@ Future<dynamic> sendNewsWithMultiImage(
   request.fields["description"] = description;
   request.fields["youtube_link"] = link;
   request.fields["news_events_category"] = description == '' ? '4' : '5';
+  if (newsId != '') request.fields['newsevents_id'] = newsId;
+
   request.headers.putIfAbsent('Authorization', () => "Bearer $token");
   try {
     final response = await request.send();

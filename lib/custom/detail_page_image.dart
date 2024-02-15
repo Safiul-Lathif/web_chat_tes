@@ -94,7 +94,7 @@ class _DetailScreenState extends State<DetailScreen> {
           title: ListTile(
             contentPadding: const EdgeInsets.all(0),
             title: Text(
-              "${widget.title} -Image(${currentPage + 1}/${widget.images.length})",
+              "${widget.title}-Image(${currentPage + 1}/${widget.images.length})",
               overflow: TextOverflow.ellipsis,
             ),
             subtitle: Text(
@@ -114,21 +114,6 @@ class _DetailScreenState extends State<DetailScreen> {
                   color: Colors.black,
                 ),
                 itemBuilder: (context) => [
-                      PopupMenuItem(
-                          onTap: () async {
-                            // HapticFeedback.vibrate();
-                            // var path = '';
-                            // final url = Uri.parse(widget.images[currentPage]);
-                            // final response = await http.get(url);
-                            // final bytes = response.bodyBytes;
-                            // final temp = await getTemporaryDirectory();
-                            // path = '${temp.path}/Image.jpg';
-                            // File(path).writeAsBytes(bytes);
-                            // await Share.shareFiles(
-                            //   [path],
-                            // );
-                          },
-                          child: const Text("Share")),
                       PopupMenuItem(
                           onTap: () =>
                               _saveImage(context, widget.images[currentPage]),
@@ -165,10 +150,6 @@ class _DetailScreenState extends State<DetailScreen> {
                           child: const Text("Rotate")),
                     ]),
           ),
-          //  Text(
-          //   "Image(${currentPage + 1}/${widget.images.length})",
-          //   style: const TextStyle(color: Colors.black),
-          // ),
           elevation: 0,
           backgroundColor: Colors.blue.shade50,
         ),
@@ -183,29 +164,55 @@ class _DetailScreenState extends State<DetailScreen> {
                   fit: BoxFit.cover,
                 )),
             child: widget.images.length != 1
-                ? Center(
-                    child: CarouselSlider(
-                      items: List.generate(widget.images.length, (index) {
-                        return RotatedBox(
-                          quarterTurns: angle,
-                          child: SingleImageView(
-                            image: widget.images[index],
+                ? SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: RotatedBox(
+                      quarterTurns: angle,
+                      child: Stack(
+                        children: [
+                          SingleImageView(
+                            image: widget.images[currentPage],
                           ),
-                        );
-                      }).toList(),
-                      options: CarouselOptions(
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              currentPage = index;
-                              angle = 0;
-                            });
-                          },
-                          viewportFraction: 1,
-                          height: MediaQuery.of(context).size.height,
-                          initialPage: widget.index),
-                      carouselController: _controller,
-                    ),
-                  )
+                          if (currentPage != 0)
+                            Positioned(
+                              left: 10,
+                              bottom: MediaQuery.of(context).size.height * 0.4,
+                              child: CircleAvatar(
+                                backgroundColor: Colors.black26,
+                                child: IconButton(
+                                    onPressed: () => setState(() {
+                                          currentPage--;
+                                          angle = 0;
+                                        }),
+                                    icon: const Icon(
+                                      Icons.arrow_back_ios_new,
+                                      color: Colors.white,
+                                    )),
+                              ),
+                            ),
+                          currentPage >= widget.images.length - 1
+                              ? Container()
+                              : Positioned(
+                                  right: 10,
+                                  bottom:
+                                      MediaQuery.of(context).size.height * 0.4,
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.black26,
+                                    child: IconButton(
+                                        onPressed: () => setState(() {
+                                              currentPage++;
+                                              angle = 0;
+                                            }),
+                                        icon: const Icon(
+                                          Icons.arrow_forward_ios_outlined,
+                                          color: Colors.white,
+                                        )),
+                                  ),
+                                )
+                        ],
+                      ),
+                    ))
                 : RotatedBox(
                     quarterTurns: angle,
                     child: SingleImageView(
