@@ -17,7 +17,7 @@ Future<StudentInfo?> getSingleStudentProfile({required String id}) async {
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      print(response.body);
+
       return StudentInfo.fromJson(jsonResponse);
     } else {
       print('profile:Request failed with status: ${response.statusCode}.');

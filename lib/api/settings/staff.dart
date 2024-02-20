@@ -55,7 +55,7 @@ class StaffController {
       });
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        print(response.body);
+
         return FetchStaffList.fromJson(jsonResponse);
       } else {
         print('Request failed with status: ${response.body}.');
@@ -98,13 +98,12 @@ class StaffController {
       map["data[0][teacher_class_config][i][subject_id]"] =
           staffList.subjectTeacher[i].subject.toString();
     }
-    print(map);
+
     try {
       final response = await http.post(createStaffUrl,
           body: map,
           headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
       if (response.statusCode == 200) {
-        print(response.body);
         return jsonDecode(response.body);
       } else {
         print('Request failed with status: ${response.statusCode}.');
@@ -147,13 +146,12 @@ class StaffController {
       map['teacher_class_config'][i]['subject_id'] =
           staffList.subjectTeacher[i].subject.toString();
     }
-    print(map);
+
     try {
       final response = await http.post(editStaffUrl,
           body: map,
           headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
       if (response.statusCode == 200) {
-        print(response.body);
         return jsonDecode(response.body);
       } else {
         print('Request failed with status: ${response.statusCode}.');
@@ -176,8 +174,6 @@ class StaffController {
           body: map,
           headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
       if (response.statusCode == 200) {
-        print(response.body);
-
         return jsonDecode(response.body);
       } else {
         print('Onboarding Request failed with status: ${response.statusCode}.');

@@ -169,10 +169,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               ),
               Positioned(
                   top: 0,
-                  right: 0,
+                  right: 10,
                   child: IconButton(
                       onPressed: () => widget.callback!(),
-                      icon: const Icon(Icons.close)))
+                      icon: const Icon(
+                        Icons.close,
+                        size: 30,
+                      )))
             ],
           )),
     ));

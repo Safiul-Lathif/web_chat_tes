@@ -19,9 +19,7 @@ Future<dynamic> likeDislikeNews(
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      if (kDebugMode) {
-        print(response.body);
-      }
+      if (kDebugMode) {}
       return jsonDecode(response.body);
     } else {
       if (kDebugMode) {

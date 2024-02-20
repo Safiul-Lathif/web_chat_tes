@@ -15,7 +15,7 @@ Future<NewsFeed?> getNewsFeed() async {
         .get(url, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      print(response.body);
+
       return NewsFeed.fromJson(jsonResponse);
     } else {
       if (kDebugMode) {

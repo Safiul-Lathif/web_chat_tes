@@ -19,7 +19,6 @@ Future<dynamic> deleteAttachments(
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      print(response.body);
       return jsonDecode(response.body);
     } else {
       if (kDebugMode) {

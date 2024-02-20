@@ -18,7 +18,7 @@ Future<List<ManagementList>?> getManagementList() async {
     });
     if (response.statusCode == 200) {
       List jsonResponse = jsonDecode(response.body);
-      print(response.body);
+
       return jsonResponse.map((json) => ManagementList.fromJson(json)).toList();
     } else {
       print('Request failed with status: ${response.statusCode}.');

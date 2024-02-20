@@ -21,7 +21,6 @@ Future<dynamic> updateAttendanceList({
   map["class_config"] = classConfig;
 
   try {
-    print(map);
     final response = await http.post(url, body: map, headers: {
       HttpHeaders.authorizationHeader: 'Bearer $token',
     });

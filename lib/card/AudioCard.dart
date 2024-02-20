@@ -224,7 +224,7 @@ class _AudioCardState extends State<AudioCard> {
                                                       .contains("http://")
                                                   ? widget.data.images![0]
                                                   : "https://${widget.data.images![0]}";
-                                      print(url);
+
                                       setState(() {
                                         playing = !playing;
                                       });
@@ -440,13 +440,13 @@ class _AudioCardState extends State<AudioCard> {
                                                         .contains("http://")
                                                     ? widget.data.images![0]
                                                     : "https://${widget.data.images![0]}";
-                                        print(url);
+
                                         setState(() {
                                           playing = !playing;
                                         });
                                         if (playing) {
                                           var res = await audioPlayer.play(url);
-                                          print(url);
+
                                           if (res == 1) {
                                             setState(() {
                                               playing = true;

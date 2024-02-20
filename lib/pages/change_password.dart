@@ -60,7 +60,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                             SizedBox(
                               width: MediaQuery.of(context).size.width * 0.9,
                               child: const Text(
-                                "Don't worry we wil follow this method to Change Password",
+                                "Don't worry we will follow this method to Change Password",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(fontSize: 16),
                               ),
@@ -205,7 +205,10 @@ class _ChangePasswordState extends State<ChangePassword> {
                     right: 0,
                     child: IconButton(
                         onPressed: () => widget.callback!(),
-                        icon: const Icon(Icons.close)))
+                        icon: const Icon(
+                          Icons.close,
+                          size: 30,
+                        )))
               ],
             )),
       )),

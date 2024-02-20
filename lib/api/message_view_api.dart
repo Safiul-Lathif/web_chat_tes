@@ -12,7 +12,6 @@ Future<MessageView?> getMsgFeed(String id) async {
 
   var map = <String, dynamic>{};
   map["group_id"] = id;
-  print(token);
 
   try {
     final response = await http.post(url,

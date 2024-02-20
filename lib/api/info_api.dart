@@ -20,7 +20,7 @@ Future<Info?> getInfo(
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      print(response.body);
+
       return Info.fromJson(jsonResponse);
       // return jsonDecode(response.body);
     } else {

@@ -14,7 +14,7 @@ Future<Dashboard?> getDashboardDetails() async {
         .get(url, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      print(response.body);
+
       return Dashboard.fromJson(jsonResponse);
     } else {
       print('Dashboard:Request failed with status: ${response.statusCode}.');

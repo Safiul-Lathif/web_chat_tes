@@ -22,11 +22,9 @@ Future<dynamic> addEditSubject(
   if (subjectId != 0) map["subject[0][subject_id]"] = subjectId.toString();
 
   try {
-    print(map);
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      print(response.body);
       return jsonDecode(response.body);
     } else {
       print(
@@ -53,7 +51,7 @@ Future<List<Subjects>?> getSubjectsList({required String divId}) async {
     });
     if (response.statusCode == 200) {
       List jsonResponse = jsonDecode(response.body);
-      log(response.body);
+
       return jsonResponse.map((json) => Subjects.fromJson(json)).toList();
     } else {
       log('get subject: Request failed with status: ${response.statusCode}.');
@@ -80,7 +78,6 @@ Future<dynamic> deleteSubject(
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      log(response.body);
       return jsonDecode(response.body);
     } else {
       log('Delete subject Request failed with status: ${response.statusCode}.');

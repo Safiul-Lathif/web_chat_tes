@@ -19,7 +19,7 @@ Future<SingleNewsEvents?> getSingleNews(String id) async {
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      print(response.body);
+
       return SingleNewsEvents.fromJson(jsonResponse);
     } else {
       print(
@@ -73,7 +73,7 @@ Future<SingleEvent?> getSingleEvent(String id) async {
 //     if (response.statusCode == 200) {
 //       final jsonResponse = jsonDecode(response.body);
 //       if (kDebugMode) {
-//         print(response.body);
+//         
 //       }
 //       return UpcomingEvent.fromJson(jsonResponse);
 //     } else {

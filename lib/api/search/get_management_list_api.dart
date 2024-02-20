@@ -20,7 +20,7 @@ Future<SearchManagementModel?> getManagementList(int pageNumber) async {
         headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      print(response.body);
+
       return SearchManagementModel.fromJson(jsonResponse);
     } else {
       print('management:- Request failed with status: ${response.statusCode}.');

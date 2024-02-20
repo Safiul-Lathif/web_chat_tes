@@ -22,11 +22,9 @@ Future<dynamic> addEditSection(
   map["sections[0][section_name]"] = sectionName;
   if (sectionId != 0) map["sections[0][section_id]"] = sectionId.toString();
   try {
-    print(map);
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      print(response.body);
       return jsonDecode(response.body);
     } else {
       print(
@@ -79,8 +77,6 @@ Future<dynamic> deleteSection(
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      log(response.body);
-
       return jsonDecode(response.body);
     } else {
       log('Onboarding Request failed with status: ${response.statusCode}.');

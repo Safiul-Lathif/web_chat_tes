@@ -14,13 +14,11 @@ Future<NewsFeedMain?> getNewsFeed(
       : "${Strings.baseURL}api/v2/mainscreen_view_newsevents?student_id=$studentId&page=$pageNumber");
   SessionManager pref = SessionManager();
   String? token = await pref.getAuthToken();
-  print(token);
 
   try {
     final response = await http
         .get(url, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      print(response.body);
       final jsonResponse = jsonDecode(response.body);
       return NewsFeedMain.fromJson(jsonResponse);
     } else {

@@ -27,7 +27,6 @@ Future<Login?> login(
       body: map,
     );
     if (response.statusCode == 200) {
-      print(response.body);
       final jsonResponse = jsonDecode(response.body);
       return Login.fromJson(jsonResponse);
     } else {
@@ -53,7 +52,6 @@ Future<dynamic> forgotOtp(
       body: map,
     );
     if (response.statusCode == 200) {
-      print(response.body);
       return jsonDecode(response.body);
     } else {
       print('Request failed with status: ${response.statusCode}.');
@@ -81,7 +79,6 @@ Future<dynamic> changePassword(
       body: map,
     );
     if (response.statusCode == 200) {
-      print(response.body);
       return jsonDecode(response.body);
     } else {
       print('Request failed with status: ${response.statusCode}.');
@@ -109,7 +106,6 @@ Future<dynamic> resetPassword(
       body: map,
     );
     if (response.statusCode == 200) {
-      print(response.body);
       return jsonDecode(response.body);
     } else {
       print('Request failed with status: ${response.statusCode}.');
@@ -162,7 +158,6 @@ Future<dynamic> otpLogin(
       body: map,
     );
     if (response.statusCode == 200) {
-      print(response.body);
       final jsonResponse = jsonDecode(response.body);
       return jsonResponse;
     } else {

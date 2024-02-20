@@ -307,7 +307,6 @@ Future<dynamic> sendHomework({
     map["ext[$i]"] = fileList[i].extension!;
     map["file_name[$i]"] = fileList[i].name;
   }
-  log("$map");
   try {
     final response = await http.post(url, body: map, headers: {
       HttpHeaders.authorizationHeader: 'Bearer $token',

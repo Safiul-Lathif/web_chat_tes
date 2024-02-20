@@ -23,7 +23,7 @@ Future<List<StaffHomework>?> getStaffHomework(
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       List jsonResponse = jsonDecode(response.body);
-      print(response.body);
+
       return jsonResponse.map((json) => StaffHomework.fromJson(json)).toList();
     } else {
       // ignore: avoid_print

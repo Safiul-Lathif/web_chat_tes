@@ -19,11 +19,9 @@ Future<dynamic> addEditDivision(
   map["divisions[0][division_name]"] = divisionName;
   if (divisionId != 0) map["divisions[0][division_id]"] = divisionId.toString();
   try {
-    print(map);
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      print(response.body);
       return jsonDecode(response.body);
     } else {
       log('create update :Request failed with status: ${response.statusCode}.');
@@ -69,8 +67,6 @@ Future<dynamic> deleteDivision({required String divisionId}) async {
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      log(response.body);
-
       return jsonDecode(response.body);
     } else {
       log('Onboarding Request failed with status: ${response.statusCode}.');

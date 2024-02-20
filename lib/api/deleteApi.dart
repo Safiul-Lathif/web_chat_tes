@@ -27,9 +27,7 @@ Future<dynamic> deleteNotification(
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       //final jsonResponse = jsonDecode(response.body);
-      if (kDebugMode) {
-        print(response.body);
-      }
+      if (kDebugMode) {}
       return jsonDecode(response.body);
     } else {
       print('Request failed with status: ${response.statusCode}.');
@@ -61,7 +59,6 @@ Future<dynamic> onboardingdelete(
     if (response.statusCode == 200) {
       //final jsonResponse = jsonDecode(response.body);
       // ignore: avoid_print
-      print(response.body);
 
       return jsonDecode(response.body);
     } else {
@@ -186,7 +183,6 @@ Future<dynamic> deleteSubject(
     if (response.statusCode == 200) {
       //final jsonResponse = jsonDecode(response.body);
       // ignore: avoid_print
-      print(response.body);
 
       return jsonDecode(response.body);
     } else {
@@ -213,8 +209,6 @@ Future<dynamic> deleteStaff({required String staffId}) async {
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      print(response.body);
-
       return jsonDecode(response.body);
     } else {
       print('Onboarding Request failed with status: ${response.statusCode}.');
@@ -246,7 +240,6 @@ Future<dynamic> deleteManagement({required String managementId}) async {
     if (response.statusCode == 200) {
       //final jsonResponse = jsonDecode(response.body);
       // ignore: avoid_print
-      print(response.body);
 
       return jsonDecode(response.body);
     } else {
@@ -279,7 +272,6 @@ Future<dynamic> deleteStudent({required String divid}) async {
     if (response.statusCode == 200) {
       //final jsonResponse = jsonDecode(response.body);
       // ignore: avoid_print
-      print(response.body);
 
       return jsonDecode(response.body);
     } else {
@@ -312,7 +304,6 @@ Future<dynamic> deleteHomework({required String fileId}) async {
     if (response.statusCode == 200) {
       //final jsonResponse = jsonDecode(response.body);
       // ignore: avoid_print
-      print(response.body);
 
       return jsonDecode(response.body);
     } else {
