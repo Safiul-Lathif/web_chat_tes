@@ -19,7 +19,6 @@ class _ClassWidgetState extends State<ClassWidget> {
   List<ListsClass>? classes;
   int divisionId = 0;
   bool isLoading = true;
-  String className = '';
 
   @override
   void initState() {
@@ -61,7 +60,7 @@ class _ClassWidgetState extends State<ClassWidget> {
                 onPressed: () async {
                   await addEditClass(
                           classId: classList.id,
-                          className: className,
+                          className: classList.className,
                           divId: divisionId.toString())
                       .then((value) {
                     getListOfClass(divisionId);
@@ -76,6 +75,7 @@ class _ClassWidgetState extends State<ClassWidget> {
                 child: const Text("Submit")),
             TextButton(
                 onPressed: () {
+                  getListOfClass(divisionId);
                   Navigator.pop(context);
                 },
                 child: const Text("Cancel"))
@@ -83,7 +83,7 @@ class _ClassWidgetState extends State<ClassWidget> {
           content: FormBuilderTextField(
             onChanged: (value) {
               setState(() {
-                className = value!;
+                classList.className = value!;
               });
             },
             name: 'Classes name',
@@ -290,7 +290,6 @@ class _ClassWidgetState extends State<ClassWidget> {
                       .then((value) {
                     if (value != null) {
                       getListOfClass(divisionId);
-
                       Utility.displaySnackBar(context, "Deleted Successfully");
                     } else {
                       Utility.displaySnackBar(context, "Not Deleted");

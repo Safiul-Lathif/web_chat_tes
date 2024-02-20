@@ -1,3 +1,4 @@
+// ignore_for_file: unnecessary_string_interpolations, avoid_print
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -19,9 +20,10 @@ Future<dynamic> addEditClass(
   map["classes[0][class_name]"] = className;
   if (classId != 0) map["classes[0][class_id]"] = classId.toString();
   try {
+    print("$map ");
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
-    print("$map ${response.statusCode}");
+    print("${response.body}");
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {

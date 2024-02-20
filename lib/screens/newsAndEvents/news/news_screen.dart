@@ -1,4 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, must_be_immutable
+import 'dart:async';
+
 import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -37,6 +39,8 @@ class _NewsScreenState extends State<NewsScreen> {
   int totalCount = 0;
   String newsIds = '';
   String url = 'data';
+  int? selectedIndex;
+  bool isPageSelected = false;
 
   @override
   void initState() {
@@ -95,10 +99,19 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   void navigateToDetailsPage(
-      {required String newsId, required bool accessiblePerson}) {
+      {required String newsId,
+      required bool accessiblePerson,
+      required int index}) {
     setState(() {
+      isPageSelected = false;
       newsIds = newsId;
       isDetailScreen = true;
+      selectedIndex = index;
+    });
+    Timer(const Duration(milliseconds: 100), () {
+      setState(() {
+        isPageSelected = true;
+      });
     });
   }
 
@@ -129,10 +142,231 @@ class _NewsScreenState extends State<NewsScreen> {
   @override
   Widget build(BuildContext context) {
     return isDetailScreen
-        ? DetailsPageNews(
-            accessiblePerson: widget.accessiblePerson,
-            newsId: newsIds,
-            callBack: onBackDetailsPage)
+        ? Row(
+            children: [
+              Expanded(
+                  child: Container(
+                height: MediaQuery.of(context).size.height,
+                decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    image: DecorationImage(
+                        colorFilter: ColorFilter.mode(
+                            Colors.blue.withOpacity(0.2), BlendMode.dstATop),
+                        image: const AssetImage(Images.bgImage),
+                        repeat: ImageRepeat.repeatX)),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const ScrollPhysics(),
+                  padding: const EdgeInsets.all(10),
+                  controller: newsController,
+                  itemCount: oldNews.length + 1,
+                  itemExtent: 200,
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return Container(
+                        padding: const EdgeInsets.all(10.0),
+                        child: InkWell(
+                          onLongPress: widget.accessiblePerson
+                              ? () {
+                                  deleteNewsAlert(
+                                      newsFeed!.latest.id.toString());
+                                }
+                              : null,
+                          onTap: () => navigateToDetailsPage(
+                              index: index,
+                              newsId: newsFeed!.latest.id.toString(),
+                              accessiblePerson: widget.accessiblePerson),
+                          child: Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(15)),
+                                    image: DecorationImage(
+                                      colorFilter: ColorFilter.mode(
+                                          Colors.blue.withOpacity(0.3),
+                                          BlendMode.dstATop),
+                                      image: const AssetImage(
+                                          "assets/images/bg_image_tes.jpg"),
+                                      fit: BoxFit.fill,
+                                    )),
+                                child: ClipRRect(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(15)),
+                                  child: Column(
+                                    children: [
+                                      newsFeed!.latest.images.isEmpty
+                                          ? Container(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                newsFeed!.latest.title
+                                                    .capitalize(),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 2,
+                                                style: GoogleFonts.lato(
+                                                    textStyle: const TextStyle(
+                                                        fontSize: 19,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                              ),
+                                            )
+                                          : Image.network(
+                                              newsFeed!.latest.images[0]
+                                                      .contains("https://")
+                                                  ? newsFeed!.latest.images[0]
+                                                  : newsFeed!.latest.images[0]
+                                                          .contains("http://")
+                                                      ? newsFeed!
+                                                          .latest.images[0]
+                                                      : "http://${newsFeed!.latest.images[0]}",
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.19,
+                                              fit: BoxFit.cover,
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                            ),
+                                      newsFeed!.latest.images.isEmpty
+                                          ? Padding(
+                                              padding:
+                                                  const EdgeInsets.all(5.0),
+                                              child: Text(
+                                                newsFeed!.latest.description
+                                                    .toString(),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 3,
+                                                style: GoogleFonts.lato(
+                                                    textStyle: const TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white)),
+                                              ),
+                                            )
+                                          : Padding(
+                                              padding:
+                                                  const EdgeInsets.all(5.0),
+                                              child: Text(
+                                                newsFeed!.latest.title,
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 3,
+                                                style: GoogleFonts.lato(
+                                                    textStyle: const TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white)),
+                                              ),
+                                            )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                  top: 10,
+                                  right: 15,
+                                  child: Container(
+                                    height: 17,
+                                    width: 40,
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.only(
+                                          bottomRight: Radius.circular(7),
+                                          topRight: Radius.circular(7)),
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.green.shade900,
+                                          Colors.green.shade600,
+                                          Colors.green.shade500
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text("Latest",
+                                          style: GoogleFonts.lato(
+                                              textStyle: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 8,
+                                                  color: Colors.white))),
+                                    ),
+                                  )),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                    switch (oldNews[index - 1].newsEventsCategory) {
+                      case 1:
+                        {
+                          return Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: textWidget(index - 1),
+                          );
+                        }
+                      case 2:
+                        {
+                          return Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: imageWidget(index - 1),
+                          );
+                        }
+                      case 3:
+                        {
+                          return Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: imageWithCaptionWidget(index - 1, 0.2),
+                          );
+                        }
+                      case 4:
+                        {
+                          return Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: multiImageWithTitle(index - 1),
+                          );
+                        }
+                      case 5:
+                        {
+                          return Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: multiImageWithCaptionWidget(index - 1, 0.2),
+                          );
+                        }
+                    }
+                    return Text(
+                      oldNews[index - 1].newsEventsCategory.toString(),
+                    );
+                  },
+                ),
+              )),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.55,
+                child: isPageSelected
+                    ? DetailsPageNews(
+                        accessiblePerson: widget.accessiblePerson,
+                        newsId: newsIds,
+                        callBack: onBackDetailsPage)
+                    : Container(
+                        decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            image: DecorationImage(
+                                colorFilter: ColorFilter.mode(
+                                    Colors.blue.withOpacity(0.2),
+                                    BlendMode.dstATop),
+                                image: const AssetImage(Images.bgImage),
+                                repeat: ImageRepeat.repeatX)),
+                        child: Center(child: LoadingAnimator())),
+              )
+            ],
+          )
         : Scaffold(
             body: Container(
               padding: const EdgeInsets.all(20),
@@ -194,7 +428,9 @@ class _NewsScreenState extends State<NewsScreen> {
                     SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: oldNews.isEmpty
-                            ? LoadingAnimator()
+                            ? SizedBox(
+                                height: MediaQuery.of(context).size.height,
+                                child: Center(child: LoadingAnimator()))
                             : Container(
                                 padding: const EdgeInsets.all(10.0),
                                 child: MediaQuery.removePadding(
@@ -221,6 +457,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                                 }
                                               : null,
                                           onTap: () => navigateToDetailsPage(
+                                              index: index,
                                               newsId: newsFeed!.latest.id
                                                   .toString(),
                                               accessiblePerson:
@@ -420,7 +657,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                         case 3:
                                           {
                                             return imageWithCaptionWidget(
-                                                index - 1);
+                                                index - 1, 0.4);
                                           }
                                         case 4:
                                           {
@@ -430,7 +667,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                         case 5:
                                           {
                                             return multiImageWithCaptionWidget(
-                                                index - 1);
+                                                index - 1, 0.4);
                                           }
                                       }
                                       return Text(
@@ -484,7 +721,7 @@ class _NewsScreenState extends State<NewsScreen> {
     Utility.displaySnackBar(context, message);
   }
 
-  InkWell imageWithCaptionWidget(int index) {
+  InkWell imageWithCaptionWidget(int index, double height) {
     return InkWell(
       onLongPress: widget.accessiblePerson
           ? () {
@@ -492,6 +729,7 @@ class _NewsScreenState extends State<NewsScreen> {
             }
           : null,
       onTap: () => navigateToDetailsPage(
+          index: index,
           newsId: oldNews[index].id.toString(),
           accessiblePerson: widget.accessiblePerson),
       child: Stack(
@@ -499,6 +737,9 @@ class _NewsScreenState extends State<NewsScreen> {
           Container(
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
+              border: selectedIndex != index
+                  ? null
+                  : Border.all(color: Colors.green, width: 2),
               image: DecorationImage(
                 colorFilter: ColorFilter.mode(
                     Colors.blue.withOpacity(0.3), BlendMode.dstATop),
@@ -522,7 +763,7 @@ class _NewsScreenState extends State<NewsScreen> {
                   child: Image.network(
                     oldNews[index].images[0],
                     fit: BoxFit.cover,
-                    height: MediaQuery.of(context).size.height * 0.4,
+                    height: MediaQuery.of(context).size.height * height,
                     width: MediaQuery.of(context).size.width,
                   ),
                 ),
@@ -569,7 +810,7 @@ class _NewsScreenState extends State<NewsScreen> {
     );
   }
 
-  InkWell multiImageWithCaptionWidget(int index) {
+  InkWell multiImageWithCaptionWidget(int index, double height) {
     return InkWell(
       onLongPress: widget.accessiblePerson
           ? () {
@@ -577,6 +818,7 @@ class _NewsScreenState extends State<NewsScreen> {
             }
           : null,
       onTap: () => navigateToDetailsPage(
+          index: index,
           newsId: oldNews[index].id.toString(),
           accessiblePerson: widget.accessiblePerson),
       child: Stack(
@@ -584,6 +826,9 @@ class _NewsScreenState extends State<NewsScreen> {
           Container(
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
+              border: selectedIndex != index
+                  ? null
+                  : Border.all(color: Colors.green, width: 2),
               image: DecorationImage(
                 colorFilter: ColorFilter.mode(
                     Colors.blue.withOpacity(0.3), BlendMode.dstATop),
@@ -607,7 +852,7 @@ class _NewsScreenState extends State<NewsScreen> {
                   child: Image.network(
                     oldNews[index].images[0],
                     fit: BoxFit.cover,
-                    height: MediaQuery.of(context).size.height * 0.4,
+                    height: MediaQuery.of(context).size.height * height,
                     width: MediaQuery.of(context).size.width,
                   ),
                 ),
@@ -662,6 +907,7 @@ class _NewsScreenState extends State<NewsScreen> {
             }
           : null,
       onTap: () => navigateToDetailsPage(
+          index: index,
           newsId: oldNews[index].id.toString(),
           accessiblePerson: widget.accessiblePerson),
       child: Stack(
@@ -669,6 +915,9 @@ class _NewsScreenState extends State<NewsScreen> {
           Container(
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
+              border: selectedIndex != index
+                  ? null
+                  : Border.all(color: Colors.green, width: 2),
               image: DecorationImage(
                 colorFilter: ColorFilter.mode(
                     Colors.blue.withOpacity(0.3), BlendMode.dstATop),
@@ -730,6 +979,7 @@ class _NewsScreenState extends State<NewsScreen> {
             }
           : null,
       onTap: () => navigateToDetailsPage(
+          index: index,
           newsId: oldNews[index].id.toString(),
           accessiblePerson: widget.accessiblePerson),
       child: Stack(
@@ -737,6 +987,9 @@ class _NewsScreenState extends State<NewsScreen> {
           Container(
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
+              border: selectedIndex != index
+                  ? null
+                  : Border.all(color: Colors.green, width: 2),
               image: DecorationImage(
                 colorFilter: ColorFilter.mode(
                     Colors.blue.withOpacity(0.3), BlendMode.dstATop),
@@ -790,7 +1043,9 @@ class _NewsScreenState extends State<NewsScreen> {
     );
   }
 
-  InkWell textWidget(int index) {
+  InkWell textWidget(
+    int index,
+  ) {
     return InkWell(
       onLongPress: widget.accessiblePerson
           ? () {
@@ -798,6 +1053,7 @@ class _NewsScreenState extends State<NewsScreen> {
             }
           : null,
       onTap: () => navigateToDetailsPage(
+          index: index,
           newsId: oldNews[index].id.toString(),
           accessiblePerson: widget.accessiblePerson),
       child: Stack(
@@ -806,6 +1062,9 @@ class _NewsScreenState extends State<NewsScreen> {
             padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
+              border: selectedIndex != index
+                  ? null
+                  : Border.all(color: Colors.green, width: 2),
               image: DecorationImage(
                 colorFilter: ColorFilter.mode(
                     Colors.blue.withOpacity(0.3), BlendMode.dstATop),

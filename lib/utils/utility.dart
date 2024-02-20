@@ -55,6 +55,19 @@ class Utility {
     return false;
   }
 
+  static Future<String> getUrlYt(url) async {
+    var videoId = '';
+    const String regex =
+        r"(?:https?:\/\/)?(?:www\.)?youtu(?:\.be|be\.com)\/(?:watch\?v=)?([^#&?]*).*";
+    final match = RegExp(regex).firstMatch(url);
+    if (match != null) {
+      videoId = match.group(1)!;
+    } else {
+      print("Invalid YouTube URL");
+    }
+    return videoId;
+  }
+
   static String convertDateFormat(String date, String outFormat,
       {String inFormat = ""}) {
     try {

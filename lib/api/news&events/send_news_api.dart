@@ -65,6 +65,7 @@ Future<dynamic> sendNewsWithImage(
     request.fields["images[$i]"] = base64Encode(img[i].bytes!);
     request.fields["ext[$i]"] = img[i].extension!;
     request.fields["file_name[$i]"] = img[i].name;
+    print(img[i].extension!);
   }
   for (int i = 0; i < classIds.length; i++) {
     request.fields['visible_to[$i]'] = classIds[i];
@@ -77,6 +78,8 @@ Future<dynamic> sendNewsWithImage(
   if (newsId != '') request.fields['newsevents_id'] = newsId;
 
   request.headers.putIfAbsent('Authorization', () => "Bearer $token");
+  print("news id: $newsId");
+
   try {
     final response = await request.send();
     if (response.statusCode == 200) {
@@ -123,6 +126,8 @@ Future<dynamic> sendNewsWithMultiImage(
   request.fields["youtube_link"] = link;
   request.fields["news_events_category"] = description == '' ? '4' : '5';
   if (newsId != '') request.fields['newsevents_id'] = newsId;
+
+  print("news id: $newsId");
 
   request.headers.putIfAbsent('Authorization', () => "Bearer $token");
   try {

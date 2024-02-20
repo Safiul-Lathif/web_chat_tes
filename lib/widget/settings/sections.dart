@@ -19,7 +19,6 @@ class _SectionWidgetState extends State<SectionWidget> {
   SectionList? sectionList;
   int divisionId = 0;
   bool isLoading = true;
-  String sectionName = '';
 
   @override
   void initState() {
@@ -61,7 +60,7 @@ class _SectionWidgetState extends State<SectionWidget> {
                 onPressed: () async {
                   await addEditSection(
                           sectionId: section.id,
-                          sectionName: sectionName,
+                          sectionName: section.sectionName,
                           divId: divisionId.toString())
                       .then((value) {
                     getListOfSections(divisionId);
@@ -76,6 +75,7 @@ class _SectionWidgetState extends State<SectionWidget> {
                 child: const Text("Submit")),
             TextButton(
                 onPressed: () {
+                  getListOfSections(divisionId);
                   Navigator.pop(context);
                 },
                 child: const Text("Cancel"))
@@ -83,7 +83,7 @@ class _SectionWidgetState extends State<SectionWidget> {
           content: FormBuilderTextField(
             onChanged: (value) {
               setState(() {
-                sectionName = value!;
+                section.sectionName = value!;
               });
             },
             name: 'Sections name',

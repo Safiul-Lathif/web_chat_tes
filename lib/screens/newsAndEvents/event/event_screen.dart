@@ -1,4 +1,6 @@
 // ignore_for_file: must_be_immutable
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -7,8 +9,8 @@ import 'package:ui/Utils/Utility.dart';
 import 'package:ui/api/news&events/delete_news_api.dart';
 import 'package:ui/api/news&events/events_feed_api.dart';
 import 'package:ui/config/const.dart';
+import 'package:ui/config/images.dart';
 import 'package:ui/custom/loading_animator.dart';
-import 'package:ui/custom/no_data_widget.dart';
 import 'package:ui/model/news&events/events_feed_model.dart';
 import 'package:ui/screens/newsAndEvents/event/add_event_form.dart';
 import 'package:ui/screens/newsAndEvents/event/detail_page_events.dart';
@@ -35,6 +37,8 @@ class _EventScreenState extends State<EventScreen> {
 
   final ScrollController upcomingController = ScrollController();
   final ScrollController completedController = ScrollController();
+
+  bool isPageSelected = false;
 
   @override
   void initState() {
@@ -128,9 +132,13 @@ class _EventScreenState extends State<EventScreen> {
     );
   }
 
+  int selectedIndex = 0;
   void navigation(String message) {
     Utility.displaySnackBar(context, message);
   }
+
+  final PageController _pageController =
+      PageController(viewportFraction: 0.4, initialPage: 0);
 
   String eventsId = '';
   bool isPastEvent = false;
@@ -138,12 +146,21 @@ class _EventScreenState extends State<EventScreen> {
   void navigateToDetailsPage(
       {required String eventId,
       required bool accessiblePerson,
+      required int index,
       required bool isPast}) {
     setState(() {
+      isPageSelected = false;
       eventsId = eventId;
       isPastEvent = isPast;
       isAccessiblePerson = accessiblePerson;
       isDetailScreen = true;
+      selectedIndex = index;
+      pageNumber = index;
+    });
+    Timer(const Duration(milliseconds: 100), () {
+      setState(() {
+        isPageSelected = true;
+      });
     });
   }
 
@@ -176,11 +193,62 @@ class _EventScreenState extends State<EventScreen> {
   @override
   Widget build(BuildContext context) {
     return isDetailScreen
-        ? DetailsPageEvents(
-            callBack: onBackDetailsPage,
-            accessiblePerson: isAccessiblePerson,
-            isPast: isPastEvent,
-            eventId: eventsId)
+        ? Row(
+            children: [
+              Expanded(
+                  child: Container(
+                      height: MediaQuery.of(context).size.height,
+                      decoration: BoxDecoration(
+                          color: Colors.blue.shade50,
+                          image: DecorationImage(
+                              colorFilter: ColorFilter.mode(
+                                  Colors.blue.withOpacity(0.2),
+                                  BlendMode.dstATop),
+                              image: const AssetImage(Images.bgImage),
+                              repeat: ImageRepeat.repeatX)),
+                      child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: const ScrollPhysics(),
+                          padding: const EdgeInsets.all(10),
+                          controller: isPastEvent
+                              ? completedController
+                              : upcomingController,
+                          itemCount: isPastEvent
+                              ? completedEvents.length
+                              : upcomingEvents.length,
+                          itemExtent: 200,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: imageWithCaptionWidget(
+                                  index,
+                                  0.2,
+                                  isPastEvent
+                                      ? completedEvents[index]
+                                      : upcomingEvents[index]),
+                            );
+                          }))),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.55,
+                child: isPageSelected
+                    ? DetailsPageEvents(
+                        callBack: onBackDetailsPage,
+                        accessiblePerson: isAccessiblePerson,
+                        isPast: isPastEvent,
+                        eventId: eventsId)
+                    : Container(
+                        decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            image: DecorationImage(
+                                colorFilter: ColorFilter.mode(
+                                    Colors.blue.withOpacity(0.2),
+                                    BlendMode.dstATop),
+                                image: const AssetImage(Images.bgImage),
+                                repeat: ImageRepeat.repeatX)),
+                        child: Center(child: LoadingAnimator())),
+              ),
+            ],
+          )
         : Scaffold(
             body: Container(
               padding: const EdgeInsets.all(20),
@@ -267,196 +335,253 @@ class _EventScreenState extends State<EventScreen> {
                                                 fontWeight: FontWeight.bold)),
                                       ),
                                     )
-                                  : SizedBox(
-                                      height: 218,
-                                      child: PageView.builder(
-                                        itemCount: upcomingEvents.length,
-                                        physics: const ScrollPhysics(),
-                                        controller: PageController(
-                                            viewportFraction: 0.6),
-                                        onPageChanged: (int index) =>
-                                            setState(() => _index = index),
-                                        itemBuilder: (_, i) {
-                                          return InkWell(
-                                            onLongPress: widget.accessiblePerson
-                                                ? () {
-                                                    deleteNewsAlert(
-                                                        upcomingEvents[i]
-                                                            .id
-                                                            .toString());
-                                                  }
-                                                : null,
-                                            onTap: () => navigateToDetailsPage(
-                                                eventId: upcomingEvents[i]
-                                                    .id
-                                                    .toString(),
-                                                accessiblePerson:
-                                                    widget.accessiblePerson,
-                                                isPast: false),
-                                            child: Transform.scale(
-                                              scale: i == _index ? 1 : 0.8,
-                                              child: Card(
-                                                  elevation: 6,
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20)),
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                      color:
-                                                          Colors.blue.shade50,
-                                                      image: DecorationImage(
-                                                        colorFilter:
-                                                            ColorFilter.mode(
-                                                                Colors.blue
-                                                                    .withOpacity(
-                                                                        0.3),
-                                                                BlendMode
-                                                                    .dstATop),
-                                                        image: const AssetImage(
-                                                            "assets/images/bg_image_tes.jpg"),
-                                                        fit: BoxFit.cover,
-                                                      ),
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                            color: Colors.grey
-                                                                .withOpacity(
-                                                                    .5),
-                                                            offset:
-                                                                const Offset(
-                                                                    3, 2),
-                                                            blurRadius: 7)
-                                                      ],
-                                                      borderRadius:
-                                                          const BorderRadius
-                                                                  .all(
-                                                              Radius.circular(
-                                                                  15)),
-                                                    ),
-                                                    child: Column(
-                                                      children: [
-                                                        ClipRRect(
-                                                          borderRadius:
-                                                              const BorderRadius
-                                                                      .only(
-                                                                  topLeft: Radius
-                                                                      .circular(
-                                                                          15),
-                                                                  topRight: Radius
-                                                                      .circular(
-                                                                          15)),
-                                                          child: Image.network(
-                                                            upcomingEvents[i]
-                                                                .images[0],
-                                                            fit: BoxFit.cover,
-                                                            height: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .height *
-                                                                0.2,
-                                                            width:
-                                                                MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
-                                                          ),
-                                                        ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(3.0),
-                                                          child: Text(
-                                                            upcomingEvents[i]
-                                                                .title,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            maxLines: 2,
-                                                            style: GoogleFonts.lato(
-                                                                textStyle: const TextStyle(
-                                                                    fontSize:
-                                                                        15,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold)),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                          height: 5,
-                                                        ),
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            Row(
-                                                              children: [
-                                                                const SizedBox(
-                                                                  width: 5,
-                                                                ),
-                                                                Text(
-                                                                  'Date :',
-                                                                  style: GoogleFonts.lato(
-                                                                      textStyle: const TextStyle(
-                                                                          fontSize:
-                                                                              11,
-                                                                          fontWeight:
-                                                                              FontWeight.bold)),
-                                                                ),
-                                                                Text(
-                                                                  DateFormat(
-                                                                          'd MMMM, yyyy')
-                                                                      .format(upcomingEvents[
-                                                                              i]
-                                                                          .eventDate),
-                                                                  style: GoogleFonts.lato(
-                                                                      textStyle: const TextStyle(
-                                                                          fontSize:
-                                                                              10,
-                                                                          fontWeight:
-                                                                              FontWeight.bold)),
-                                                                ),
-                                                              ],
+                                  : Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        if (_index != 0)
+                                          CircleAvatar(
+                                            backgroundColor: Colors.white70,
+                                            child: IconButton(
+                                                onPressed: _index == 0
+                                                    ? null
+                                                    : () {
+                                                        setState(() {
+                                                          _index--;
+                                                          _pageController.animateToPage(
+                                                              _index,
+                                                              duration:
+                                                                  const Duration(
+                                                                      milliseconds:
+                                                                          10),
+                                                              curve: Curves
+                                                                  .easeInOut);
+                                                        });
+                                                      },
+                                                icon: const Icon(
+                                                  Icons.arrow_back_ios_new,
+                                                  color: Colors.black,
+                                                )),
+                                          ),
+                                        Expanded(
+                                          child: SizedBox(
+                                            height: 218,
+                                            child: PageView.builder(
+                                              itemCount: upcomingEvents.length,
+                                              physics: const ScrollPhysics(),
+                                              controller: _pageController,
+                                              onPageChanged: (int index) =>
+                                                  setState(
+                                                      () => _index = index),
+                                              itemBuilder: (_, i) {
+                                                return InkWell(
+                                                  onLongPress: widget
+                                                          .accessiblePerson
+                                                      ? () {
+                                                          deleteNewsAlert(
+                                                              upcomingEvents[i]
+                                                                  .id
+                                                                  .toString());
+                                                        }
+                                                      : null,
+                                                  onTap: () =>
+                                                      navigateToDetailsPage(
+                                                          index: i,
+                                                          eventId:
+                                                              upcomingEvents[i]
+                                                                  .id
+                                                                  .toString(),
+                                                          accessiblePerson: widget
+                                                              .accessiblePerson,
+                                                          isPast: false),
+                                                  child: Transform.scale(
+                                                    scale:
+                                                        i == _index ? 1 : 0.8,
+                                                    child: Card(
+                                                        elevation: 6,
+                                                        shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20)),
+                                                        child: Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors
+                                                                .blue.shade50,
+                                                            image:
+                                                                DecorationImage(
+                                                              colorFilter: ColorFilter.mode(
+                                                                  Colors.blue
+                                                                      .withOpacity(
+                                                                          0.3),
+                                                                  BlendMode
+                                                                      .dstATop),
+                                                              image: const AssetImage(
+                                                                  "assets/images/bg_image_tes.jpg"),
+                                                              fit: BoxFit.cover,
                                                             ),
-                                                            Row(
-                                                              children: [
-                                                                Text(
-                                                                  'Time :',
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                  color: Colors
+                                                                      .grey
+                                                                      .withOpacity(
+                                                                          .5),
+                                                                  offset:
+                                                                      const Offset(
+                                                                          3, 2),
+                                                                  blurRadius: 7)
+                                                            ],
+                                                            borderRadius:
+                                                                const BorderRadius
+                                                                        .all(
+                                                                    Radius
+                                                                        .circular(
+                                                                            15)),
+                                                          ),
+                                                          child: Column(
+                                                            children: [
+                                                              ClipRRect(
+                                                                borderRadius: const BorderRadius
+                                                                        .only(
+                                                                    topLeft: Radius
+                                                                        .circular(
+                                                                            15),
+                                                                    topRight: Radius
+                                                                        .circular(
+                                                                            15)),
+                                                                child: Image
+                                                                    .network(
+                                                                  upcomingEvents[
+                                                                          i]
+                                                                      .images[0],
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  height: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .height *
+                                                                      0.2,
+                                                                  width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width,
+                                                                ),
+                                                              ),
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        3.0),
+                                                                child: Text(
+                                                                  upcomingEvents[
+                                                                          i]
+                                                                      .title,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  maxLines: 2,
                                                                   style: GoogleFonts.lato(
                                                                       textStyle: const TextStyle(
                                                                           fontSize:
-                                                                              11,
+                                                                              15,
                                                                           fontWeight:
                                                                               FontWeight.bold)),
                                                                 ),
-                                                                Text(
-                                                                  DateFormat.jm().format(DateFormat(
-                                                                          "hh:mm:ss")
-                                                                      .parse(upcomingEvents[
-                                                                              i]
-                                                                          .eventTime
-                                                                          .toString())),
-                                                                  style: GoogleFonts.lato(
-                                                                      textStyle: const TextStyle(
-                                                                          fontSize:
-                                                                              10,
-                                                                          fontWeight:
-                                                                              FontWeight.bold)),
-                                                                ),
-                                                                const SizedBox(
-                                                                  width: 5,
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )),
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 5,
+                                                              ),
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: [
+                                                                  Row(
+                                                                    children: [
+                                                                      const SizedBox(
+                                                                        width:
+                                                                            5,
+                                                                      ),
+                                                                      Text(
+                                                                        'Date :',
+                                                                        style: GoogleFonts.lato(
+                                                                            textStyle:
+                                                                                const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                                                                      ),
+                                                                      Text(
+                                                                        DateFormat('d MMMM, yyyy')
+                                                                            .format(upcomingEvents[i].eventDate),
+                                                                        style: GoogleFonts.lato(
+                                                                            textStyle:
+                                                                                const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  Row(
+                                                                    children: [
+                                                                      Text(
+                                                                        'Time :',
+                                                                        style: GoogleFonts.lato(
+                                                                            textStyle:
+                                                                                const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                                                                      ),
+                                                                      Text(
+                                                                        DateFormat.jm().format(DateFormat("hh:mm:ss").parse(upcomingEvents[i]
+                                                                            .eventTime
+                                                                            .toString())),
+                                                                        style: GoogleFonts.lato(
+                                                                            textStyle:
+                                                                                const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                                                                      ),
+                                                                      const SizedBox(
+                                                                        width:
+                                                                            5,
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )),
+                                                  ),
+                                                );
+                                              },
                                             ),
-                                          );
-                                        },
-                                      ),
+                                          ),
+                                        ),
+                                        _index >= upcomingEvents.length - 1
+                                            ? Container()
+                                            : CircleAvatar(
+                                                backgroundColor: Colors.white70,
+                                                child: IconButton(
+                                                    onPressed: _index >=
+                                                            upcomingEvents
+                                                                    .length -
+                                                                1
+                                                        ? null
+                                                        : () {
+                                                            setState(() {
+                                                              _index++;
+                                                              _pageController.animateToPage(
+                                                                  _index,
+                                                                  duration: const Duration(
+                                                                      milliseconds:
+                                                                          10),
+                                                                  curve: Curves
+                                                                      .easeInOut);
+                                                            });
+                                                          },
+                                                    icon: const Icon(
+                                                      Icons
+                                                          .arrow_forward_ios_sharp,
+                                                      color: Colors.black,
+                                                    )),
+                                              ),
+                                      ],
                                     ),
                               Container(
                                 padding: const EdgeInsets.only(
@@ -475,10 +600,10 @@ class _EventScreenState extends State<EventScreen> {
                                   shrinkWrap: true,
                                   itemCount: completedEvents.length,
                                   gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
+                                      const SliverGridDelegateWithMaxCrossAxisExtent(
+                                          maxCrossAxisExtent: 500,
+                                          childAspectRatio: 3,
                                           crossAxisSpacing: 20,
-                                          childAspectRatio: 3.5,
                                           mainAxisSpacing: 20),
                                   physics: const ScrollPhysics(),
                                   itemBuilder: (context, index) {
@@ -486,6 +611,7 @@ class _EventScreenState extends State<EventScreen> {
                                       children: [
                                         InkWell(
                                           onTap: () => navigateToDetailsPage(
+                                              index: index,
                                               eventId: completedEvents[index]
                                                   .id
                                                   .toString(),
@@ -533,7 +659,7 @@ class _EventScreenState extends State<EventScreen> {
                                                         MediaQuery.of(context)
                                                                 .size
                                                                 .width *
-                                                            0.2,
+                                                            0.13,
                                                     height:
                                                         MediaQuery.of(context)
                                                             .size
@@ -718,5 +844,96 @@ class _EventScreenState extends State<EventScreen> {
               ),
             ),
           );
+  }
+
+  InkWell imageWithCaptionWidget(
+      int index, double height, EventFeed eventFeed) {
+    return InkWell(
+      onLongPress: widget.accessiblePerson
+          ? () {
+              deleteNewsAlert(eventFeed.id.toString());
+            }
+          : null,
+      onTap: () => navigateToDetailsPage(
+          index: index,
+          eventId: eventFeed.id.toString(),
+          accessiblePerson: widget.accessiblePerson,
+          isPast: isPastEvent),
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              border: selectedIndex != index
+                  ? null
+                  : Border.all(color: Colors.green, width: 2),
+              image: DecorationImage(
+                colorFilter: ColorFilter.mode(
+                    Colors.blue.withOpacity(0.3), BlendMode.dstATop),
+                image: const AssetImage("assets/images/bg_image_tes.jpg"),
+                fit: BoxFit.fill,
+              ),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.grey.withOpacity(.5),
+                    offset: const Offset(3, 2),
+                    blurRadius: 7)
+              ],
+              borderRadius: const BorderRadius.all(Radius.circular(15)),
+            ),
+            child: Column(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15)),
+                  child: Image.network(
+                    eventFeed.images[0],
+                    fit: BoxFit.cover,
+                    height: MediaQuery.of(context).size.height * height,
+                    width: MediaQuery.of(context).size.width,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(3.0),
+                  child: Text(
+                    eventFeed.title,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: GoogleFonts.lato(
+                        textStyle: const TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (eventFeed.visibility != '' && widget.accessiblePerson)
+            Positioned(
+              top: 10,
+              right: 10,
+              child: InkWell(
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return SimpleDialog(
+                          titlePadding: const EdgeInsets.all(8.0),
+                          title: Center(child: Text(eventFeed.visibility)),
+                        );
+                      });
+                },
+                child: Lottie.asset(
+                  'assets/lottie/class1.json',
+                  height: 30.0,
+                  repeat: true,
+                  reverse: true,
+                  animate: true,
+                ),
+              ),
+            )
+        ],
+      ),
+    );
   }
 }

@@ -52,7 +52,8 @@ class _DivisionWidgetState extends State<DivisionWidget> {
                       initialize();
                       Utility.displaySnackBar(context, value["message"]);
                     } else {
-                      Utility.displaySnackBar(context, "error");
+                      Utility.displaySnackBar(
+                          context, "Error Please try again Later");
                     }
                     Navigator.pop(context);
                   });
