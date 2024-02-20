@@ -19,7 +19,6 @@ class _SubjectWidgetState extends State<SubjectWidget> {
   List<Subjects>? subjects;
   int divisionId = 0;
   bool isLoading = true;
-  String subjectName = '';
 
   @override
   void initState() {
@@ -62,7 +61,7 @@ class _SubjectWidgetState extends State<SubjectWidget> {
                   await addEditSubject(
                           divId: divisionId.toString(),
                           subjectId: subject.id,
-                          subjectName: subjectName)
+                          subjectName: subject.subjectName)
                       .then((value) {
                     getListOfSubject(divisionId);
                     if (value != null) {
@@ -76,6 +75,7 @@ class _SubjectWidgetState extends State<SubjectWidget> {
                 child: const Text("Submit")),
             TextButton(
                 onPressed: () {
+                  getListOfSubject(divisionId);
                   Navigator.pop(context);
                 },
                 child: const Text("Cancel"))
@@ -83,7 +83,7 @@ class _SubjectWidgetState extends State<SubjectWidget> {
           content: FormBuilderTextField(
             onChanged: (value) {
               setState(() {
-                subjectName = value!;
+                subject.subjectName = value!;
               });
             },
             name: 'subject name',

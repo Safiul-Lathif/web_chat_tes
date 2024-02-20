@@ -589,7 +589,7 @@ class _StaffWidgetState extends State<StaffWidget> {
                 runSpacing: 15,
                 children: [
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.25,
+                    width: MediaQuery.of(context).size.width * 0.3,
                     child: Stack(
                       children: [
                         Center(
@@ -790,46 +790,15 @@ class _StaffWidgetState extends State<StaffWidget> {
                         ],
                       ),
                     ),
-                    // Visibility(
-                    //   visible: singleStaffData.classTeacher == "yes",
-                    //   child: SizedBox(
-                    //     width: MediaQuery.of(context).size.width * 0.3,
-                    //     child: DropdownButtonFormField<dynamic>(
-                    //       isExpanded: true,
-                    //       value: singleStaffData.classConfig == 0
-                    //           ? null
-                    //           : singleStaffData.classConfig,
-                    //       decoration: InputDecoration(
-                    //           hintText: 'class name ',
-                    //           border: const OutlineInputBorder(
-                    //               borderSide: BorderSide(color: Colors.black)),
-                    //           focusedBorder: const OutlineInputBorder(
-                    //               borderSide: BorderSide(
-                    //                   color: Colors.black, width: 1)),
-                    //           labelStyle:
-                    //               TextStyle(color: Colors.grey.shade800),
-                    //           contentPadding: const EdgeInsets.only(
-                    //               left: 10, top: 4, bottom: 4)),
-                    //       icon: const Icon(Icons.keyboard_arrow_down),
-                    //       items: sectionList!
-                    //           .map<DropdownMenuItem<dynamic>>((item) {
-                    //         return DropdownMenuItem(
-                    //           value: item.id,
-                    //           child: Text(item.classSection),
-                    //         );
-                    //       }).toList(),
-                    //       onChanged: (newValue) async {
-                    //         setState(() {
-                    //           singleStaffData.classConfig = newValue;
-                    //         });
-                    //       },
-                    //     ),
-                    //   ),
-                    // ),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.3,
+                      width: singleStaffData.subjectTeacher.isEmpty
+                          ? MediaQuery.of(context).size.width * 0.3
+                          : MediaQuery.of(context).size.width * 0.62,
                       child: Row(
                         children: [
+                          const SizedBox(
+                            width: 20,
+                          ),
                           const Text(
                             "Subject Teacher: ",
                             style: TextStyle(fontSize: 16),
@@ -988,6 +957,9 @@ class _StaffWidgetState extends State<StaffWidget> {
                           contentPadding: const EdgeInsets.only(
                               left: 10, top: 4, bottom: 4)),
                     ),
+                  ),
+                  const SizedBox(
+                    height: 10,
                   ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.3,

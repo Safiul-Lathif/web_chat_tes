@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -20,12 +22,15 @@ Future<dynamic> addEditSection(
   map["sections[0][section_name]"] = sectionName;
   if (sectionId != 0) map["sections[0][section_id]"] = sectionId.toString();
   try {
+    print(map);
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
+      print(response.body);
       return jsonDecode(response.body);
     } else {
-      log('create update section :Request failed with status: ${response.statusCode}.');
+      print(
+          'create update section :Request failed with status: ${response.statusCode}.');
       return null;
     }
   } on Error catch (err) {

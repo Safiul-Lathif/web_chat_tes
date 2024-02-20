@@ -111,7 +111,6 @@ class _AddNewsFormState extends State<AddNewsForm> {
     if (widget.newsEventsData != null) {
       setState(() {
         isEdit = true;
-        print(widget.newsEventsData!.title);
         title = widget.newsEventsData!.title;
         description = widget.newsEventsData!.description;
         link = widget.newsEventsData!.link;
@@ -477,7 +476,9 @@ class _AddNewsFormState extends State<AddNewsForm> {
                                   .classConfig
                                   .toString());
                             }
-                            switch (image.length) {
+                            var imageLength =
+                                image.length + uploadedImages.length;
+                            switch (imageLength) {
                               case 0:
                                 {
                                   return sendNewsText(

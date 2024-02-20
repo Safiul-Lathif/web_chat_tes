@@ -1,15 +1,9 @@
 // ignore_for_file: must_be_immutable, deprecated_member_use
-import 'dart:html';
-import 'dart:io';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:image_downloader_web/image_downloader_web.dart';
 
 class DetailScreen extends StatefulWidget {
   DetailScreen(
@@ -42,28 +36,11 @@ class _DetailScreenState extends State<DetailScreen> {
     String? message;
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
-      // // Download image
-      // final http.Response response = await http.get(Uri.parse(url));
-
-      // // Get temporary directory
-      // final dir = await getTemporaryDirectory();
-
-      // // Create an image name
-      // var filename = '${dir.path}/${url.split('/').last}';
-
-      // // Save to filesystem
-      // final file = File(filename);
-      // await file.writeAsBytes(response.bodyBytes);
-
-      // // Ask the user to save it
-      // final params = SaveFileDialogParams(sourceFilePath: file.path);
-      // final finalPath = await FlutterFileDialog.saveFile(params: params);
-      // if (finalPath != null) {
-      //   message = 'Image saved to disk';
-      // }
-      AnchorElement anchorElement = AnchorElement(href: url);
-      anchorElement.download = "fileName";
-      anchorElement.click();
+      await WebImageDownloader.downloadImageFromWeb(
+        url,
+        name: url.split('/').last,
+        imageType: ImageType.png,
+      );
     } catch (e) {
       message = 'An error occurred while saving the image';
     }

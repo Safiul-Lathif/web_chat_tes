@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -18,13 +20,17 @@ Future<dynamic> addEditSubject(
   map['division_id'] = divId;
   map["subject[0][subject_name]"] = subjectName;
   if (subjectId != 0) map["subject[0][subject_id]"] = subjectId.toString();
+
   try {
+    print(map);
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
+      print(response.body);
       return jsonDecode(response.body);
     } else {
-      log('create update :Request failed with status: ${response.statusCode}.');
+      print(
+          'create update :Request failed with status: ${response.statusCode}.');
       return null;
     }
   } on Error catch (err) {

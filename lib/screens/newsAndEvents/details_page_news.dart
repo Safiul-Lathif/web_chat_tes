@@ -1,12 +1,7 @@
-// ignore_for_file: must_be_immutable
-import 'dart:io';
+// ignore_for_file: must_be_immutable, deprecated_member_use
 import 'package:flutter/services.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:http/http.dart' as http;
 import 'package:ui/Utils/Utility.dart';
 import 'package:ui/api/news&events/like_dislike_api.dart';
 import 'package:ui/custom/detail_page_image.dart';
@@ -16,8 +11,6 @@ import 'package:ui/model/news&events/single_news_events_model.dart';
 import 'package:ui/screens/newsAndEvents/news/add_news_form.dart';
 import 'package:ui/utils/session_management.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-
 import '../../api/news&events/single_news_event.dart';
 
 class DetailsPageNews extends StatefulWidget {
@@ -73,6 +66,19 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
     isLoading = false;
   }
 
+  String getUrlYt(url) {
+    var videoId = '';
+    const String regex =
+        r"(?:https?:\/\/)?(?:www\.)?youtu(?:\.be|be\.com)\/(?:watch\?v=)?([^#&?]*).*";
+    final match = RegExp(regex).firstMatch(url);
+    if (match != null) {
+      videoId = match.group(1)!;
+    } else {
+      print("Invalid YouTube URL");
+    }
+    return videoId;
+  }
+
   void getIndividualNews() async {
     await getSingleNews(newsFeed.id.toString()).then((value) {
       setState(() {
@@ -119,22 +125,21 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: isLoading
-          ? LoadingAnimator()
-          : Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20)),
-                  image: DecorationImage(
-                      colorFilter: ColorFilter.mode(
-                          Colors.blue.withOpacity(0.3), BlendMode.dstATop),
-                      image: const AssetImage("assets/images/bg_image_tes.jpg"),
-                      repeat: ImageRepeat.repeatX)),
-              child: SingleChildScrollView(
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+            color: Colors.blue.shade50,
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+            image: DecorationImage(
+                colorFilter: ColorFilter.mode(
+                    Colors.blue.withOpacity(0.3), BlendMode.dstATop),
+                image: const AssetImage("assets/images/bg_image_tes.jpg"),
+                repeat: ImageRepeat.repeatX)),
+        child: isLoading
+            ? Center(child: LoadingAnimator())
+            : SingleChildScrollView(
                 child: Column(
                   children: [
                     Container(
@@ -146,7 +151,7 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                               image: NetworkImage(
                                 newsFeed.images[0].image,
                               ),
-                              fit: BoxFit.contain)),
+                              fit: BoxFit.cover)),
                       child: Padding(
                         padding: const EdgeInsets.only(top: 10, left: 10),
                         child: CircleAvatar(
@@ -297,7 +302,7 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                               Positioned(
                                 right: 0,
                                 bottom:
-                                    MediaQuery.of(context).size.height * 0.1,
+                                    MediaQuery.of(context).size.height * 0.15,
                                 child: CircleAvatar(
                                   backgroundColor: Colors.white70,
                                   child: IconButton(
@@ -317,7 +322,7 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                               ),
                               Positioned(
                                 left: 0,
-                                top: MediaQuery.of(context).size.height * 0.09,
+                                top: MediaQuery.of(context).size.height * 0.17,
                                 child: CircleAvatar(
                                   backgroundColor: Colors.white70,
                                   child: IconButton(
@@ -359,39 +364,17 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                                 onTap: () {
                                   launchUrl(Uri.parse(newsFeed.youtubeLink),
                                       mode: LaunchMode.externalApplication);
-                                  // showDialog(
-                                  //   context: context,
-                                  //   builder: (context) {
-                                  //     return YoutubePlayer(
-                                  //       controller: YoutubePlayerController(
-                                  //         initialVideoId:
-                                  //             "${YoutubePlayer.convertUrlToId(newsFeed.youtubeLink)}",
-                                  //         flags: const YoutubePlayerFlags(
-                                  //           enableCaption: true,
-                                  //           captionLanguage: 'en',
-                                  //         ),
-                                  //       ),
-                                  //       liveUIColor: Colors.amber,
-                                  //       showVideoProgressIndicator: true,
-                                  //       bottomActions: [
-                                  //         CurrentPosition(),
-                                  //         ProgressBar(
-                                  //           isExpanded: true,
-                                  //         ),
-                                  //         const PlaybackSpeedButton()
-                                  //       ],
-                                  //     );
-                                  //   },
-                                  // );
                                 },
                                 child: Container(
-                                    height: 200,
-                                    width: double.infinity,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.5,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       image: DecorationImage(
                                           image: NetworkImage(
-                                              'https://img.youtube.com/vi/${YoutubePlayer.convertUrlToId(newsFeed.youtubeLink)}/0.jpg'),
+                                              "https://img.youtube.com/vi/${getUrlYt(newsFeed.youtubeLink)}/0.jpg"),
                                           fit: BoxFit.cover),
                                     ),
                                     child: const Icon(
@@ -414,7 +397,7 @@ class _DetailsPageNewsState extends State<DetailsPageNews> {
                   ],
                 ),
               ),
-            ),
+      ),
     );
   }
 }
