@@ -1,10 +1,10 @@
+// ignore_for_file: unused_import, avoid_print
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:share_plus/share_plus.dart';
 import 'package:ui/config/strings.dart';
 import 'package:ui/utils/session_management.dart';
-
 import '../../model/search_parent_model.dart';
 
 Future<dynamic> addEditParent(ParentSearchList singleParent,
@@ -25,8 +25,6 @@ Future<dynamic> addEditParent(ParentSearchList singleParent,
   request.fields['name'] = singleParent.firstName.toString();
   request.fields['user_role'] = '3';
   request.fields['user_category'] = singleParent.userCategory.toString();
-
-  print(token);
 
   request.headers.putIfAbsent('Authorization', () => "Bearer $token");
   try {

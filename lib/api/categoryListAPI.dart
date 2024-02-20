@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -17,7 +19,6 @@ Future<List<Class_>?> getCategoryList() async {
     });
     if (response.statusCode == 200) {
       List jsonResponse = jsonDecode(response.body)["classes"];
-      print(response.body);
       return jsonResponse.map((json) => Class_.fromJson(json)).toList();
     } else {
       print('Request failed with status: ${response.statusCode}.');

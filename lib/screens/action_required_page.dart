@@ -837,7 +837,7 @@ class _ActionRequiredState extends State<ActionRequired> {
                                                                               index]
                                                                           .images[0]
                                                                       : "https://${widget.actionRequired[index].images[0]}";
-                                                          print(url);
+
                                                           setState(() {
                                                             playing = !playing;
                                                           });

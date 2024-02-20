@@ -77,7 +77,6 @@ Future<dynamic> deleteClass(
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
-      log(response.body);
       return jsonDecode(response.body);
     } else {
       log('Onboarding Request failed with status: ${response.statusCode}.');

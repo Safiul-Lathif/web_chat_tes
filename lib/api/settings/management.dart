@@ -32,7 +32,7 @@ class ManagementController {
       });
       if (response.statusCode == 200) {
         List jsonResponse = jsonDecode(response.body);
-        print(response.body);
+
         return jsonResponse
             .map((json) => ManagementListModel.fromJson(json))
             .toList();
@@ -54,7 +54,7 @@ class ManagementController {
       });
       if (response.statusCode == 200) {
         List jsonResponse = jsonDecode(response.body);
-        print(response.body);
+
         return jsonResponse
             .map((json) => DesignationList.fromJson(json))
             .toList();
@@ -81,7 +81,7 @@ class ManagementController {
       });
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        print(response.body);
+
         return ManagementList.fromJson(jsonResponse);
       } else {
         print('Request failed with status: ${response.statusCode}.');
@@ -113,13 +113,12 @@ class ManagementController {
     map["data[0][employee_no]"] = managementList.employeeNo.toString();
     map["data[0][email_address]"] = managementList.emailId.toString();
     map["data[0][user_category]"] = managementList.userCategory.toString();
-    print(map);
+
     try {
       final response = await http.post(createManagementUrl,
           body: map,
           headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
       if (response.statusCode == 200) {
-        print(response.body);
         return jsonDecode(response.body);
       } else {
         print('Request failed with status: ${response.statusCode}.');
@@ -151,13 +150,12 @@ class ManagementController {
     map['employee_no'] = managementList.employeeNo.toString();
     map['email_address'] = managementList.emailId.toString();
     map['user_category'] = managementList.userCategory.toString();
-    print(map);
+
     try {
       final response = await http.post(editManagementUrl,
           body: map,
           headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
       if (response.statusCode == 200) {
-        print(response.body);
         return jsonDecode(response.body);
       } else {
         print('Request failed with status: ${response.statusCode}.');

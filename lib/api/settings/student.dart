@@ -30,7 +30,7 @@ class StudentController {
       });
       if (response.statusCode == 200) {
         List jsonResponse = jsonDecode(response.body);
-        print(response.body);
+
         return jsonResponse.map((json) => ParentList.fromJson(json)).toList();
       } else {
         print('Request failed with status: ${response.statusCode}.');
@@ -54,7 +54,7 @@ class StudentController {
       });
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        print(response.body);
+
         return SingleParent.fromJson(jsonResponse);
       } else {
         print('Request failed with status: ${response.body}.');
@@ -117,13 +117,12 @@ class StudentController {
       map["data[0][student_file_name"] = studentPhoto[i].name;
     }
     map["data[0][class_config]"] = student.classSection.toString();
-    print(map);
+
     try {
       final response = await http.post(createParentUrl,
           body: map,
           headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
       if (response.statusCode == 200) {
-        print(response.body);
         return jsonDecode(response.body);
       } else {
         print('Request failed with status: ${response.statusCode}.');
@@ -184,13 +183,12 @@ class StudentController {
       map["student_file_name"] = studentPhoto[i].name;
     }
     map["class_config"] = student.classSection.toString();
-    print(map);
+
     try {
       final response = await http.post(editParentUrl,
           body: map,
           headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
       if (response.statusCode == 200) {
-        print(response.body);
         return jsonDecode(response.body);
       } else {
         print('Request failed with status: ${response.statusCode}.');
@@ -213,8 +211,6 @@ class StudentController {
           body: map,
           headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
       if (response.statusCode == 200) {
-        print(response.body);
-
         return jsonDecode(response.body);
       } else {
         print('Onboarding Request failed with status: ${response.statusCode}.');

@@ -62,7 +62,7 @@ class _ForgotChangePasswordState extends State<ForgotChangePassword> {
                             height: 10,
                           ),
                           const Text(
-                              "Dont worry we wil follow this method to reset"),
+                              "Don't worry we will follow this method to reset"),
                           const SizedBox(
                             height: 30,
                           ),

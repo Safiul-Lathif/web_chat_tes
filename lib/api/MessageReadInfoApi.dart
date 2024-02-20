@@ -23,7 +23,6 @@ Future<MessageReadinfo?> getReadinfo(String grpid, String notifyid) async {
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       //final jsonResponse = jsonDecode(response.body);
-      print(response.body);
 
       return MessageReadinfo.fromJson(jsonDecode(response.body));
     } else {

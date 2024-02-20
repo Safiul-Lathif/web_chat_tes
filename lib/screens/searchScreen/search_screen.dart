@@ -93,6 +93,12 @@ class _SearchPageState extends State<SearchPage> {
     staffList();
   }
 
+  void loadStudentData() {
+    print("loading student data");
+    clearData();
+    studentList();
+  }
+
   List<DesignationList> managementTypeList = [];
 
   void initialize() async {
@@ -1234,6 +1240,8 @@ class _SearchPageState extends State<SearchPage> {
                                                                 onPressed: () {
                                                                   addEditUserPopUp(
                                                                       StudentEditPage(
+                                                                    callBack:
+                                                                        loadStudentData,
                                                                     studentList:
                                                                         listOfStudent!
                                                                             .elementAt(i),

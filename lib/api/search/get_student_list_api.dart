@@ -13,14 +13,14 @@ Future<StudentSearchList?> getStudentList(int pageNumber) async {
   String? token = await pref.getAuthToken();
   var map = <String, dynamic>{};
   map["page"] = pageNumber.toString();
-  print(token);
+
   try {
     final response = await http.post(url,
         body: pageNumber == 0 ? null : map,
         headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      log(response.body);
+
       return StudentSearchList.fromJson(jsonResponse);
     } else {
       print('Request failed with status: ${response.statusCode}.');

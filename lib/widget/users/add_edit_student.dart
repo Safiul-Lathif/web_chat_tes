@@ -18,8 +18,10 @@ import 'package:ui/utils/utility.dart';
 import '../../model/classModel.dart';
 
 class StudentEditPage extends StatefulWidget {
-  const StudentEditPage({super.key, required this.studentList});
+  const StudentEditPage(
+      {super.key, required this.studentList, required this.callBack});
   final StudentList studentList;
+  final Function callBack;
 
   @override
   State<StudentEditPage> createState() => _StudentEditPageState();
@@ -399,6 +401,7 @@ class _StudentEditPageState extends State<StudentEditPage> {
             });
             Utility.displaySnackBar(context, 'Error in updating the student');
           }
+          widget.callBack();
         });
       }
     }

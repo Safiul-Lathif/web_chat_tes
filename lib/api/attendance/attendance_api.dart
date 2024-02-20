@@ -16,7 +16,7 @@ Future<AttendanceModel?> getAttendanceInfo() async {
     });
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      print(response.body);
+
       return AttendanceModel.fromJson(jsonResponse);
     } else {
       print('Attendance :-Request failed with status: ${response.statusCode}.');

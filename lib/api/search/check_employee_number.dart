@@ -13,13 +13,13 @@ Future<dynamic> checkEmployeeNumber(String number, int id, int role) async {
   map["employee_no"] = number;
   map["user_role"] = role.toString();
   if (id != 0) map["id"] = id.toString();
-  print(map);
+
   try {
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      print(response.body);
+
       return jsonResponse;
     } else {
       print(

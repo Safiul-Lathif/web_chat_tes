@@ -23,16 +23,12 @@ Future<dynamic> register(
   map["academic_year"] = academic;
   map["school_code"] = schoolCode;
 
-  print(map);
-  print(url);
-
   try {
     final response = await http.post(
       url,
       body: map,
     );
     if (response.statusCode == 200) {
-      print(response.body);
       return jsonDecode(response.body);
     } else {
       print('Request failed with status: ${response.statusCode}.');

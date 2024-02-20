@@ -20,7 +20,7 @@ Future<ClassGroup?> getHomeWork(DateTime homeWorkDate) async {
     });
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      print(response.body);
+
       return ClassGroup.fromJson(jsonResponse);
     } else {
       print('Request failed with status: ${response.statusCode}.');

@@ -22,7 +22,7 @@ Future<ProfileModel?> getProfile(
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      print(response.body);
+
       return ProfileModel.fromJson(jsonResponse);
     } else {
       print(

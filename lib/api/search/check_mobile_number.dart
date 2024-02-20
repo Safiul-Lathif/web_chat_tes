@@ -19,7 +19,7 @@ Future<dynamic> checkMobileNumber(int number, int id, int category) async {
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      print(response.body);
+
       return jsonResponse;
     } else {
       print(

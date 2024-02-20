@@ -18,7 +18,7 @@ Future<SearchStaffModel?> getStaffList(int pageNumber) async {
         headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      print(response.body);
+
       return SearchStaffModel.fromJson(jsonResponse);
     } else {
       // ignore: avoid_print

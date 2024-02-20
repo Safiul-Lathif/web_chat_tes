@@ -17,7 +17,7 @@ Future<List<StudentGroupList>?> getStudentGroupList(String groupId) async {
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
       List jsonResponse = jsonDecode(response.body);
-      print(response.body);
+
       return jsonResponse
           .map((json) => StudentGroupList.fromJson(json))
           .toList();
