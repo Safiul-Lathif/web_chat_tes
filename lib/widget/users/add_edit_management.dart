@@ -17,9 +17,13 @@ import '../../model/settings/index.dart';
 
 class AddEditManagementPage extends StatefulWidget {
   AddEditManagementPage(
-      {super.key, required this.userModel, required this.isEdit});
+      {super.key,
+      required this.userModel,
+      required this.isEdit,
+      required this.callback});
   ManagementList userModel;
   final bool isEdit;
+  Function callback;
 
   @override
   State<AddEditManagementPage> createState() => _AddEditManagementPageState();
@@ -411,6 +415,7 @@ class _AddEditManagementPageState extends State<AddEditManagementPage> {
                                                 ? "Management Updated Scuessfully"
                                                 : 'Management added scuessfully');
                                         Navigator.pop(context, true);
+                                        widget.callback();
                                       } else {
                                         setState(() {
                                           widget.userModel = userModel!;
