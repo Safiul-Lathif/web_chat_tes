@@ -13,9 +13,14 @@ import 'package:ui/utils/utility.dart';
 import '../../api/addEditUser/add_edit_admin_api.dart';
 
 class AddEditAdminPage extends StatefulWidget {
-  AddEditAdminPage({super.key, required this.userModel, required this.isEdit});
+  AddEditAdminPage(
+      {super.key,
+      required this.userModel,
+      required this.isEdit,
+      required this.callback});
   AdminList userModel;
   final bool isEdit;
+  Function callback;
 
   @override
   State<AddEditAdminPage> createState() => _AddEditAdminPageState();
@@ -338,6 +343,7 @@ class _AddEditAdminPageState extends State<AddEditAdminPage> {
                                               ? "Admin Updated Scuessfully"
                                               : 'Admin added scuessfully');
                                       Navigator.pop(context, true);
+                                      widget.callback();
                                     } else {
                                       setState(() {
                                         widget.userModel = userModel!;

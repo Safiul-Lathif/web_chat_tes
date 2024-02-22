@@ -1,15 +1,11 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, use_build_context_synchronously
 // ignore_for_file: must_be_immutable
 import 'dart:convert';
-import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:ui/api/addEditUser/add_edit_parents_api.dart';
 import 'package:ui/api/profile_api.dart';
 import 'package:ui/api/search/check_mobile_number.dart';
@@ -18,9 +14,14 @@ import 'package:ui/model/search_parent_model.dart';
 import 'package:ui/utils/utility.dart';
 
 class AddEditParentPage extends StatefulWidget {
-  AddEditParentPage({super.key, required this.userModel, required this.isEdit});
-  ParentSearchList userModel;
+  AddEditParentPage(
+      {super.key,
+      required this.userModel,
+      required this.isEdit,
+      required this.callback});
+  late ParentSearchList userModel;
   final bool isEdit;
+  final Function callback;
 
   @override
   State<AddEditParentPage> createState() => _AddEditParentPageState();
@@ -83,32 +84,6 @@ class _AddEditParentPageState extends State<AddEditParentPage> {
       dobController.text = widget.userModel.dob;
     });
     getProfile(id: widget.userModel.id.toString(), role: "", studentId: '');
-  }
-
-  Future<void> _selectDate(
-    BuildContext context,
-    String field,
-  ) async {
-    setState(() {
-      selectedDate = DateTime.now();
-    });
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        initialDatePickerMode: DatePickerMode.day,
-        firstDate: DateTime(1900),
-        lastDate: DateTime.now());
-    if (picked != null) {
-      setState(() {
-        selectedDate = picked;
-        switch (field) {
-          case 'dob':
-            widget.userModel.dob = DateFormat.yMd().format(selectedDate);
-            dobController.text = widget.userModel.dob;
-            break;
-        }
-      });
-    }
   }
 
   @override
@@ -380,6 +355,7 @@ class _AddEditParentPageState extends State<AddEditParentPage> {
                 ? "Parent Updated Scuessfully"
                 : 'Parent added scuessfully');
         Navigator.pop(context, true);
+        widget.callback();
       } else {
         setState(() {
           widget.userModel = userModel!;

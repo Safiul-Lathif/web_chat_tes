@@ -16,9 +16,14 @@ import 'package:ui/utils/utility.dart';
 import '../../model/search/staff_list_model.dart';
 
 class AddEditStaffPage extends StatefulWidget {
-  AddEditStaffPage({super.key, required this.userModel, required this.isEdit});
+  AddEditStaffPage(
+      {super.key,
+      required this.userModel,
+      required this.isEdit,
+      required this.callBack});
   StaffSearchList userModel;
   final bool isEdit;
+  Function callBack;
 
   @override
   State<AddEditStaffPage> createState() => _AddEditStaffPageState();
@@ -394,6 +399,7 @@ class _AddEditStaffPageState extends State<AddEditStaffPage> {
                                         ? "Staff Updated Scuessfully"
                                         : 'Staff added scuessfully');
                                 Navigator.pop(context, true);
+                                widget.callBack();
                               } else {
                                 Utility.displaySnackBar(context,
                                     'Something went wrong please try again');

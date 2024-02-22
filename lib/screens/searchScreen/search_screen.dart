@@ -94,9 +94,13 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void loadStudentData() {
-    print("loading student data");
     clearData();
     studentList();
+  }
+
+  void loadParentData() {
+    clearData();
+    parentsList();
   }
 
   List<DesignationList> managementTypeList = [];
@@ -601,6 +605,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget dynamicWidget = AddEditParentPage(
     userModel: ParentSearchList.parentModelData,
+    callback: () {},
     isEdit: false,
   );
 
@@ -611,6 +616,7 @@ class _SearchPageState extends State<SearchPage> {
           {
             dynamicWidget = AddEditAdminPage(
               userModel: AdminList.adminModelData,
+              callback: loadAdminData,
               isEdit: false,
             );
           }
@@ -619,6 +625,7 @@ class _SearchPageState extends State<SearchPage> {
           {
             dynamicWidget = AddEditParentPage(
               userModel: ParentSearchList.parentModelData,
+              callback: loadParentData,
               isEdit: false,
             );
           }
@@ -627,6 +634,7 @@ class _SearchPageState extends State<SearchPage> {
           {
             dynamicWidget = AddEditStaffPage(
               userModel: StaffSearchList.staffModelData,
+              callBack: loadStaffData,
               isEdit: false,
             );
           }
@@ -635,6 +643,7 @@ class _SearchPageState extends State<SearchPage> {
           {
             dynamicWidget = AddEditManagementPage(
               userModel: ManagementList.managementModelData,
+              callback: loadManagementData,
               isEdit: false,
             );
           }
@@ -643,6 +652,7 @@ class _SearchPageState extends State<SearchPage> {
           {
             dynamicWidget = AddEditAdminPage(
               userModel: AdminList.adminModelData,
+              callback: loadAdminData,
               isEdit: false,
             );
           }
@@ -1536,6 +1546,8 @@ class _SearchPageState extends State<SearchPage> {
                                                                 onPressed: () {
                                                                   addEditUserPopUp(
                                                                       AddEditStaffPage(
+                                                                    callBack:
+                                                                        loadStaffData,
                                                                     userModel:
                                                                         listOfStaff!
                                                                             .elementAt(i),
@@ -1823,6 +1835,8 @@ class _SearchPageState extends State<SearchPage> {
                                                                 onPressed: () {
                                                                   addEditUserPopUp(
                                                                       AddEditParentPage(
+                                                                    callback:
+                                                                        loadParentData,
                                                                     userModel:
                                                                         listOfParents!
                                                                             .elementAt(i),
@@ -2112,6 +2126,8 @@ class _SearchPageState extends State<SearchPage> {
                                                                 onPressed: () {
                                                                   addEditUserPopUp(
                                                                       AddEditManagementPage(
+                                                                    callback:
+                                                                        loadManagementData,
                                                                     userModel:
                                                                         listOfManagement!
                                                                             .elementAt(i),
@@ -2367,6 +2383,8 @@ class _SearchPageState extends State<SearchPage> {
                                                                 onPressed: () {
                                                                   addEditUserPopUp(
                                                                       AddEditAdminPage(
+                                                                    callback:
+                                                                        loadAdminData,
                                                                     userModel:
                                                                         listOfAdmin!
                                                                             .elementAt(i),
