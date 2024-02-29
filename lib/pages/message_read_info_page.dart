@@ -141,17 +141,13 @@ class _MessageReadInfoPageState extends State<MessageReadInfoPage> {
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.86,
                   child: readInfo == null
-                      ? Center(
-                          child: AnimatedTextKit(
-                              repeatForever: true,
-                              animatedTexts: [
-                                ColorizeAnimatedText(
-                                  "Loading . . .",
-                                  textStyle: colorizeTextStyle,
-                                  colors: colorizeColors,
-                                ),
-                              ]),
-                        )
+                      ? AnimatedTextKit(repeatForever: true, animatedTexts: [
+                          ColorizeAnimatedText(
+                            "Loading . . .",
+                            textStyle: colorizeTextStyle,
+                            colors: colorizeColors,
+                          ),
+                        ])
                       : readInfo!.isEmpty
                           ? AnimatedTextKit(
                               repeatForever: true,

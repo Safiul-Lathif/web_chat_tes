@@ -148,21 +148,26 @@ class _NewsScreenState extends State<NewsScreen> {
                   child: Container(
                 height: MediaQuery.of(context).size.height,
                 decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
+                    ),
                     image: DecorationImage(
-                        colorFilter: ColorFilter.mode(
-                            Colors.blue.withOpacity(0.2), BlendMode.dstATop),
-                        image: const AssetImage(Images.bgImage),
-                        repeat: ImageRepeat.repeatX)),
+                      colorFilter: ColorFilter.mode(
+                          Colors.blue.withOpacity(0.4), BlendMode.dstATop),
+                      image: const AssetImage(Images.bgImage),
+                      fit: BoxFit.cover,
+                    )),
                 child: ListView.builder(
                   shrinkWrap: true,
                   physics: const ScrollPhysics(),
                   padding: const EdgeInsets.all(10),
                   controller: newsController,
-                  itemCount: oldNews.length + 1,
+                  itemCount: 1,
                   itemExtent: 200,
                   itemBuilder: (context, index) {
-                    if (index == 0) {
+                    if (selectedIndex == -1) {
                       return Container(
                         padding: const EdgeInsets.all(10.0),
                         child: InkWell(
@@ -304,45 +309,46 @@ class _NewsScreenState extends State<NewsScreen> {
                         ),
                       );
                     }
-                    switch (oldNews[index - 1].newsEventsCategory) {
+                    switch (oldNews[selectedIndex!].newsEventsCategory) {
                       case 1:
                         {
                           return Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: textWidget(index - 1),
+                            child: textWidget(selectedIndex!),
                           );
                         }
                       case 2:
                         {
                           return Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: imageWidget(index - 1),
+                            child: imageWidget(selectedIndex!),
                           );
                         }
                       case 3:
                         {
                           return Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: imageWithCaptionWidget(index - 1, 0.2),
+                            child: imageWithCaptionWidget(selectedIndex!, 0.2),
                           );
                         }
                       case 4:
                         {
                           return Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: multiImageWithTitle(index - 1),
+                            child: multiImageWithTitle(selectedIndex!),
                           );
                         }
                       case 5:
                         {
                           return Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: multiImageWithCaptionWidget(index - 1, 0.2),
+                            child: multiImageWithCaptionWidget(
+                                selectedIndex!, 0.2),
                           );
                         }
                     }
                     return Text(
-                      oldNews[index - 1].newsEventsCategory.toString(),
+                      oldNews[selectedIndex!].newsEventsCategory.toString(),
                     );
                   },
                 ),
@@ -457,7 +463,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                                 }
                                               : null,
                                           onTap: () => navigateToDetailsPage(
-                                              index: index,
+                                              index: -1,
                                               newsId: newsFeed!.latest.id
                                                   .toString(),
                                               accessiblePerson:
@@ -737,9 +743,6 @@ class _NewsScreenState extends State<NewsScreen> {
           Container(
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
-              border: selectedIndex != index
-                  ? null
-                  : Border.all(color: Colors.green, width: 2),
               image: DecorationImage(
                 colorFilter: ColorFilter.mode(
                     Colors.blue.withOpacity(0.3), BlendMode.dstATop),
@@ -781,7 +784,7 @@ class _NewsScreenState extends State<NewsScreen> {
               ],
             ),
           ),
-          if (oldNews[index].visibility != '' && widget.accessiblePerson)
+          if (oldNews[index].visibility != '')
             Positioned(
               top: 10,
               right: 10,
@@ -796,12 +799,9 @@ class _NewsScreenState extends State<NewsScreen> {
                         );
                       });
                 },
-                child: Lottie.asset(
-                  'assets/lottie/class1.json',
+                child: Image.asset(
+                  'assets/images/class_room.png',
                   height: 30.0,
-                  repeat: true,
-                  reverse: true,
-                  animate: true,
                 ),
               ),
             )
@@ -826,9 +826,6 @@ class _NewsScreenState extends State<NewsScreen> {
           Container(
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
-              border: selectedIndex != index
-                  ? null
-                  : Border.all(color: Colors.green, width: 2),
               image: DecorationImage(
                 colorFilter: ColorFilter.mode(
                     Colors.blue.withOpacity(0.3), BlendMode.dstATop),
@@ -870,7 +867,7 @@ class _NewsScreenState extends State<NewsScreen> {
               ],
             ),
           ),
-          if (oldNews[index].visibility != '' && widget.accessiblePerson)
+          if (oldNews[index].visibility != '')
             Positioned(
               top: 10,
               right: 10,
@@ -885,12 +882,9 @@ class _NewsScreenState extends State<NewsScreen> {
                         );
                       });
                 },
-                child: Lottie.asset(
-                  'assets/lottie/class1.json',
+                child: Image.asset(
+                  'assets/images/class_room.png',
                   height: 30.0,
-                  repeat: true,
-                  reverse: true,
-                  animate: true,
                 ),
               ),
             )
@@ -915,9 +909,6 @@ class _NewsScreenState extends State<NewsScreen> {
           Container(
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
-              border: selectedIndex != index
-                  ? null
-                  : Border.all(color: Colors.green, width: 2),
               image: DecorationImage(
                 colorFilter: ColorFilter.mode(
                     Colors.blue.withOpacity(0.3), BlendMode.dstATop),
@@ -942,7 +933,7 @@ class _NewsScreenState extends State<NewsScreen> {
               ),
             ),
           ),
-          if (oldNews[index].visibility != '' && widget.accessiblePerson)
+          if (oldNews[index].visibility != '')
             Positioned(
               top: 10,
               right: 10,
@@ -957,12 +948,9 @@ class _NewsScreenState extends State<NewsScreen> {
                         );
                       });
                 },
-                child: Lottie.asset(
-                  'assets/lottie/class1.json',
+                child: Image.asset(
+                  'assets/images/class_room.png',
                   height: 30.0,
-                  repeat: true,
-                  reverse: true,
-                  animate: true,
                 ),
               ),
             )
@@ -987,9 +975,6 @@ class _NewsScreenState extends State<NewsScreen> {
           Container(
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
-              border: selectedIndex != index
-                  ? null
-                  : Border.all(color: Colors.green, width: 2),
               image: DecorationImage(
                 colorFilter: ColorFilter.mode(
                     Colors.blue.withOpacity(0.3), BlendMode.dstATop),
@@ -1014,7 +999,7 @@ class _NewsScreenState extends State<NewsScreen> {
               ),
             ),
           ),
-          if (oldNews[index].visibility != '' && widget.accessiblePerson)
+          if (oldNews[index].visibility != '')
             Positioned(
               top: 10,
               right: 10,
@@ -1029,12 +1014,9 @@ class _NewsScreenState extends State<NewsScreen> {
                         );
                       });
                 },
-                child: Lottie.asset(
-                  'assets/lottie/class1.json',
+                child: Image.asset(
+                  'assets/images/class_room.png',
                   height: 30.0,
-                  repeat: true,
-                  reverse: true,
-                  animate: true,
                 ),
               ),
             )
@@ -1062,9 +1044,6 @@ class _NewsScreenState extends State<NewsScreen> {
             padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
-              border: selectedIndex != index
-                  ? null
-                  : Border.all(color: Colors.green, width: 2),
               image: DecorationImage(
                 colorFilter: ColorFilter.mode(
                     Colors.blue.withOpacity(0.3), BlendMode.dstATop),
@@ -1119,7 +1098,7 @@ class _NewsScreenState extends State<NewsScreen> {
               ],
             ),
           ),
-          if (oldNews[index].visibility != '' && widget.accessiblePerson)
+          if (oldNews[index].visibility != '')
             Positioned(
               top: 10,
               right: 10,
@@ -1134,12 +1113,9 @@ class _NewsScreenState extends State<NewsScreen> {
                                 Chip(label: Text(oldNews[index].visibility)));
                       });
                 },
-                child: Lottie.asset(
-                  'assets/lottie/class1.json',
+                child: Image.asset(
+                  'assets/images/class_room.png',
                   height: 30.0,
-                  repeat: true,
-                  reverse: true,
-                  animate: true,
                 ),
               ),
             )

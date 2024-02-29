@@ -15,6 +15,7 @@ class ProfileInfo extends StatefulWidget {
   int id;
   String image;
   String lastSeen;
+  BuildContext context;
   ProfileInfo(
       {super.key,
       required this.role,
@@ -24,6 +25,7 @@ class ProfileInfo extends StatefulWidget {
       this.parentName,
       required this.id,
       required this.lastSeen,
+      required this.context,
       required this.image});
 
   @override
@@ -147,11 +149,10 @@ class _ProfileInfoState extends State<ProfileInfo> {
                                   id: widget.id.toString(), role: widget.role)
                               .then((value) {
                             if (value != null) {
-                              setState(() {
-                                Utility.displaySnackBar(
-                                    context, value["message"]);
-                              });
+                              Utility.displaySnackBar(
+                                  widget.context, value["message"]);
                             }
+                            Navigator.pop(context);
                           });
                         },
                         child: const Text(

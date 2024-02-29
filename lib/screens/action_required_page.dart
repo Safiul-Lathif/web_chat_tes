@@ -1,17 +1,11 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, avoid_web_libraries_in_flutter
 import 'dart:async';
-import 'dart:html';
-import 'dart:io';
+import 'dart:html' as html;
 import 'package:audioplayers/audioplayers.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:ui/api/action_required_api.dart';
-import 'package:ui/card/parents_reply_card.dart';
 import 'package:ui/config/images.dart';
 import 'package:ui/custom/detail_page_image.dart';
 import 'package:ui/model/action_required_model.dart';
@@ -1061,15 +1055,7 @@ class _ActionRequiredState extends State<ActionRequired> {
       });
 
   Future openFile({required String url, required String fileName}) async {
-    AnchorElement anchorElement = AnchorElement(href: url);
-    anchorElement.download = fileName;
-    anchorElement.click();
-    // final file = await downloadFile(url, fileName);
-    // if (file == null) return;
-    // setState(() {
-    //   isDownloading = false;
-    // });
-    // OpenFile.open(file.path);
+    html.window.open(url, fileName);
   }
 
   // Future<File?> downloadFile(String url, String name) async {

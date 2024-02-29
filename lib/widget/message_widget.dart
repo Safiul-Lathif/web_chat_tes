@@ -1552,7 +1552,7 @@ class _MessageWidgetState extends State<MessageWidget> {
       ).then((value) {
         navigateFunction(value);
       });
-    } else if (imgController.text.isNotEmpty && image.isNotEmpty) {
+    } else if (imgController.text.isNotEmpty && images.isNotEmpty) {
       category = 2;
       await sendImg(
               img: images,
@@ -1565,7 +1565,7 @@ class _MessageWidgetState extends State<MessageWidget> {
           .then((value) {
         navigateFunction(value);
       });
-    } else if (imgController.text.isEmpty && image.isNotEmpty) {
+    } else if (imgController.text.isEmpty && images.isNotEmpty) {
       category = 3;
       await sendImg(
               img: images,
@@ -1705,8 +1705,8 @@ class TabWidget extends StatelessWidget {
           children: [
             Container(
               margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 10 * fem),
-              width: 15 * fem,
-              height: 15 * fem,
+              width: 20 * fem,
+              height: 20 * fem,
               child: Image.asset(
                 assetImage.assetName,
                 fit: BoxFit.cover,

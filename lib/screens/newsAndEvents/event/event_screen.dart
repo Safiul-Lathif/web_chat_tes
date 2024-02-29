@@ -1,10 +1,8 @@
 // ignore_for_file: must_be_immutable
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
 import 'package:ui/Utils/Utility.dart';
 import 'package:ui/api/news&events/delete_news_api.dart';
 import 'package:ui/api/news&events/events_feed_api.dart';
@@ -81,6 +79,14 @@ class _EventScreenState extends State<EventScreen> {
           isLoading = false;
         });
       }
+    });
+  }
+
+  void updateLatestEvents() {
+    setState(() {
+      pageNumber = 1;
+      upcomingEvents.clear();
+      initialize();
     });
   }
 
@@ -174,7 +180,7 @@ class _EventScreenState extends State<EventScreen> {
                       width: MediaQuery.of(context).size.width * 0.4,
                       height: MediaQuery.of(context).size.height * 0.65,
                       child: AddEventForm(
-                        callback: initialize,
+                        callback: updateLatestEvents,
                       ),
                     ),
                   ),
@@ -199,23 +205,23 @@ class _EventScreenState extends State<EventScreen> {
                   child: Container(
                       height: MediaQuery.of(context).size.height,
                       decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
+                          color: Colors.white,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            bottomLeft: Radius.circular(20),
+                          ),
                           image: DecorationImage(
-                              colorFilter: ColorFilter.mode(
-                                  Colors.blue.withOpacity(0.2),
-                                  BlendMode.dstATop),
-                              image: const AssetImage(Images.bgImage),
-                              repeat: ImageRepeat.repeatX)),
+                            colorFilter: ColorFilter.mode(
+                                Colors.blue.withOpacity(0.4),
+                                BlendMode.dstATop),
+                            image: const AssetImage(Images.bgImage),
+                            fit: BoxFit.cover,
+                          )),
                       child: ListView.builder(
                           shrinkWrap: true,
                           physics: const ScrollPhysics(),
                           padding: const EdgeInsets.all(10),
-                          controller: isPastEvent
-                              ? completedController
-                              : upcomingController,
-                          itemCount: isPastEvent
-                              ? completedEvents.length
-                              : upcomingEvents.length,
+                          itemCount: 1,
                           itemExtent: 200,
                           itemBuilder: (context, index) {
                             return Padding(
@@ -367,7 +373,10 @@ class _EventScreenState extends State<EventScreen> {
                                           ),
                                         Expanded(
                                           child: SizedBox(
-                                            height: 218,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.4,
                                             child: PageView.builder(
                                               itemCount: upcomingEvents.length,
                                               physics: const ScrollPhysics(),
@@ -463,7 +472,7 @@ class _EventScreenState extends State<EventScreen> {
                                                                               context)
                                                                           .size
                                                                           .height *
-                                                                      0.2,
+                                                                      0.3,
                                                                   width: MediaQuery.of(
                                                                           context)
                                                                       .size
@@ -602,7 +611,7 @@ class _EventScreenState extends State<EventScreen> {
                                   gridDelegate:
                                       const SliverGridDelegateWithMaxCrossAxisExtent(
                                           maxCrossAxisExtent: 500,
-                                          childAspectRatio: 3,
+                                          childAspectRatio: 2,
                                           crossAxisSpacing: 20,
                                           mainAxisSpacing: 20),
                                   physics: const ScrollPhysics(),
@@ -801,11 +810,8 @@ class _EventScreenState extends State<EventScreen> {
                                                     '' &&
                                                 widget.accessiblePerson
                                             ? Positioned(
-                                                top: 10,
-                                                right: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.1,
+                                                bottom: 5,
+                                                right: 10,
                                                 child: InkWell(
                                                   onTap: () {
                                                     showDialog(
@@ -822,12 +828,9 @@ class _EventScreenState extends State<EventScreen> {
                                                                       .visibility)));
                                                         });
                                                   },
-                                                  child: Lottie.asset(
-                                                    'assets/lottie/class1.json',
+                                                  child: Image.asset(
+                                                    'assets/images/class_room.png',
                                                     height: 30.0,
-                                                    repeat: true,
-                                                    reverse: true,
-                                                    animate: true,
                                                   ),
                                                 ),
                                               )
@@ -864,9 +867,6 @@ class _EventScreenState extends State<EventScreen> {
           Container(
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
-              border: selectedIndex != index
-                  ? null
-                  : Border.all(color: Colors.green, width: 2),
               image: DecorationImage(
                 colorFilter: ColorFilter.mode(
                     Colors.blue.withOpacity(0.3), BlendMode.dstATop),
@@ -923,12 +923,9 @@ class _EventScreenState extends State<EventScreen> {
                         );
                       });
                 },
-                child: Lottie.asset(
-                  'assets/lottie/class1.json',
+                child: Image.asset(
+                  'assets/images/class_room.png',
                   height: 30.0,
-                  repeat: true,
-                  reverse: true,
-                  animate: true,
                 ),
               ),
             )

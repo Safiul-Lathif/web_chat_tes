@@ -1,12 +1,25 @@
 // ignore_for_file: iterable_contains_unrelated_type, must_be_immutable
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ui/api/group_info_api.dart';
 import 'package:ui/api/inactive_user_api.dart';
+import 'package:ui/api/search/check_mobile_number.dart';
+import 'package:ui/api/settings/get_admissin_number.dart';
+import 'package:ui/api/settings/student.dart';
 import 'package:ui/model/group_info_model.dart';
 import 'package:ui/model/image_list_model.dart';
+import 'package:ui/model/settings/student.dart';
 import 'package:ui/utils/utility.dart';
 import 'package:ui/widget/profile_info.dart';
+
+import '../model/search/management_list_model.dart';
+import '../model/view_section_model.dart';
+import '../widget/settings/management.dart';
 
 class GroupInfoWidget extends StatefulWidget {
   final String schoolName;
@@ -14,6 +27,7 @@ class GroupInfoWidget extends StatefulWidget {
   List<ImageList>? imageList;
   bool isLoading;
   final Function callback;
+  bool isClass;
 
   GroupInfoWidget(
       {super.key,
@@ -21,6 +35,7 @@ class GroupInfoWidget extends StatefulWidget {
       required this.id,
       required this.imageList,
       required this.isLoading,
+      required this.isClass,
       required this.callback});
 
   @override
@@ -40,6 +55,34 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
 
   int totalItem = 0;
   bool isSearch = false;
+
+  String className = '';
+  List<SectionDetail> sectionList = [];
+  List<ManagementList>? managementList = [];
+  List<PlatformFile> fatherPhoto = [];
+  List<PlatformFile> motherPhoto = [];
+  List<PlatformFile> guardianPhoto = [];
+  List<PlatformFile> studentPhoto = [];
+
+  bool isValidNumber = true;
+  bool isGuardian = false;
+  String index = '';
+
+  bool isFatherDuplicate = false;
+  bool isMotherDuplicate = false;
+  bool isGuardianDuplicate = false;
+  String gender = '';
+
+  String errorText = 'admission id is required in this field ';
+  void getValidAdmissionNumber(String number, SingleParent student) async {
+    await getAdmissionNumber(number).then((value) {
+      setState(() {
+        isValidNumber = value['status'];
+        student.admissionNumber = number;
+        errorText = value['message'];
+      });
+    });
+  }
 
   bool isLoading = false;
   Future<bool> activeInactiveUser(
@@ -183,63 +226,91 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
                     const SizedBox(
                       height: 10,
                     ),
-                    Container(
-                      height: 45,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(15)),
-                          border: Border.all(color: Colors.black)),
-                      child: TextField(
-                        onTap: () {
-                          setState(() {
-                            isSearch = !isSearch;
-                            // listOfParticipants.clear();
-                            // groupInfo = null;
-                            // page = 0;
-                            // getGroupList(0);
-                          });
-                        },
-                        onChanged: (value) {
-                          setState(() {
-                            searchText = value;
-                            searchMember();
-                          });
-                        },
-                        controller: controller,
-                        decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.only(
-                              top: 12,
-                            ),
-                            prefixIcon: Icon(
-                              Icons.search,
-                              color: !isSearch
-                                  ? Colors.black38
-                                  : Colors.grey.shade600,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                Icons.clear,
-                                color: !isSearch
-                                    ? Colors.black38
-                                    : Colors.grey.shade600,
-                              ),
+                    Row(
+                      children: [
+                        Container(
+                          height: 45,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(15)),
+                              border: Border.all(color: Colors.black)),
+                          child: TextField(
+                            onTap: () {
+                              setState(() {
+                                isSearch = !isSearch;
+                              });
+                            },
+                            onChanged: (value) {
+                              setState(() {
+                                searchText = value;
+                                searchMember();
+                              });
+                            },
+                            controller: controller,
+                            decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.only(
+                                  top: 12,
+                                ),
+                                prefixIcon: Icon(
+                                  Icons.search,
+                                  color: !isSearch
+                                      ? Colors.black38
+                                      : Colors.grey.shade600,
+                                ),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    Icons.clear,
+                                    color: !isSearch
+                                        ? Colors.black38
+                                        : Colors.grey.shade600,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      controller.clear();
+                                      searchText = '';
+                                      isSearch = !isSearch;
+                                    });
+                                  },
+                                ),
+                                hintText: 'Search...',
+                                hintStyle: TextStyle(
+                                  color: !isSearch
+                                      ? Colors.black38
+                                      : Colors.grey.shade600,
+                                ),
+                                border: InputBorder.none),
+                          ),
+                        ),
+                        if (widget.isClass)
+                          IconButton(
                               onPressed: () {
-                                setState(() {
-                                  controller.clear();
-                                  searchText = '';
-                                  isSearch = !isSearch;
-                                });
+                                addEditPopUp(SingleParent(
+                                    studentId: 0,
+                                    studentName: '',
+                                    fatherMobileNumber: 0,
+                                    fatherEmailAddress: '',
+                                    fatherName: '',
+                                    fatherId: 0,
+                                    motherMobileNumber: 0,
+                                    motherEmailAddress: '',
+                                    motherName: '',
+                                    motherId: 0,
+                                    guardianMobileNumber: 0,
+                                    guardianEmailAddress: '',
+                                    guardianName: '',
+                                    guardianId: 0,
+                                    admissionNumber: '',
+                                    rollNo: 0,
+                                    dob: '',
+                                    employeeNo: '',
+                                    gender: '',
+                                    photo: '',
+                                    temporaryStudent: '',
+                                    classSection: int.parse(widget.id)));
                               },
-                            ),
-                            hintText: 'Search...',
-                            hintStyle: TextStyle(
-                              color: !isSearch
-                                  ? Colors.black38
-                                  : Colors.grey.shade600,
-                            ),
-                            border: InputBorder.none),
-                      ),
+                              icon: const Icon(Icons.person_add_alt))
+                      ],
                     ),
                     SizedBox(
                       height: 320,
@@ -291,7 +362,7 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
                                   onTap: () {
                                     showDialog(
                                       context: context,
-                                      builder: (context) => Material(
+                                      builder: (ctx) => Material(
                                         type: MaterialType.transparency,
                                         child: Center(
                                             child: SizedBox(
@@ -302,6 +373,7 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
                                                         .height *
                                                     0.5,
                                                 child: ProfileInfo(
+                                                    context: context,
                                                     lastSeen: groupInfo!.elementAt(index).lastLogin != ''
                                                         ? "Last Login:${Utility.convertDateFormat(groupInfo!.elementAt(index).lastLogin, "dd-MMM-yyyy")} \t${Utility.convertTimeFormat(groupInfo!.elementAt(index).lastLogin.split(' ').last)}"
                                                         : "",
@@ -358,6 +430,677 @@ class _GroupInfoWidgetState extends State<GroupInfoWidget> {
                 ),
         ),
       ],
+    );
+  }
+
+  final _formKey = GlobalKey<FormState>();
+  bool isEdit = false;
+
+  final TextEditingController dobController = TextEditingController();
+  final TextEditingController dojController = TextEditingController();
+  DateTime selectedDate = DateTime.now();
+
+  Future<void> _selectDate(
+      BuildContext context, String field, SingleParent singleStudent) async {
+    setState(() {
+      selectedDate = DateTime.now();
+    });
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        initialDatePickerMode: DatePickerMode.day,
+        firstDate: DateTime(1900),
+        lastDate: DateTime.now());
+    if (picked != null) {
+      setState(() {
+        selectedDate = picked;
+        switch (field) {
+          case 'dob':
+            singleStudent.dob = DateFormat('dd-MM-yyyy').format(selectedDate);
+            dobController.text = singleStudent.dob;
+            break;
+        }
+      });
+    }
+  }
+
+  addEditPopUp(SingleParent student) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return Form(
+          key: _formKey,
+          child: AlertDialog(
+            title: const Text("Add Student"),
+            actions: [
+              TextButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      if (isEdit) {
+                        await StudentController()
+                            .editParent(
+                          student: student,
+                          fatherPhoto: fatherPhoto,
+                          motherPhoto: motherPhoto,
+                          guardianPhoto: guardianPhoto,
+                          studentPhoto: studentPhoto,
+                        )
+                            .then((value) {
+                          if (value != null) {
+                            Utility.displaySnackBar(
+                                context,
+                                isEdit
+                                    ? "Student Updated Scuessfully"
+                                    : 'Student added scuessfully');
+                            Navigator.pop(context);
+                          } else {
+                            Utility.displaySnackBar(context,
+                                'Something went wrong please try again');
+                            Navigator.pop(context);
+                          }
+                        });
+                      } else {
+                        await StudentController()
+                            .addParent(
+                          student: student,
+                          fatherPhoto: fatherPhoto,
+                          motherPhoto: motherPhoto,
+                          guardianPhoto: guardianPhoto,
+                          studentPhoto: studentPhoto,
+                        )
+                            .then((value) {
+                          if (value != null) {
+                            Utility.displaySnackBar(
+                                context,
+                                isEdit
+                                    ? "Student Updated Scuessfully"
+                                    : 'Student added scuessfully');
+                            Navigator.pop(context);
+                          } else {
+                            Utility.displaySnackBar(context,
+                                'Something went wrong please try again');
+                            Navigator.pop(context);
+                          }
+                        });
+                      }
+                    }
+                  },
+                  child: const Text("Submit")),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Cancel"))
+            ],
+            content: SingleChildScrollView(
+              child: StatefulBuilder(builder: (context, setState) {
+                return SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.65,
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceEvenly,
+                    runSpacing: 15,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: FormBuilderTextField(
+                          keyboardType: TextInputType.name,
+                          name: "",
+                          initialValue: student.studentName,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Student name is required in this field';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.only(
+                                top: 5, bottom: 5, left: 15),
+                            filled: true,
+                            hintText: 'Student Name *',
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              student.studentName = value!;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: FormBuilderTextField(
+                          name: "",
+                          keyboardType: TextInputType.text,
+                          initialValue: student.admissionNumber,
+                          validator: (value) {
+                            if (isValidNumber == false) {
+                              return errorText;
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Admission ID*',
+                            contentPadding: const EdgeInsets.only(
+                                top: 5, bottom: 5, left: 15),
+                            filled: true,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                          ),
+                          onChanged: (value) {
+                            getValidAdmissionNumber(value!, student);
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: FormBuilderTextField(
+                          name: "",
+                          keyboardType: TextInputType.text,
+                          initialValue: student.rollNo == 0
+                              ? null
+                              : student.rollNo.toString(),
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.only(
+                                top: 5, bottom: 5, left: 15),
+                            hintText: 'Roll Number (optional)',
+                            filled: true,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              student.rollNo = int.parse(value!);
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Row(
+                              children: [
+                                Radio(
+                                    value: 'Male',
+                                    groupValue: index,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        index = newValue.toString();
+                                        student.gender = 'Male';
+                                      });
+                                    }),
+                                const Text('Boy')
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Radio(
+                                    value: 'Female',
+                                    groupValue: index,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        index = newValue.toString();
+                                        student.gender = 'Female';
+                                      });
+                                    }),
+                                const Text('Girl')
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          _selectDate(context, 'dob', student);
+                        },
+                        child: FormTextWidget(
+                            isValidate: true,
+                            isEnabled: false,
+                            keyboardType: TextInputType.name,
+                            controller: dobController,
+                            hintText: 'Date Of Birth',
+                            onChanged: (value) {}),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: FormBuilderTextField(
+                          keyboardType: TextInputType.name,
+                          name: "",
+                          validator: (value) {
+                            if (student.fatherName == '' &&
+                                student.motherName == '' &&
+                                student.guardianName == '') {
+                              return 'Father/mother/guardian name is required';
+                            }
+                            return null;
+                          },
+                          initialValue: student.fatherName,
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.only(
+                                top: 5, bottom: 5, left: 15),
+                            filled: true,
+                            hintText: 'Father Name*',
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              student.fatherName = value!;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: FormBuilderTextField(
+                          name: "",
+                          keyboardType: TextInputType.phone,
+                          initialValue: student.fatherMobileNumber == 0
+                              ? null
+                              : student.fatherMobileNumber.toString(),
+                          validator: (value) {
+                            if (student.fatherMobileNumber == 0 &&
+                                student.motherMobileNumber == 0 &&
+                                student.guardianMobileNumber == 0) {
+                              return 'Father/mother/guardian name is required';
+                            }
+                            if (student.fatherMobileNumber.toString().length !=
+                                10) {
+                              return 'please enter valid mobile number';
+                            }
+                            if (isFatherDuplicate) {
+                              return 'The Number is already exist its duplicate number ';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.only(
+                                top: 5, bottom: 5, left: 15),
+                            hintText: 'Father Mobile Number*',
+                            filled: true,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                          ),
+                          onChanged: (value) async {
+                            setState(() {
+                              student.fatherMobileNumber = int.parse(value!);
+                            });
+                            if (value!.length == 10) {
+                              var unMappedNumber = await checkMobileNumber(
+                                  student.fatherMobileNumber, 0, 1);
+                              var data = true;
+                              data = unMappedNumber['status'] == false &&
+                                      unMappedNumber['tag'] != 'duplicate'
+                                  ? false
+                                  : true;
+                              setState(() => isFatherDuplicate =
+                                  unMappedNumber['tag'] == 'duplicate'
+                                      ? true
+                                      : false);
+                              if (!data) {
+                                alertWindow(student.fatherMobileNumber);
+                              } else {
+                                setState(() {
+                                  isMapped = true;
+                                });
+                              }
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: FormBuilderTextField(
+                          name: "",
+                          keyboardType: TextInputType.emailAddress,
+                          initialValue: student.fatherEmailAddress,
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.only(
+                                top: 5, bottom: 5, left: 15),
+                            hintText: 'Father email address',
+                            filled: true,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              student.fatherEmailAddress = value!;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: FormBuilderTextField(
+                          keyboardType: TextInputType.name,
+                          initialValue: student.motherName,
+                          name: "",
+                          validator: (value) {
+                            if (student.fatherName == '' &&
+                                student.motherName == '' &&
+                                student.guardianName == '') {
+                              return 'Father/mother/guardian name is required';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.only(
+                                top: 5, bottom: 5, left: 15),
+                            filled: true,
+                            hintText: 'Mother Name',
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              student.motherName = value!;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: FormBuilderTextField(
+                          name: "",
+                          keyboardType: TextInputType.phone,
+                          initialValue: student.motherMobileNumber == 0
+                              ? null
+                              : student.motherMobileNumber.toString(),
+                          validator: (value) {
+                            if (student.fatherMobileNumber == 0 &&
+                                student.motherMobileNumber == 0 &&
+                                student.guardianMobileNumber == 0) {
+                              return 'Father/mother/guardian name is required';
+                            }
+                            if (student.motherName != '' &&
+                                student.motherMobileNumber == 0) {
+                              return 'please enter mother number';
+                            }
+                            if (student.motherMobileNumber != 0 &&
+                                student.motherMobileNumber.toString().length !=
+                                    10) {
+                              return 'please enter valid mobile number';
+                            }
+                            if (isMotherDuplicate) {
+                              return 'The Number is already exist its duplicate number ';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.only(
+                                top: 5, bottom: 5, left: 15),
+                            hintText: 'Mother Mobile Number',
+                            filled: true,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                          ),
+                          onChanged: (value) async {
+                            setState(() {
+                              student.motherMobileNumber = int.parse(value!);
+                            });
+                            if (value!.length == 10) {
+                              var unMappedNumber = await checkMobileNumber(
+                                  student.motherMobileNumber, 0, 2);
+                              var data = true;
+                              data = unMappedNumber['status'] == false &&
+                                      unMappedNumber['tag'] != 'duplicate'
+                                  ? false
+                                  : true;
+                              setState(() => isMotherDuplicate =
+                                  unMappedNumber['tag'] == 'duplicate'
+                                      ? true
+                                      : false);
+                              if (!data) {
+                                alertWindow(student.motherMobileNumber);
+                              } else {
+                                setState(() {
+                                  isMapped = true;
+                                });
+                              }
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: FormBuilderTextField(
+                          name: "",
+                          keyboardType: TextInputType.emailAddress,
+                          initialValue: student.motherEmailAddress,
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.only(
+                                top: 5, bottom: 5, left: 15),
+                            hintText: 'Mother email Address',
+                            filled: true,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              student.motherEmailAddress = value!;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: Row(
+                          children: [
+                            Checkbox(
+                                value: isGuardian,
+                                activeColor: Colors.blueGrey.shade400,
+                                onChanged: (value) {
+                                  setState(() {
+                                    isGuardian = value!;
+                                  });
+                                }),
+                            const Text("Guardian",
+                                style: TextStyle(fontWeight: FontWeight.bold))
+                          ],
+                        ),
+                      ),
+                      if (isGuardian == true)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          child: FormBuilderTextField(
+                            keyboardType: TextInputType.name,
+                            name: "",
+                            validator: (value) {
+                              if (student.fatherName == '' &&
+                                  student.motherName == '' &&
+                                  student.guardianName == '') {
+                                return 'Father/mother/guardian name is required';
+                              }
+                              return null;
+                            },
+                            initialValue: student.guardianName,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.only(
+                                  top: 5, bottom: 5, left: 15),
+                              filled: true,
+                              hintText: 'Guardian Name',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15)),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                student.guardianName = value!;
+                              });
+                            },
+                          ),
+                        ),
+                      if (isGuardian == true)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          child: FormBuilderTextField(
+                            name: "",
+                            validator: (value) {
+                              if (student.fatherMobileNumber == 0 &&
+                                  student.motherMobileNumber == 0 &&
+                                  student.guardianMobileNumber == 0) {
+                                return 'Father/mother/guardian name is required';
+                              }
+                              if (student.guardianName != '' &&
+                                  student.guardianMobileNumber == 0) {
+                                return 'please enter mother number';
+                              }
+                              if (student.guardianMobileNumber != 0 &&
+                                  student.guardianMobileNumber
+                                          .toString()
+                                          .length !=
+                                      10) {
+                                return 'please enter valid mobile number';
+                              }
+                              if (isGuardianDuplicate) {
+                                return 'The Number is already exist its duplicate number ';
+                              }
+                              return null;
+                            },
+                            keyboardType: TextInputType.phone,
+                            initialValue: student.guardianMobileNumber == 0
+                                ? null
+                                : student.guardianMobileNumber.toString(),
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.only(
+                                  top: 5, bottom: 5, left: 15),
+                              hintText: 'Guardian Mobile Number',
+                              filled: true,
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15)),
+                            ),
+                            onChanged: (value) async {
+                              setState(() {
+                                student.guardianMobileNumber =
+                                    int.parse(value!);
+                              });
+                              if (value!.length == 10) {
+                                var unMappedNumber = await checkMobileNumber(
+                                    student.guardianMobileNumber, 0, 9);
+                                var data = true;
+                                data = unMappedNumber['status'] == false &&
+                                        unMappedNumber['tag'] != 'duplicate'
+                                    ? false
+                                    : true;
+                                setState(() => isGuardianDuplicate =
+                                    unMappedNumber['tag'] == 'duplicate'
+                                        ? true
+                                        : false);
+                                if (!data) {
+                                  alertWindow(student.guardianMobileNumber);
+                                } else {
+                                  setState(() {
+                                    isMapped = true;
+                                  });
+                                }
+                              }
+                            },
+                          ),
+                        ),
+                      if (isGuardian == true)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          child: FormBuilderTextField(
+                            name: "",
+                            keyboardType: TextInputType.emailAddress,
+                            initialValue: student.guardianEmailAddress,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.only(
+                                  top: 5, bottom: 5, left: 15),
+                              hintText: 'Guardian email Address',
+                              filled: true,
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15)),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                student.guardianEmailAddress = value!;
+                              });
+                            },
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              }),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  bool isMapped = true;
+  void alertWindow(number) async {
+    return await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Column(
+            children: [
+              const Text("Are you sure?"),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                "Mobile number already mapped with students do you want to continue.",
+                style: GoogleFonts.lato(
+                    fontSize: 13, fontWeight: FontWeight.normal),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  setState(() {
+                    isMapped = false;
+                  });
+                  Navigator.pop(context);
+                },
+                child: const Text("No")),
+            TextButton(
+                onPressed: () async {
+                  setState(() {
+                    isMapped = true;
+                  });
+                  Navigator.pop(context);
+                },
+                child: const Text("Yes")),
+          ],
+        );
+      },
     );
   }
 }

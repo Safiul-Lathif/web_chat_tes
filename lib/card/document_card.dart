@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, avoid_web_libraries_in_flutter
 import 'dart:async';
-import 'dart:html';
+import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
@@ -18,6 +18,8 @@ import 'package:ui/custom/visibility_widget.dart';
 import 'package:ui/model/info_model.dart';
 import 'package:ui/model/message_view_model.dart';
 import 'package:ui/utils/utils_file.dart';
+import 'dart:js' as js;
+
 import 'package:ui/widget/new_time_widget.dart';
 
 class DocumentCard extends StatefulWidget {
@@ -669,8 +671,6 @@ class _DocumentCardState extends State<DocumentCard> {
       {required String url,
       required String fileName,
       required int index}) async {
-    AnchorElement anchorElement = AnchorElement(href: url);
-    anchorElement.download = fileName;
-    anchorElement.click();
+    html.window.open(url, fileName);
   }
 }

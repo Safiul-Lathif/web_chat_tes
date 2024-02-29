@@ -1,5 +1,5 @@
 // ignore_for_file: unnecessary_null_comparison, must_be_immutable
-import 'dart:html';
+import 'dart:html' as html;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,6 +21,7 @@ import 'package:ui/model/parenthomeworkmodel.dart';
 import 'package:ui/model/staff_home_work_model.dart';
 import 'package:ui/utils/session_management.dart';
 import 'package:ui/utils/utils_file.dart';
+import 'dart:js' as js;
 
 class HomeWorkPage extends StatefulWidget {
   HomeWorkPage({
@@ -207,15 +208,7 @@ class _HomeWorkPageState extends State<HomeWorkPage> {
     required String url,
     required String fileName,
   }) async {
-    AnchorElement anchorElement = AnchorElement(href: url);
-    anchorElement.download = fileName;
-    anchorElement.click();
-    // final file = await downloadFile(url, fileName);
-    // if (file == null) {
-    //   _snackBar('Unable to open Document');
-    // } else {
-    //   OpenFile.open(file.path);
-    // }
+    html.window.open(url, fileName);
   }
 
   _snackBar(String message) {

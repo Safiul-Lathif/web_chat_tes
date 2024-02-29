@@ -183,7 +183,7 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                     ),
                   ),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.95,
+                    width: MediaQuery.of(context).size.width * 0.9,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -215,32 +215,36 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                           : null;
                                     });
                                   },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                isDeclined
-                                    ? const Icon(
-                                        Icons.thumb_down_alt,
-                                        size: 20,
-                                        color: Colors.white,
-                                      )
-                                    : const Icon(
-                                        Icons.thumb_down_alt_outlined,
-                                        size: 20,
-                                        color: Colors.white,
-                                      ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  eventFeed.declined == 0
-                                      ? "Declined"
-                                      : "Declined (${eventFeed.declined.toString()})",
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 15, right: 15),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  isDeclined
+                                      ? const Icon(
+                                          Icons.thumb_down_alt,
+                                          size: 20,
+                                          color: Colors.white,
+                                        )
+                                      : const Icon(
+                                          Icons.thumb_down_alt_outlined,
+                                          size: 20,
+                                          color: Colors.white,
+                                        ),
+                                  const SizedBox(
+                                    width: 5,
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    eventFeed.declined == 0
+                                        ? "Declined"
+                                        : "Declined (${eventFeed.declined.toString()})",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             )),
                         const SizedBox(
                           width: 10,
@@ -273,32 +277,36 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                         : Utility.displaySnackBar(context,
                                             "Event Accepted Successfully");
                                   },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                isAccepted
-                                    ? const Icon(
-                                        Icons.thumb_up_alt,
-                                        size: 20,
-                                        color: Colors.white,
-                                      )
-                                    : const Icon(
-                                        Icons.thumb_up_alt_outlined,
-                                        size: 20,
-                                        color: Colors.white,
-                                      ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  eventFeed.accepted == 0
-                                      ? "Accepted"
-                                      : "Accepted(${eventFeed.accepted.toString()})",
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 15, right: 15),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  isAccepted
+                                      ? const Icon(
+                                          Icons.thumb_up_alt,
+                                          size: 20,
+                                          color: Colors.white,
+                                        )
+                                      : const Icon(
+                                          Icons.thumb_up_alt_outlined,
+                                          size: 20,
+                                          color: Colors.white,
+                                        ),
+                                  const SizedBox(
+                                    width: 5,
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    eventFeed.accepted == 0
+                                        ? "Accepted"
+                                        : "Accepted(${eventFeed.accepted.toString()})",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             )),
                         const SizedBox(
                           width: 10,
@@ -326,40 +334,65 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                       ),
                     ),
                   eventFeed.images.length >= 2
-                      ? Stack(
-                          children: [
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.4,
-                              width: MediaQuery.of(context).size.width,
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => DetailScreen(
-                                                index: itemIndex,
-                                                images: images,
-                                                dateTime: eventFeed.eventDate,
-                                                title: eventFeed.user,
-                                              )));
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(20)),
-                                    image: DecorationImage(
-                                        fit: BoxFit.cover,
-                                        image: NetworkImage(images[itemIndex])),
+                      ? Padding(
+                          padding: const EdgeInsets.only(
+                            left: 10,
+                            right: 10,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: itemIndex == 0
+                                    ? Colors.black12
+                                    : Colors.black38,
+                                child: IconButton(
+                                    onPressed: itemIndex == 0
+                                        ? null
+                                        : () {
+                                            setState(() {
+                                              itemIndex--;
+                                            });
+                                          },
+                                    icon: const Icon(
+                                      Icons.arrow_back_ios_new,
+                                      color: Colors.white,
+                                    )),
+                              ),
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.4,
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => DetailScreen(
+                                                  index: itemIndex,
+                                                  images: images,
+                                                  dateTime: eventFeed.eventDate,
+                                                  title: eventFeed.user,
+                                                )));
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(20)),
+                                      image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image:
+                                              NetworkImage(images[itemIndex])),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Positioned(
-                              right: 0,
-                              bottom: MediaQuery.of(context).size.height * 0.15,
-                              child: CircleAvatar(
-                                backgroundColor: Colors.white70,
+                              CircleAvatar(
+                                backgroundColor:
+                                    itemIndex >= eventFeed.images.length - 1
+                                        ? Colors.black12
+                                        : Colors.black38,
                                 child: IconButton(
                                     onPressed:
                                         itemIndex >= eventFeed.images.length - 1
@@ -371,30 +404,11 @@ class _DetailsPageEventsState extends State<DetailsPageEvents> {
                                               },
                                     icon: const Icon(
                                       Icons.arrow_forward_ios_sharp,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                     )),
                               ),
-                            ),
-                            Positioned(
-                              left: 0,
-                              top: MediaQuery.of(context).size.height * 0.17,
-                              child: CircleAvatar(
-                                backgroundColor: Colors.white70,
-                                child: IconButton(
-                                    onPressed: itemIndex == 0
-                                        ? null
-                                        : () {
-                                            setState(() {
-                                              itemIndex--;
-                                            });
-                                          },
-                                    icon: const Icon(
-                                      Icons.arrow_back_ios_new,
-                                      color: Colors.black,
-                                    )),
-                              ),
-                            )
-                          ],
+                            ],
+                          ),
                         )
                       : Container(),
                   if (eventFeed.youtubeLink != '')

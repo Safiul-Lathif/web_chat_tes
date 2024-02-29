@@ -996,7 +996,7 @@ class _SearchPageState extends State<SearchPage> {
                       const SizedBox(
                         width: 10,
                       ),
-                      if (currentTab != 'Student')
+                      if (currentTab != 'Student' && currentTab != 'Parent')
                         SizedBox(
                           height: 40,
                           child: ElevatedButton.icon(
