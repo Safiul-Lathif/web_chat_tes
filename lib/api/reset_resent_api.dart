@@ -17,9 +17,9 @@ Future<dynamic> resetAndReSend(
     final response = await http.post(url,
         body: map, headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
     if (response.statusCode == 200) {
+      print(response.body);
       return jsonDecode(response.body);
     } else {
-      // ignore: avoid_print
       print('Request failed with status: ${response.statusCode}.');
       return null;
     }

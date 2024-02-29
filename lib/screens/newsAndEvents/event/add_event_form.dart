@@ -692,8 +692,8 @@ class _AddEventFormState extends State<AddEventForm> {
   }
 
   void navigation(String message) {
-    widget.callback();
     Navigator.pop(context, true);
+    widget.callback();
     Utility.displaySnackBar(context, message);
   }
 }

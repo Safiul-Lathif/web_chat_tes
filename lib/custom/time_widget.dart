@@ -47,10 +47,10 @@ class _TimeWidgetState extends State<TimeWidget> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(
-              Images.timeIcon,
-              height: 10,
-              width: 10,
+            const Icon(
+              Icons.timelapse,
+              color: Colors.black,
+              size: 16,
             ),
             const SizedBox(
               width: 3,

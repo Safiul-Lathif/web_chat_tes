@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
@@ -15,6 +15,7 @@ import 'package:ui/custom/time_widget.dart';
 import 'package:ui/custom/visibility_widget.dart';
 import 'package:ui/model/message_view_model.dart';
 import 'package:ui/utils/utils_file.dart';
+import 'dart:js' as js;
 
 class MaterialCard extends StatefulWidget {
   const MaterialCard({
@@ -414,16 +415,7 @@ class _MaterialCardState extends State<MaterialCard> {
   }
 
   Future openFile({required String url, required String fileName}) async {
-    AnchorElement anchorElement = AnchorElement(href: url);
-    anchorElement.download = fileName;
-    anchorElement.click();
-    // final file = await downloadFile(url, fileName);
-    // if (file == null) return;
-    // setState(() {
-    //   isDownloading = false;
-    // });
-    // if (file.path.isEmpty) return;
-    // OpenFile.open(file.path);
+    html.window.open(url, fileName);
   }
 
   // Future<File?> downloadFile(String url, String name) async {

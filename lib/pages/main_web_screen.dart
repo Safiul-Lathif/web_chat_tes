@@ -84,9 +84,10 @@ class _MainWebScreenState extends State<MainWebScreen> {
   }
 
   msg(BuildContext context, String id, String className, String name,
-      String role, String classId) async {
+      String role, String classId, bool isMainClass) async {
     setState(() {
       isLoading = true;
+      isClass = isMainClass;
     });
     await getChatData(
         id: id, classId: classId, className: className, name: name, role: role);
@@ -127,6 +128,7 @@ class _MainWebScreenState extends State<MainWebScreen> {
     });
   }
 
+  bool isClass = false;
   bool isVisible = false;
   @override
   Widget build(BuildContext context) {
@@ -193,6 +195,7 @@ class _MainWebScreenState extends State<MainWebScreen> {
                         fit: BoxFit.cover,
                       )),
                   child: GroupInfoWidget(
+                    isClass: isClass,
                     id: grpId,
                     schoolName: userSchoolName,
                     imageList: imageList,
@@ -297,7 +300,7 @@ class _GroupListState extends State<GroupList> {
                                           .toString();
                                       var role = widget.mainGroup!.userRole;
                                       widget.callback(context, id, className,
-                                          name, role, '');
+                                          name, role, '', false);
                                     });
                                   },
                                 ),
@@ -367,8 +370,14 @@ class _GroupListState extends State<GroupList> {
                                           var classId = widget.classGroup!
                                               .classGroup[index].classConfig
                                               .toString();
-                                          widget.callback(context, id,
-                                              className, name, role, classId);
+                                          widget.callback(
+                                              context,
+                                              id,
+                                              className,
+                                              name,
+                                              role,
+                                              classId,
+                                              true);
                                         });
                                       },
                                       leading: Stack(
@@ -407,18 +416,6 @@ class _GroupListState extends State<GroupList> {
                               },
                             ),
                     ),
-                    // Positioned(
-                    //   right: 1,
-                    //   bottom: 1,
-                    //   child: CircleAvatar(
-                    //     radius: 20,
-                    //     backgroundColor: Colors.green.shade500,
-                    //     child: const Icon(
-                    //       Icons.chat,
-                    //       color: Colors.white,
-                    //     ),
-                    //   ),
-                    // )
                   ],
                 ),
               ],
